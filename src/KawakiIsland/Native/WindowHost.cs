@@ -2,11 +2,14 @@ namespace KawakiIsland.Native;
 
 /// <summary>
 /// Перехват оконных сообщений, которых WinUI наружу не отдаёт: глобальная
-/// горячая клавиша и минимальный размер окна.
+/// горячая клавиша, минимальный размер окна и всё, что касается системной рамки.
 /// </summary>
 internal sealed unsafe class WindowHost : IDisposable
 {
     private const nuint SubclassId = 1;
+    private const int WM_SETTEXT = 0x000C;
+    private const int WM_NCPAINT = 0x0085;
+    private const int WM_NCACTIVATE = 0x0086;
 
     private readonly nint _hwnd;
     // Делегат обязан жить столько же, сколько подкласс, иначе сборщик мусора
@@ -23,12 +26,29 @@ internal sealed unsafe class WindowHost : IDisposable
         Win32.SetWindowSubclass(hwnd, _proc, SubclassId, 0);
     }
 
+    /// <summary>
+    /// Переставить наш обработчик в начало цепочки. WinUI добавляет свои
+    /// подклассы позже нашего и, будучи снаружи, возвращает рамочные стили
+    /// после нашей чистки. Вызывать после первой активации окна.
+    /// </summary>
+    public void BecomeOutermost()
+    {
+        Win32.RemoveWindowSubclass(_hwnd, _proc, SubclassId);
+        Win32.SetWindowSubclass(_hwnd, _proc, SubclassId, 0);
+    }
+
     public bool RegisterHotkey(int id, uint modifiers, uint vk)
     {
         if (!Win32.RegisterHotKey(_hwnd, id, modifiers | Win32.MOD_NOREPEAT, vk))
             return false;
         _hotkeys.Add(id);
         return true;
+    }
+
+    public void UnregisterHotkey(int id)
+    {
+        if (_hotkeys.Remove(id))
+            Win32.UnregisterHotKey(_hwnd, id);
     }
 
     private nint WndProc(nint hWnd, uint msg, nint wParam, nint lParam, nuint id, nuint data)
@@ -39,10 +59,24 @@ internal sealed unsafe class WindowHost : IDisposable
                 // Вся площадь окна — клиентская: системной рамке негде рисоваться.
                 return 0;
 
+            // Эти три сообщения DefWindowProc обрабатывает, рисуя классический
+            // заголовок прямо поверх окна, — та самая белая полоса с крестиком.
+            case WM_NCPAINT:
+                return 0;
+            case WM_NCACTIVATE:
+                // lParam = -1: состояние активности меняется, но заголовок не перерисовывается.
+                return Win32.DefSubclassProc(hWnd, msg, wParam, -1);
+            case WM_SETTEXT:
+                return Win32.WithoutVisibleStyle(hWnd, () => Win32.DefSubclassProc(hWnd, msg, wParam, lParam));
+
             case Win32.WM_STYLECHANGING:
-                // WinUI при показе окна возвращает WS_DLGFRAME/WS_SYSMENU — не даём.
+            {
+                // WinUI при показе окна возвращает WS_DLGFRAME/WS_SYSMENU — срезаем
+                // уже после всех внутренних обработчиков.
+                var result = Win32.DefSubclassProc(hWnd, msg, wParam, lParam);
                 Win32.SanitizeStyleChange((int)wParam, lParam);
-                break;
+                return result;
+            }
 
             case Win32.WM_ERASEBKGND:
                 Win32.EraseTransparent(hWnd, wParam);

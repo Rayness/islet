@@ -29,6 +29,8 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260804001" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.9169" />
     <PackageReference Include="System.Data.OleDb" Version="10.0.12" />
+    <!-- Только описания эффектов для стекла (маска по форме островка). -->
+    <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.4.0" />
   </ItemGroup>
 
 </Project>

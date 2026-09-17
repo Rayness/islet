@@ -1,3 +1,5 @@
+using KawakiIsland.Settings;
+
 namespace KawakiIsland.Search;
 
 internal sealed class SearchService
@@ -5,10 +7,13 @@ internal sealed class SearchService
     private const int MaxApps = 4;
     private const int MaxFiles = 5;
 
-    /// <summary>Куда уходит «найти в интернете». Запрос подставляется в конец.</summary>
-    private const string WebSearchUrl = "https://yandex.ru/search/?text=";
-
     private readonly AppIndex _apps = new();
+    private readonly DriveIndex _drives;
+
+    public SearchService(DriveIndex drives)
+    {
+        _drives = drives;
+    }
 
     public void WarmUp() => _apps.RefreshIfStale();
 
@@ -21,21 +26,42 @@ internal sealed class SearchService
         return results;
     }
 
-    /// <summary>Полная выдача: приложения, затем файлы, затем интернет.</summary>
+    /// <summary>Полная выдача: приложения, затем файлы (индекс Windows + свой индекс дисков), затем интернет.</summary>
     public async Task<List<ResultItem>> SearchAsync(string query)
     {
-        var files = await FileSearch.SearchAsync(query, MaxFiles);
+        var windows = FileSearch.SearchAsync(query, MaxFiles);
+        var drives = Task.Run(() => _drives.Search(query, MaxFiles));
+        await Task.WhenAll(windows, drives);
+
+        // Поровну из обоих источников, чтобы второй диск не терялся за первым.
+        var files = Interleave(windows.Result, drives.Result)
+            .DistinctBy(f => f.Target, StringComparer.OrdinalIgnoreCase)
+            .Take(MaxFiles);
+
         var results = _apps.Search(query, MaxApps);
         results.AddRange(files);
         results.Add(WebItem(query));
         return results;
     }
 
-    private static ResultItem WebItem(string query) => new()
+    private static IEnumerable<ResultItem> Interleave(List<ResultItem> a, List<ResultItem> b)
     {
-        Title = $"Найти «{query}» в интернете",
-        Subtitle = "Браузер",
-        Kind = ResultKind.Web,
-        Target = WebSearchUrl + Uri.EscapeDataString(query),
-    };
+        for (var i = 0; i < Math.Max(a.Count, b.Count); i++)
+        {
+            if (i < a.Count) yield return a[i];
+            if (i < b.Count) yield return b[i];
+        }
+    }
+
+    private static ResultItem WebItem(string query)
+    {
+        var engine = SearchEngine.Find(SettingsStore.Current.SearchEngine);
+        return new()
+        {
+            Title = $"Найти «{query}» в интернете",
+            Subtitle = engine.Title,
+            Kind = ResultKind.Web,
+            Target = engine.UrlPrefix + Uri.EscapeDataString(query),
+        };
+    }
 }

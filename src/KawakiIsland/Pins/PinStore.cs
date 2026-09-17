@@ -127,6 +127,16 @@ internal sealed class PinStore
             Save();
     }
 
+    public void Move(Pin pin, int delta)
+    {
+        var from = Items.IndexOf(pin);
+        var to = from + delta;
+        if (from < 0 || to < 0 || to >= Items.Count) return;
+        Items.RemoveAt(from);
+        Items.Insert(to, pin);
+        Save();
+    }
+
     public void ResetToDefaults()
     {
         Items = Defaults();

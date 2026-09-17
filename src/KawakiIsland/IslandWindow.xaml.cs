@@ -13,6 +13,8 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using System.Numerics;
+using KawakiIsland.Settings;
 using Windows.Graphics;
 using WinRT;
 using VirtualKey = Windows.System.VirtualKey;
@@ -37,13 +39,9 @@ namespace KawakiIsland;
 public sealed partial class IslandWindow : Window
 {
     private const int HotkeyId = 1;
-    private const uint HotkeyModifiers = Win32.MOD_CONTROL | Win32.MOD_ALT;
-    private const uint HotkeyKey = Win32.VK_SPACE;
-    private const string HotkeyLabel = "Ctrl + Alt + Пробел";
 
     private const double CollapsedWidth = 160;
     private const double CollapsedHeight = 8;
-    private const double ExpandedWidth = 680;
     private const double BarHeight = 56;
     private const double RowHeight = 52;
     private const int MaxRows = 8;
@@ -60,9 +58,13 @@ public sealed partial class IslandWindow : Window
 
     private readonly nint _hwnd;
     private readonly WindowHost _host;
-    private readonly SearchService _search = new();
-    private readonly PinStore _pins = new();
+    private readonly SearchService _search = new(App.Current.DriveIndex);
+    private readonly PinStore _pins = App.Current.Pins;
+    private readonly IslandBackdrop _backdrop = new();
     private readonly ObservableCollection<ResultItem> _results = [];
+    private bool _activatedOnce;
+
+    private static double ExpandedWidth => SettingsStore.Current.IslandWidth;
 
     private readonly DispatcherQueueTimer _pollTimer;
     private readonly DispatcherQueueTimer _animationTimer;
@@ -93,8 +95,7 @@ public sealed partial class IslandWindow : Window
         ConfigureAppWindow();
 
         _host.HotkeyPressed += OnHotkey;
-        var hotkeyOk = _host.RegisterHotkey(HotkeyId, HotkeyModifiers, HotkeyKey);
-        HotkeyInfo.Text = hotkeyOk ? $"Открыть: {HotkeyLabel}" : $"{HotkeyLabel} занято другой программой";
+        ApplyHotkey();
 
         ResultsList.ItemsSource = _results;
 
@@ -108,12 +109,13 @@ public sealed partial class IslandWindow : Window
             _ = RunFullSearchAsync();
         });
 
-        MainMenu.Opened += (_, _) => { _openFlyouts++; AutoStartItem.IsChecked = AutoStart.IsEnabled; };
+        MainMenu.Opened += (_, _) => _openFlyouts++;
         MainMenu.Closed += (_, _) => _openFlyouts--;
 
         _pins.Changed += RenderPins;
-        _pins.Load();
         RenderPins();
+        SettingsStore.Changed += ApplySettings;
+        ApplySettings();
 
         UpdateClock();
         ApplyPill(_current);
@@ -162,7 +164,52 @@ public sealed partial class IslandWindow : Window
         // квадратные углы) — дочищаем стиль руками.
         Win32.MakeBareTopmostPopup(_hwnd);
         Win32.EnablePerPixelTransparency(_hwnd);
-        SystemBackdrop = new TransparentBackdrop();
+        SystemBackdrop = _backdrop;
+    }
+
+    // ------------------------------------------------------------------
+    // Настройки
+    // ------------------------------------------------------------------
+
+    private string _hotkeyStatus = "";
+
+    /// <summary>Текущее состояние горячей клавиши — для окна настроек.</summary>
+    public string HotkeyStatus => _hotkeyStatus;
+
+    /// <summary>Перерегистрировать горячую клавишу из настроек. false — занята другой программой.</summary>
+    public bool ApplyHotkey()
+    {
+        var hotkey = SettingsStore.Current.Hotkey;
+        _host.UnregisterHotkey(HotkeyId);
+        var ok = _host.RegisterHotkey(HotkeyId, hotkey.Modifiers, hotkey.Key);
+        _hotkeyStatus = ok ? $"Открыть: {hotkey.Label}" : $"{hotkey.Label} занято другой программой";
+        HotkeyInfo.Text = _hotkeyStatus;
+        if (!ok) Log.Write($"hotkey {hotkey.Label} is taken");
+        return ok;
+    }
+
+    /// <summary>На время записи новой комбинации в настройках старая не должна срабатывать.</summary>
+    public void SuspendHotkey() => _host.UnregisterHotkey(HotkeyId);
+
+    private Hotkey? _appliedHotkey;
+
+    private void ApplySettings()
+    {
+        var s = SettingsStore.Current;
+        if (_appliedHotkey is not null && _appliedHotkey != s.Hotkey)
+            ApplyHotkey();
+        _appliedHotkey = s.Hotkey;
+
+        _backdrop.Glass = s.Glass;
+        var alpha = (byte)Math.Round(255 * (s.Glass ? s.SurfaceOpacity : Math.Max(s.SurfaceOpacity, 0.9)));
+        Pill.Background = new SolidColorBrush(ColorHelper.FromArgb(alpha, 0x06, 0x0B, 0x0F));
+        ClockText.Visibility = s.ShowClock ? Visibility.Visible : Visibility.Collapsed;
+        Panel.Width = s.IslandWidth - 2;
+
+        if (_mode != Mode.Collapsed)
+            AnimateToTarget();
+        else
+            ApplyPill(_current);
     }
 
     private void TrySetIcon()
@@ -185,13 +232,21 @@ public sealed partial class IslandWindow : Window
         var x = area.X + (area.Width - width) / 2;
         var y = area.Y + (int)Math.Round(TopMargin * scale);
         AppWindow.MoveAndResize(new RectInt32(x, y, width, height));
+        ApplyPill(_current);
     }
 
     private void ApplyPill(SizeD size)
     {
+        var radius = Math.Min(size.Height / 2, MaxCornerRadius);
         Pill.Width = size.Width;
         Pill.Height = size.Height;
-        Pill.CornerRadius = new CornerRadius(Math.Min(size.Height / 2, MaxCornerRadius));
+        Pill.CornerRadius = new CornerRadius(radius);
+
+        // Стекло живёт в пикселях окна, пилюля — в DIP по центру сверху.
+        var scale = (float)Win32.GetScale(_hwnd);
+        var window = new Vector2((float)_windowSize.Width, (float)_windowSize.Height) * scale;
+        var pill = new Vector2((float)size.Width, (float)size.Height) * scale;
+        _backdrop.UpdateShape(window, new Vector2((window.X - pill.X) / 2, 0), pill, (float)radius * scale);
     }
 
     private SizeD TargetSize()
@@ -286,6 +341,19 @@ public sealed partial class IslandWindow : Window
         SearchBox.SelectAll();
     }
 
+    /// <summary>Раскрыть с запросом, не забирая фокус (ключ --demo, для скриншотов).</summary>
+    public void ShowDemo(string query)
+    {
+        _search.WarmUp();
+        SetMode(Mode.Pinned);
+        // До загрузки поля TextChanged не приходит — ждём, пока окно отрисуется.
+        DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () =>
+        {
+            SearchBox.Text = query;
+            SearchBox_TextChanged(SearchBox, null!);
+        });
+    }
+
     /// <summary>Свернуть и вернуть клавиатуру тому окну, где человек был до островка.</summary>
     private void Dismiss(bool restoreFocus)
     {
@@ -313,6 +381,15 @@ public sealed partial class IslandWindow : Window
     private void OnActivated(object sender, WindowActivatedEventArgs args)
     {
         Log.Write($"activation {args.WindowActivationState}, mode {_mode}, flyouts {_openFlyouts}");
+
+        if (!_activatedOnce)
+        {
+            _activatedOnce = true;
+            // К этому моменту WinUI навесил свои подклассы — встаём перед ними
+            // и ещё раз чистим стиль, который они успели вернуть.
+            _host.BecomeOutermost();
+            Win32.MakeBareTopmostPopup(_hwnd);
+        }
         if (args.WindowActivationState == WindowActivationState.Deactivated)
         {
             // Меню открыто — фокус ушёл в его всплывающее окно, это не уход с островка.
@@ -667,24 +744,18 @@ public sealed partial class IslandWindow : Window
         args.Handled = true;
     }
 
-    private void AutoStartItem_Click(object sender, RoutedEventArgs e)
+    private void Settings_Click(object sender, RoutedEventArgs e)
     {
-        try { AutoStart.Set(AutoStartItem.IsChecked); }
-        catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Autostart: {ex.Message}"); }
+        Dismiss(restoreFocus: false);
+        App.Current.OpenSettings();
     }
 
-    private void EditPins_Click(object sender, RoutedEventArgs e)
-    {
-        if (Launcher.Open("notepad.exe", $"\"{PinStore.FilePath}\""))
-            Dismiss(restoreFocus: false);
-    }
-
-    private void ResetPins_Click(object sender, RoutedEventArgs e) => _pins.ResetToDefaults();
-
-    private void Exit_Click(object sender, RoutedEventArgs e) => Close();
+    private void Exit_Click(object sender, RoutedEventArgs e) => App.Current.Shutdown();
 
     private void OnClosed(object sender, WindowEventArgs args)
     {
+        SettingsStore.Changed -= ApplySettings;
+        _pins.Changed -= RenderPins;
         _pollTimer.Stop();
         _animationTimer.Stop();
         _clockTimer.Stop();

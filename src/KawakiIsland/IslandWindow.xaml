@@ -35,6 +35,7 @@
             HorizontalAlignment="Center"
             VerticalAlignment="Top"
             Background="{StaticResource IslandSurfaceBrush}"
+            BackgroundSizing="OuterBorderEdge"
             BorderBrush="{StaticResource IslandEdgeBrush}"
             BorderThickness="1"
             CornerRadius="4">
@@ -109,16 +110,11 @@
                                 x:Name="MainMenu"
                                 Placement="BottomEdgeAlignedRight"
                                 ShouldConstrainToRootBounds="False">
-                                <ToggleMenuFlyoutItem
-                                    x:Name="AutoStartItem"
-                                    Click="AutoStartItem_Click"
-                                    Text="Запускать вместе с Windows" />
-                                <MenuFlyoutItem Click="EditPins_Click" Text="Настроить кнопки (pins.json)">
+                                <MenuFlyoutItem Click="Settings_Click" Text="Настройки">
                                     <MenuFlyoutItem.Icon>
-                                        <FontIcon Glyph="&#xE70F;" />
+                                        <FontIcon Glyph="&#xE713;" />
                                     </MenuFlyoutItem.Icon>
                                 </MenuFlyoutItem>
-                                <MenuFlyoutItem Click="ResetPins_Click" Text="Вернуть кнопки по умолчанию" />
                                 <MenuFlyoutSeparator />
                                 <MenuFlyoutItem x:Name="HotkeyInfo" IsEnabled="False" />
                                 <MenuFlyoutItem Click="Exit_Click" Text="Закрыть островок">

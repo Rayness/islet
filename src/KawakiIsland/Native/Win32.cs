@@ -203,6 +203,21 @@ internal static unsafe partial class Win32
             ss->styleNew = (uint)((ss->styleNew & ~FrameExStyles) | WS_EX_TOOLWINDOW);
     }
 
+    private const long WS_VISIBLE = 0x10000000L;
+
+    /// <summary>
+    /// Выполнить с временно снятым WS_VISIBLE: DefWindowProc тогда не рисует
+    /// заголовок (так делает и WinForms/WPF для WM_SETTEXT без рамки).
+    /// </summary>
+    public static nint WithoutVisibleStyle(nint hWnd, Func<nint> action)
+    {
+        var style = (long)GetWindowLongPtr(hWnd, GWL_STYLE);
+        if ((style & WS_VISIBLE) == 0) return action();
+        SetWindowLongPtr(hWnd, GWL_STYLE, (nint)(style & ~WS_VISIBLE));
+        try { return action(); }
+        finally { SetWindowLongPtr(hWnd, GWL_STYLE, (nint)((long)GetWindowLongPtr(hWnd, GWL_STYLE) | WS_VISIBLE)); }
+    }
+
     /// <summary>Вернуть окно наверх, если кто-то снял с него «поверх всех».</summary>
     public static bool EnsureTopmost(nint hWnd)
     {
