@@ -35,6 +35,19 @@ internal sealed unsafe class WindowHost : IDisposable
     {
         switch (msg)
         {
+            case Win32.WM_NCCALCSIZE when wParam != 0:
+                // Вся площадь окна — клиентская: системной рамке негде рисоваться.
+                return 0;
+
+            case Win32.WM_STYLECHANGING:
+                // WinUI при показе окна возвращает WS_DLGFRAME/WS_SYSMENU — не даём.
+                Win32.SanitizeStyleChange((int)wParam, lParam);
+                break;
+
+            case Win32.WM_ERASEBKGND:
+                Win32.EraseTransparent(hWnd, wParam);
+                return 1;
+
             case Win32.WM_HOTKEY:
                 HotkeyPressed?.Invoke((int)wParam);
                 return 0;

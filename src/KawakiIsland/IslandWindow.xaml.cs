@@ -29,8 +29,10 @@ namespace KawakiIsland;
 /// • Закреплён — горячей клавишей или кликом в поиск. Держит фокус и
 ///   сворачивается, только когда фокус ушёл: Esc, запуск, клик мимо.
 ///
-/// Размер окна анимируется вручную: у WinUI нет анимации размеров окна, а
-/// прозрачного окна с тенью нужной формы — тоже. Поэтому окно и есть островок.
+/// ФОРМА. Окно прозрачное, островок — пилюля (Border) внутри него. Анимируется
+/// пилюля, а не окно: изменение размера окна на каждом кадре заставляет DWM
+/// перерисовывать всё и даёт мигание. Окно меняет размер только на границах
+/// анимации: при росте — сразу до конечного, при сжатии — после неё.
 /// </summary>
 public sealed partial class IslandWindow : Window
 {
@@ -39,16 +41,18 @@ public sealed partial class IslandWindow : Window
     private const uint HotkeyKey = Win32.VK_SPACE;
     private const string HotkeyLabel = "Ctrl + Alt + Пробел";
 
-    private const double CollapsedWidth = 200;
-    private const double CollapsedHeight = 10;
+    private const double CollapsedWidth = 160;
+    private const double CollapsedHeight = 8;
     private const double ExpandedWidth = 680;
     private const double BarHeight = 56;
     private const double RowHeight = 52;
     private const int MaxRows = 8;
-    private const double ListBottomPadding = 8;
-    private const double TopMargin = 6;
-    private const int AnimationMs = 180;
+    private const double ListBottomPadding = 10;
+    private const double MaxCornerRadius = 28;
+    private const double TopMargin = 8;
+    private const int AnimationMs = 220;
     private const int HoverLeaveDelayMs = 350;
+    private const int TopmostCheckEveryTicks = 10;
 
     private enum Mode { Collapsed, Hover, Pinned }
 
@@ -65,10 +69,9 @@ public sealed partial class IslandWindow : Window
     private readonly DispatcherQueueTimer _clockTimer;
     private readonly DispatcherQueueTimer _debounceTimer;
 
-    private DesktopAcrylicController? _acrylic;
-    private SystemBackdropConfiguration? _backdropConfig;
-
     private Mode _mode = Mode.Collapsed;
+    private int _pollTicks;
+    private SizeD _windowSize;
     private int _openFlyouts;
     private long _pointerLeftAt;
     private bool _hiddenForFullscreen;
@@ -85,10 +88,10 @@ public sealed partial class IslandWindow : Window
         InitializeComponent();
 
         _hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
-        ConfigureAppWindow();
-        SetupBackdrop();
-
+        // Перехват сообщений — раньше настройки окна: он чистит стиль, который та меняет.
         _host = new WindowHost(_hwnd);
+        ConfigureAppWindow();
+
         _host.HotkeyPressed += OnHotkey;
         var hotkeyOk = _host.RegisterHotkey(HotkeyId, HotkeyModifiers, HotkeyKey);
         HotkeyInfo.Text = hotkeyOk ? $"Открыть: {HotkeyLabel}" : $"{HotkeyLabel} занято другой программой";
@@ -113,7 +116,8 @@ public sealed partial class IslandWindow : Window
         RenderPins();
 
         UpdateClock();
-        ApplyBounds(_current);
+        ApplyPill(_current);
+        ResizeWindow(_current);
 
         Activated += OnActivated;
         Closed += OnClosed;
@@ -143,20 +147,22 @@ public sealed partial class IslandWindow : Window
         catch { /* старые сборки Windows: окно просто будет видно в Alt+Tab */ }
 
         var presenter = OverlappedPresenter.Create();
-        presenter.IsAlwaysOnTop = true;
         presenter.IsResizable = false;
         presenter.IsMaximizable = false;
         presenter.IsMinimizable = false;
-        // Без этого Windows не даёт окну стать ниже заголовка, и полоска выходит толстой.
+        // Без этого Windows не даёт окну стать ниже заголовка.
         presenter.PreferredMinimumWidth = 1;
         presenter.PreferredMinimumHeight = 1;
-        // Без рамки: у окна с рамкой Windows держит минимальную высоту заголовка.
-        // Скругление при этом задаётся явно через DWM, как у системных меню.
         presenter.SetBorderAndTitleBar(hasBorder: false, hasTitleBar: false);
         AppWindow.SetPresenter(presenter);
+        // После SetPresenter: выставленное до него «поверх всех» теряется.
+        presenter.IsAlwaysOnTop = true;
 
-        Win32.SetRoundedCorners(_hwnd);
-        Win32.SetBorderColor(_hwnd, 0x1B, 0x33, 0x3D);
+        // Presenter всё равно оставляет WS_CAPTION (отсюда белая обводка и
+        // квадратные углы) — дочищаем стиль руками.
+        Win32.MakeBareTopmostPopup(_hwnd);
+        Win32.EnablePerPixelTransparency(_hwnd);
+        SystemBackdrop = new TransparentBackdrop();
     }
 
     private void TrySetIcon()
@@ -166,41 +172,26 @@ public sealed partial class IslandWindow : Window
             AppWindow.SetIcon(icon);
     }
 
-    private void SetupBackdrop()
+    /// <summary>Окно по центру у верхнего края, размер в DIP. Одинаковый размер повторно не применяется.</summary>
+    private void ResizeWindow(SizeD size, bool force = false)
     {
-        if (!DesktopAcrylicController.IsSupported())
-        {
-            Root.Background = new SolidColorBrush(ColorHelper.FromArgb(0xF2, 0x0C, 0x18, 0x20));
-            return;
-        }
+        if (!force && size == _windowSize) return;
+        _windowSize = size;
 
-        // IsInputActive всегда true: островок почти всё время неактивен, а
-        // неактивное окно Windows рисует сплошной заливкой вместо стекла.
-        _backdropConfig = new SystemBackdropConfiguration
-        {
-            IsInputActive = true,
-            Theme = SystemBackdropTheme.Dark,
-        };
-        _acrylic = new DesktopAcrylicController
-        {
-            TintColor = ColorHelper.FromArgb(0xFF, 0x07, 0x0E, 0x13),
-            TintOpacity = 0.55f,
-            LuminosityOpacity = 0.85f,
-            FallbackColor = ColorHelper.FromArgb(0xFF, 0x0C, 0x18, 0x20),
-        };
-        _acrylic.AddSystemBackdropTarget(this.As<ICompositionSupportsSystemBackdrop>());
-        _acrylic.SetSystemBackdropConfiguration(_backdropConfig);
-    }
-
-    private void ApplyBounds(SizeD size)
-    {
         var scale = Win32.GetScale(_hwnd);
         var area = DisplayArea.Primary.WorkArea;
-        var width = (int)Math.Round(size.Width * scale);
-        var height = (int)Math.Round(size.Height * scale);
+        var width = (int)Math.Ceiling(size.Width * scale);
+        var height = (int)Math.Ceiling(size.Height * scale);
         var x = area.X + (area.Width - width) / 2;
         var y = area.Y + (int)Math.Round(TopMargin * scale);
         AppWindow.MoveAndResize(new RectInt32(x, y, width, height));
+    }
+
+    private void ApplyPill(SizeD size)
+    {
+        Pill.Width = size.Width;
+        Pill.Height = size.Height;
+        Pill.CornerRadius = new CornerRadius(Math.Min(size.Height / 2, MaxCornerRadius));
     }
 
     private SizeD TargetSize()
@@ -215,9 +206,18 @@ public sealed partial class IslandWindow : Window
 
     private void AnimateToTarget()
     {
+        var target = TargetSize();
+        if (target == _animationTo && _animationTimer.IsRunning) return;
+
         _animationFrom = _current;
-        _animationTo = TargetSize();
+        _animationTo = target;
         _animationStart = Environment.TickCount64;
+
+        // Окно сразу вмещает и текущую пилюлю, и конечную — дальше анимация идёт внутри него.
+        ResizeWindow(new(
+            Math.Max(_current.Width, target.Width),
+            Math.Max(_current.Height, target.Height)));
+
         if (!_animationTimer.IsRunning)
             _animationTimer.Start();
     }
@@ -225,14 +225,18 @@ public sealed partial class IslandWindow : Window
     private void OnAnimationFrame()
     {
         var t = Math.Clamp((Environment.TickCount64 - _animationStart) / (double)AnimationMs, 0, 1);
-        var eased = 1 - Math.Pow(1 - t, 3);
+        // easeOutQuint: быстрый старт, мягкая посадка — как у «острова» в iOS.
+        var eased = 1 - Math.Pow(1 - t, 5);
         _current = new(
             _animationFrom.Width + (_animationTo.Width - _animationFrom.Width) * eased,
             _animationFrom.Height + (_animationTo.Height - _animationFrom.Height) * eased);
-        ApplyBounds(_current);
+        ApplyPill(_current);
 
         if (t >= 1)
+        {
             _animationTimer.Stop();
+            ResizeWindow(_animationTo);
+        }
     }
 
     // ------------------------------------------------------------------
@@ -255,14 +259,12 @@ public sealed partial class IslandWindow : Window
             _results.Clear();
             Panel.IsHitTestVisible = false;
             Panel.Opacity = 0;
-            Strip.Opacity = 0.7;
         }
         else if (wasCollapsed)
         {
             _pins.ReloadIfChanged();
             Panel.IsHitTestVisible = true;
             Panel.Opacity = 1;
-            Strip.Opacity = 0;
         }
 
         AnimateToTarget();
@@ -327,7 +329,13 @@ public sealed partial class IslandWindow : Window
     private void OnPoll()
     {
         UpdateFullscreenState();
-        if (_hiddenForFullscreen || _mode == Mode.Pinned)
+        if (_hiddenForFullscreen)
+            return;
+
+        if (++_pollTicks % TopmostCheckEveryTicks == 0 && Win32.EnsureTopmost(_hwnd))
+            Log.Write("topmost was lost, restored");
+
+        if (_mode == Mode.Pinned)
             return;
 
         if (!Win32.GetCursorPos(out var cursor))
@@ -375,14 +383,17 @@ public sealed partial class IslandWindow : Window
         var fullscreen = Win32.IsFullscreenOnSameMonitor(Win32.GetForegroundWindow(), _hwnd);
         if (fullscreen && !_hiddenForFullscreen)
         {
+            Log.Write("fullscreen window in front, hiding");
             _hiddenForFullscreen = true;
             SetMode(Mode.Collapsed);
             AppWindow.Hide();
         }
         else if (!fullscreen && _hiddenForFullscreen)
         {
+            Log.Write("fullscreen gone, showing");
             _hiddenForFullscreen = false;
             AppWindow.Show(activateWindow: false);
+            Win32.EnsureTopmost(_hwnd);
         }
     }
 
@@ -417,10 +428,21 @@ public sealed partial class IslandWindow : Window
             return;
         }
 
-        // Приложения — сразу, из памяти; файлы — после паузы в наборе.
-        ShowResults(_search.SearchInstant(query));
+        // Приложения — сразу, из памяти; файлы — после паузы в наборе. Пока
+        // файлы ищутся, прежние подходящие строки остаются: иначе список на
+        // каждую букву сжимался бы и снова вырастал.
+        var instant = _search.SearchInstant(query);
+        var keptFiles = _results
+            .Where(r => r.Kind is ResultKind.File or ResultKind.Folder && MatchesAllWords(r.Title, query))
+            .ToList();
+        instant.InsertRange(instant.Count - 1, keptFiles);
+        ShowResults(instant);
         _debounceTimer.Start();
     }
+
+    private static bool MatchesAllWords(string title, string query) =>
+        query.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .All(w => title.Contains(w, StringComparison.OrdinalIgnoreCase));
 
     private async Task RunFullSearchAsync()
     {
@@ -435,24 +457,57 @@ public sealed partial class IslandWindow : Window
         ShowResults(results);
     }
 
+    /// <summary>
+    /// Точечно: совпавшие строки остаются теми же объектами (с уже загруженной
+    /// иконкой и тем же контейнером), меняются только отличающиеся позиции.
+    /// Clear + Add на каждую букву пересоздавал весь список — это и было миганием.
+    /// </summary>
     private void ShowResults(List<ResultItem> items)
     {
-        _results.Clear();
-        foreach (var item in items)
-            _results.Add(item);
+        var selected = ResultsList.SelectedItem as ResultItem;
+        var keepSelection = selected is not null && ResultsList.SelectedIndex > 0;
+
+        for (var i = 0; i < items.Count; i++)
+        {
+            var existing = _results.FirstOrDefault(r => SameResult(r, items[i]));
+            var item = existing ?? items[i];
+            items[i] = item;
+
+            if (i < _results.Count)
+            {
+                if (!ReferenceEquals(_results[i], item))
+                {
+                    var from = _results.IndexOf(item);
+                    if (from > i) _results.Move(from, i);
+                    else _results.Insert(i, item);
+                }
+            }
+            else
+            {
+                _results.Add(item);
+            }
+        }
+        while (_results.Count > items.Count)
+            _results.RemoveAt(_results.Count - 1);
 
         if (_results.Count > 0)
-            ResultsList.SelectedIndex = 0;
+        {
+            var index = keepSelection ? _results.IndexOf(selected!) : 0;
+            ResultsList.SelectedIndex = index >= 0 ? index : 0;
+        }
 
         AnimateToTarget();
         _ = LoadIconsAsync(items);
     }
 
+    private static bool SameResult(ResultItem a, ResultItem b) =>
+        a.Kind == b.Kind && a.Title == b.Title && string.Equals(a.Target, b.Target, StringComparison.OrdinalIgnoreCase);
+
     private static async Task LoadIconsAsync(List<ResultItem> items)
     {
         foreach (var item in items)
         {
-            if (item.IconSource is { } source)
+            if (item.Icon is null && item.IconSource is { } source)
                 item.Icon = await ShellIcons.GetAsync(source, 32);
         }
     }
@@ -635,7 +690,5 @@ public sealed partial class IslandWindow : Window
         _clockTimer.Stop();
         _debounceTimer.Stop();
         _host.Dispose();
-        _acrylic?.Dispose();
-        _acrylic = null;
     }
 }

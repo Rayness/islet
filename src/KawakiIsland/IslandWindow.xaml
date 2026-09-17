@@ -6,13 +6,15 @@
     xmlns:search="using:KawakiIsland.Search"
     Title="Kawaki Island">
 
+    <!-- Окно прозрачное: видна только пилюля. -->
     <Grid x:Name="Root" RequestedTheme="Dark" Background="Transparent">
         <Grid.Resources>
             <!-- Палитра «Глубина» из DESIGN.md сайта. -->
-            <SolidColorBrush x:Key="IslandAccentBrush" Color="#3BE5CE" />
+            <SolidColorBrush x:Key="IslandSurfaceBrush" Color="#F5060B0F" />
+            <SolidColorBrush x:Key="IslandEdgeBrush" Color="#333BE5CE" />
             <SolidColorBrush x:Key="IslandForegroundBrush" Color="#E8F1F0" />
             <SolidColorBrush x:Key="IslandMutedBrush" Color="#8FA3A8" />
-            <SolidColorBrush x:Key="IslandFieldBrush" Color="#1A132530" />
+            <SolidColorBrush x:Key="IslandFieldBrush" Color="#FF0F1C24" />
 
             <Style x:Key="IslandIconButton" TargetType="Button">
                 <Setter Property="Width" Value="36" />
@@ -20,153 +22,168 @@
                 <Setter Property="Padding" Value="0" />
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="CornerRadius" Value="10" />
+                <Setter Property="CornerRadius" Value="18" />
                 <Setter Property="HorizontalContentAlignment" Value="Center" />
                 <Setter Property="VerticalContentAlignment" Value="Center" />
             </Style>
         </Grid.Resources>
 
-        <!-- Свёрнутое состояние: только полоска. -->
         <Border
-            x:Name="Strip"
-            Width="56"
-            Height="3"
+            x:Name="Pill"
+            Width="160"
+            Height="8"
             HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Background="{StaticResource IslandAccentBrush}"
-            CornerRadius="2"
-            Opacity="0.7">
-            <Border.OpacityTransition>
-                <ScalarTransition Duration="0:0:0.12" />
-            </Border.OpacityTransition>
-        </Border>
+            VerticalAlignment="Top"
+            Background="{StaticResource IslandSurfaceBrush}"
+            BorderBrush="{StaticResource IslandEdgeBrush}"
+            BorderThickness="1"
+            CornerRadius="4">
 
-        <Grid
-            x:Name="Panel"
-            Padding="10,0,10,0"
-            IsHitTestVisible="False"
-            Opacity="0">
-            <Grid.OpacityTransition>
-                <ScalarTransition Duration="0:0:0.16" />
-            </Grid.OpacityTransition>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="56" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
+            <!-- Ширина фиксирована: пока пилюля растёт, содержимое не переливается, а открывается. -->
+            <Grid
+                x:Name="Panel"
+                Width="678"
+                Padding="10,0,10,0"
+                HorizontalAlignment="Center"
+                IsHitTestVisible="False"
+                Opacity="0">
+                <Grid.OpacityTransition>
+                    <ScalarTransition Duration="0:0:0.14" />
+                </Grid.OpacityTransition>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="54" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
 
-            <Grid ColumnSpacing="8">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
+                <Grid ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-                <StackPanel
-                    x:Name="PinsPanel"
-                    Orientation="Horizontal"
-                    Spacing="2"
-                    VerticalAlignment="Center" />
+                    <StackPanel
+                        x:Name="PinsPanel"
+                        Orientation="Horizontal"
+                        Spacing="2"
+                        VerticalAlignment="Center" />
 
-                <TextBox
-                    x:Name="SearchBox"
-                    Grid.Column="1"
-                    VerticalAlignment="Center"
-                    PlaceholderText="Приложения, файлы, интернет"
-                    Background="{StaticResource IslandFieldBrush}"
-                    BorderThickness="0"
-                    CornerRadius="10"
-                    GotFocus="SearchBox_GotFocus"
-                    PreviewKeyDown="SearchBox_PreviewKeyDown"
-                    TextChanged="SearchBox_TextChanged" />
+                    <TextBox
+                        x:Name="SearchBox"
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        PlaceholderText="Приложения, файлы, интернет"
+                        Background="{StaticResource IslandFieldBrush}"
+                        BorderThickness="0"
+                        CornerRadius="16"
+                        Padding="14,6,10,6"
+                        GotFocus="SearchBox_GotFocus"
+                        PreviewKeyDown="SearchBox_PreviewKeyDown"
+                        TextChanged="SearchBox_TextChanged">
+                        <TextBox.Resources>
+                            <!-- Без полоски снизу при фокусе: у круглого поля она обрезается. -->
+                            <Thickness x:Key="TextControlBorderThemeThicknessFocused">0</Thickness>
+                            <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#FF132530" />
+                            <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#FF132530" />
+                        </TextBox.Resources>
+                    </TextBox>
 
-                <TextBlock
-                    x:Name="ClockText"
-                    Grid.Column="2"
-                    VerticalAlignment="Center"
-                    FontSize="14"
-                    FontWeight="SemiBold"
-                    Foreground="{StaticResource IslandForegroundBrush}" />
+                    <TextBlock
+                        x:Name="ClockText"
+                        Grid.Column="2"
+                        Margin="4,0,0,0"
+                        VerticalAlignment="Center"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Foreground="{StaticResource IslandForegroundBrush}" />
 
-                <Button
-                    x:Name="MenuButton"
-                    Grid.Column="3"
-                    Style="{StaticResource IslandIconButton}"
-                    ToolTipService.ToolTip="Меню">
-                    <FontIcon FontSize="16" Glyph="&#xE712;" />
-                    <Button.Flyout>
-                        <MenuFlyout
-                            x:Name="MainMenu"
-                            Placement="BottomEdgeAlignedRight"
-                            ShouldConstrainToRootBounds="False">
-                            <ToggleMenuFlyoutItem
-                                x:Name="AutoStartItem"
-                                Click="AutoStartItem_Click"
-                                Text="Запускать вместе с Windows" />
-                            <MenuFlyoutItem Click="EditPins_Click" Text="Настроить кнопки (pins.json)">
-                                <MenuFlyoutItem.Icon>
-                                    <FontIcon Glyph="&#xE70F;" />
-                                </MenuFlyoutItem.Icon>
-                            </MenuFlyoutItem>
-                            <MenuFlyoutItem Click="ResetPins_Click" Text="Вернуть кнопки по умолчанию" />
-                            <MenuFlyoutSeparator />
-                            <MenuFlyoutItem x:Name="HotkeyInfo" IsEnabled="False" />
-                            <MenuFlyoutItem Click="Exit_Click" Text="Закрыть островок">
-                                <MenuFlyoutItem.Icon>
-                                    <FontIcon Glyph="&#xE8BB;" />
-                                </MenuFlyoutItem.Icon>
-                            </MenuFlyoutItem>
-                        </MenuFlyout>
-                    </Button.Flyout>
-                </Button>
-            </Grid>
+                    <Button
+                        x:Name="MenuButton"
+                        Grid.Column="3"
+                        Style="{StaticResource IslandIconButton}"
+                        ToolTipService.ToolTip="Меню">
+                        <FontIcon FontSize="16" Glyph="&#xE712;" />
+                        <Button.Flyout>
+                            <MenuFlyout
+                                x:Name="MainMenu"
+                                Placement="BottomEdgeAlignedRight"
+                                ShouldConstrainToRootBounds="False">
+                                <ToggleMenuFlyoutItem
+                                    x:Name="AutoStartItem"
+                                    Click="AutoStartItem_Click"
+                                    Text="Запускать вместе с Windows" />
+                                <MenuFlyoutItem Click="EditPins_Click" Text="Настроить кнопки (pins.json)">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon Glyph="&#xE70F;" />
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                                <MenuFlyoutItem Click="ResetPins_Click" Text="Вернуть кнопки по умолчанию" />
+                                <MenuFlyoutSeparator />
+                                <MenuFlyoutItem x:Name="HotkeyInfo" IsEnabled="False" />
+                                <MenuFlyoutItem Click="Exit_Click" Text="Закрыть островок">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon Glyph="&#xE8BB;" />
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                            </MenuFlyout>
+                        </Button.Flyout>
+                    </Button>
+                </Grid>
 
-            <ListView
-                x:Name="ResultsList"
-                Grid.Row="1"
-                Margin="-4,0,-4,8"
-                IsItemClickEnabled="True"
-                ItemClick="ResultsList_ItemClick"
-                SelectionMode="Single">
-                <ListView.ItemContainerStyle>
-                    <Style BasedOn="{StaticResource DefaultListViewItemStyle}" TargetType="ListViewItem">
-                        <Setter Property="Height" Value="52" />
-                        <Setter Property="MinHeight" Value="0" />
-                        <Setter Property="Padding" Value="10,0" />
-                    </Style>
-                </ListView.ItemContainerStyle>
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="search:ResultItem">
-                        <Grid ColumnSpacing="12" Background="Transparent" ContextRequested="Result_ContextRequested">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="32" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Image
-                                Width="28"
-                                Height="28"
-                                Source="{x:Bind Icon, Mode=OneWay}" />
-                            <FontIcon
-                                FontSize="20"
-                                Foreground="{StaticResource IslandMutedBrush}"
-                                Glyph="{x:Bind Glyph}"
-                                Visibility="{x:Bind GlyphVisibility, Mode=OneWay}" />
-                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <TextBlock
-                                    FontSize="14"
-                                    Foreground="{StaticResource IslandForegroundBrush}"
-                                    Text="{x:Bind Title}"
-                                    TextTrimming="CharacterEllipsis" />
-                                <TextBlock
-                                    FontSize="12"
+                <ListView
+                    x:Name="ResultsList"
+                    Grid.Row="1"
+                    Margin="-4,0,-4,10"
+                    IsItemClickEnabled="True"
+                    ItemClick="ResultsList_ItemClick"
+                    ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                    SelectionMode="Single">
+                    <!-- Встроенные анимации добавления/удаления строк и давали мигание на каждой букве. -->
+                    <ListView.ItemContainerTransitions>
+                        <TransitionCollection />
+                    </ListView.ItemContainerTransitions>
+                    <ListView.ItemContainerStyle>
+                        <Style BasedOn="{StaticResource DefaultListViewItemStyle}" TargetType="ListViewItem">
+                            <Setter Property="Height" Value="52" />
+                            <Setter Property="MinHeight" Value="0" />
+                            <Setter Property="Padding" Value="10,0" />
+                            <Setter Property="CornerRadius" Value="14" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="search:ResultItem">
+                            <Grid ColumnSpacing="12" Background="Transparent" ContextRequested="Result_ContextRequested">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="32" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Image
+                                    Width="28"
+                                    Height="28"
+                                    Source="{x:Bind Icon, Mode=OneWay}" />
+                                <FontIcon
+                                    FontSize="20"
                                     Foreground="{StaticResource IslandMutedBrush}"
-                                    Text="{x:Bind Subtitle}"
-                                    TextTrimming="CharacterEllipsis" />
-                            </StackPanel>
-                        </Grid>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </Grid>
+                                    Glyph="{x:Bind Glyph}"
+                                    Visibility="{x:Bind GlyphVisibility, Mode=OneWay}" />
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock
+                                        FontSize="14"
+                                        Foreground="{StaticResource IslandForegroundBrush}"
+                                        Text="{x:Bind Title}"
+                                        TextTrimming="CharacterEllipsis" />
+                                    <TextBlock
+                                        FontSize="12"
+                                        Foreground="{StaticResource IslandMutedBrush}"
+                                        Text="{x:Bind Subtitle}"
+                                        TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+        </Border>
     </Grid>
 </Window>

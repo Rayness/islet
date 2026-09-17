@@ -8,6 +8,15 @@
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Акцент — аква сайта, а не системный цвет пользователя. -->
+            <Color x:Key="SystemAccentColor">#3BE5CE</Color>
+            <Color x:Key="SystemAccentColorLight1">#62EAD8</Color>
+            <Color x:Key="SystemAccentColorLight2">#8AF0E2</Color>
+            <Color x:Key="SystemAccentColorLight3">#B1F5EC</Color>
+            <Color x:Key="SystemAccentColorDark1">#2CC4B0</Color>
+            <Color x:Key="SystemAccentColorDark2">#22A392</Color>
+            <Color x:Key="SystemAccentColorDark3">#198174</Color>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

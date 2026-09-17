@@ -12,7 +12,22 @@ internal static class FileSearch
     private const string ConnectionString = "Provider=Search.CollatorDSO;Extended Properties='Application=Windows';";
 
     public static Task<List<ResultItem>> SearchAsync(string query, int max) =>
-        Task.Run(() => Query(query, max));
+        Task.Run(() =>
+        {
+            // Служба поиска изредка отвечает разовым E_FAIL — второй запрос проходит.
+            try { return Query(query, max); }
+            catch (Exception first)
+            {
+                Log.Write($"Windows Search failed, retrying: {first.Message}");
+                try { return Query(query, max); }
+                catch (Exception e)
+                {
+                    // Служба выключена или индекс недоступен — просто без файлов.
+                    Log.Write($"Windows Search failed: {e.Message}");
+                    return [];
+                }
+            }
+        });
 
     private static List<ResultItem> Query(string query, int max)
     {
@@ -29,33 +44,25 @@ internal static class FileSearch
             "ORDER BY System.Search.Rank DESC";
 
         var results = new List<ResultItem>();
-        try
+        using var connection = new OleDbConnection(ConnectionString);
+        connection.Open();
+        using var command = new OleDbCommand(sql, connection);
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
         {
-            using var connection = new OleDbConnection(ConnectionString);
-            connection.Open();
-            using var command = new OleDbCommand(sql, connection);
-            using var reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                if (reader.GetValue(0) is not string path) continue;
-                var name = reader.GetValue(1) as string ?? Path.GetFileName(path);
-                var folder = reader.GetValue(2) as string ?? "";
-                var isFolder = string.Equals(reader.GetValue(3) as string, "Directory", StringComparison.OrdinalIgnoreCase);
+            if (reader.GetValue(0) is not string path) continue;
+            var name = reader.GetValue(1) as string ?? Path.GetFileName(path);
+            var folder = reader.GetValue(2) as string ?? "";
+            var isFolder = string.Equals(reader.GetValue(3) as string, "Directory", StringComparison.OrdinalIgnoreCase);
 
-                results.Add(new ResultItem
-                {
-                    Title = name,
-                    Subtitle = folder,
-                    Kind = isFolder ? ResultKind.Folder : ResultKind.File,
-                    Target = path,
-                    IconSource = path,
-                });
-            }
-        }
-        catch (Exception e)
-        {
-            // Служба поиска выключена или индекс недоступен — просто без файлов.
-            Log.Write($"Windows Search failed: {e.Message}");
+            results.Add(new ResultItem
+            {
+                Title = name,
+                Subtitle = folder,
+                Kind = isFolder ? ResultKind.Folder : ResultKind.File,
+                Target = path,
+                IconSource = path,
+            });
         }
         return results;
     }

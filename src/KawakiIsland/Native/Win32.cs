@@ -5,6 +5,9 @@ namespace KawakiIsland.Native;
 internal static unsafe partial class Win32
 {
     public const int WM_GETMINMAXINFO = 0x0024;
+    public const int WM_ERASEBKGND = 0x0014;
+    public const int WM_STYLECHANGING = 0x007C;
+    public const int WM_NCCALCSIZE = 0x0083;
     public const int WM_HOTKEY = 0x0312;
 
     public const uint MOD_ALT = 0x1;
@@ -94,18 +97,140 @@ internal static unsafe partial class Win32
 
     public static double GetScale(nint hWnd) => GetDpiForWindow(hWnd) / 96.0;
 
-    /// <summary>Скругление, как у обычных окон Windows 11. На Windows 10 вызов просто не сработает.</summary>
-    public static void SetRoundedCorners(nint hWnd)
+    private const int GWL_STYLE = -16;
+    private const int GWL_EXSTYLE = -20;
+    private const long WS_POPUP = 0x80000000L;
+    private const long WS_CAPTION = 0x00C00000L;
+    private const long WS_THICKFRAME = 0x00040000L;
+    private const long WS_SYSMENU = 0x00080000L;
+    private const long WS_MINIMIZEBOX = 0x00020000L;
+    private const long WS_MAXIMIZEBOX = 0x00010000L;
+    private const long WS_EX_TOPMOST = 0x00000008L;
+    private const long WS_EX_TOOLWINDOW = 0x00000080L;
+    private const long WS_EX_APPWINDOW = 0x00040000L;
+    private const long WS_EX_DLGMODALFRAME = 0x00000001L;
+    private const long WS_EX_WINDOWEDGE = 0x00000100L;
+
+    private static readonly nint HWND_TOPMOST = -1;
+    private const uint SWP_NOSIZE = 0x0001;
+    private const uint SWP_NOMOVE = 0x0002;
+    private const uint SWP_NOACTIVATE = 0x0010;
+    private const uint SWP_FRAMECHANGED = 0x0020;
+    private const uint SWP_NOOWNERZORDER = 0x0200;
+
+    private const int DWMWCP_DONOTROUND = 1;
+    private const uint DWMWA_COLOR_NONE = 0xFFFFFFFE;
+
+    [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
+    private static extern nint GetWindowLongPtr(nint hWnd, int nIndex);
+
+    [DllImport("user32.dll", EntryPoint = "SetWindowLongPtrW")]
+    private static extern nint SetWindowLongPtr(nint hWnd, int nIndex, nint dwNewLong);
+
+    [DllImport("user32.dll")]
+    private static extern bool SetWindowPos(nint hWnd, nint hWndInsertAfter, int x, int y, int cx, int cy, uint flags);
+
+    [DllImport("user32.dll")]
+    private static extern bool IsZoomed(nint hWnd);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct DWM_BLURBEHIND
     {
-        var pref = DWMWCP_ROUND;
-        DwmSetWindowAttribute(hWnd, DWMWA_WINDOW_CORNER_PREFERENCE, ref pref, sizeof(int));
+        public uint dwFlags;
+        public int fEnable;
+        public nint hRgnBlur;
+        public int fTransitionOnMaximized;
     }
 
-    /// <summary>Цвет системной обводки окна (Windows 11). По умолчанию у безрамочного окна она белая.</summary>
-    public static void SetBorderColor(nint hWnd, byte r, byte g, byte b)
+    [DllImport("dwmapi.dll")]
+    private static extern int DwmEnableBlurBehindWindow(nint hWnd, ref DWM_BLURBEHIND pBlurBehind);
+
+    [DllImport("gdi32.dll")]
+    private static extern nint CreateRectRgn(int x1, int y1, int x2, int y2);
+
+    [DllImport("gdi32.dll")]
+    private static extern nint GetStockObject(int i);
+
+    [DllImport("user32.dll")]
+    private static extern bool GetClientRect(nint hWnd, out RECT lpRect);
+
+    [DllImport("user32.dll")]
+    private static extern int FillRect(nint hDC, ref RECT lprc, nint hbr);
+
+    /// <summary>
+    /// Голое всплывающее окно: без заголовка и системной рамки (она и давала
+    /// белую обводку), не в панели задач и не в Alt+Tab, поверх всех окон.
+    /// Скругление DWM выключаем — форму рисует сам островок.
+    /// </summary>
+    public static void MakeBareTopmostPopup(nint hWnd)
     {
-        var colorref = r | (g << 8) | (b << 16);
-        DwmSetWindowAttribute(hWnd, DWMWA_BORDER_COLOR, ref colorref, sizeof(int));
+        var style = (long)GetWindowLongPtr(hWnd, GWL_STYLE);
+        style &= ~(WS_CAPTION | WS_THICKFRAME | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
+        style |= WS_POPUP;
+        SetWindowLongPtr(hWnd, GWL_STYLE, (nint)style);
+
+        var ex = (long)GetWindowLongPtr(hWnd, GWL_EXSTYLE);
+        ex &= ~(WS_EX_APPWINDOW | WS_EX_DLGMODALFRAME | WS_EX_WINDOWEDGE);
+        ex |= WS_EX_TOOLWINDOW;
+        SetWindowLongPtr(hWnd, GWL_EXSTYLE, (nint)ex);
+
+        var corner = DWMWCP_DONOTROUND;
+        DwmSetWindowAttribute(hWnd, DWMWA_WINDOW_CORNER_PREFERENCE, ref corner, sizeof(int));
+        var border = unchecked((int)DWMWA_COLOR_NONE);
+        DwmSetWindowAttribute(hWnd, DWMWA_BORDER_COLOR, ref border, sizeof(int));
+
+        SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0,
+            SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+    }
+
+    private const long FrameStyles = WS_CAPTION | WS_THICKFRAME | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+    private const long FrameExStyles = WS_EX_APPWINDOW | WS_EX_DLGMODALFRAME | WS_EX_WINDOWEDGE;
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct STYLESTRUCT
+    {
+        public uint styleOld;
+        public uint styleNew;
+    }
+
+    /// <summary>Обработчик WM_STYLECHANGING: срезает рамочные стили из нового значения.</summary>
+    public static void SanitizeStyleChange(int which, nint lParam)
+    {
+        var ss = (STYLESTRUCT*)lParam;
+        if (which == GWL_STYLE)
+            ss->styleNew = (uint)((ss->styleNew & ~FrameStyles) | WS_POPUP);
+        else if (which == GWL_EXSTYLE)
+            ss->styleNew = (uint)((ss->styleNew & ~FrameExStyles) | WS_EX_TOOLWINDOW);
+    }
+
+    /// <summary>Вернуть окно наверх, если кто-то снял с него «поверх всех».</summary>
+    public static bool EnsureTopmost(nint hWnd)
+    {
+        if ((GetWindowLongPtr(hWnd, GWL_EXSTYLE) & WS_EX_TOPMOST) != 0)
+            return false;
+        SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
+        return true;
+    }
+
+    /// <summary>
+    /// Прозрачность по пикселям для окна без WS_EX_LAYERED: размытие «позади»
+    /// с регионом за пределами окна включает у DWM альфа-канал поверхности,
+    /// а само размытие никуда не попадает.
+    /// </summary>
+    public static void EnablePerPixelTransparency(nint hWnd)
+    {
+        var region = CreateRectRgn(-2, -2, -1, -1);
+        var bb = new DWM_BLURBEHIND { dwFlags = 0x1 | 0x2, fEnable = 1, hRgnBlur = region };
+        DwmEnableBlurBehindWindow(hWnd, ref bb);
+        DeleteObject(region);
+    }
+
+    /// <summary>Фон для WM_ERASEBKGND: чёрный GDI в альфа-поверхности = прозрачный, без вспышки при ресайзе.</summary>
+    public static void EraseTransparent(nint hWnd, nint hdc)
+    {
+        const int BLACK_BRUSH = 4;
+        if (GetClientRect(hWnd, out var rect))
+            FillRect(hdc, ref rect, GetStockObject(BLACK_BRUSH));
     }
 
     /// <summary>
@@ -119,6 +244,12 @@ internal static unsafe partial class Win32
 
         var cls = GetClassName(candidate);
         if (cls is "Progman" or "WorkerW" or "Shell_TrayWnd" or "Shell_SecondaryTrayWnd")
+            return false;
+
+        // Развёрнутое окно при автоскрытии панели задач тоже закрывает весь
+        // монитор, но это обычная работа, а не игра. У настоящего полноэкранного
+        // окна нет заголовка.
+        if (IsZoomed(candidate) || (GetWindowLongPtr(candidate, GWL_STYLE) & WS_CAPTION) == WS_CAPTION)
             return false;
 
         var monitor = MonitorFromWindow(candidate, MONITOR_DEFAULTTONEAREST);
