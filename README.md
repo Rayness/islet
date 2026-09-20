@@ -143,3 +143,7 @@ src/Islet/bin/Debug/net10.0-windows10.0.22621.0/win-x64/Islet.exe
 - `--settings [general|look|search|pins|about]` — открыть настройки на нужном разделе.
 
 Запущен всегда один экземпляр: второй запуск завершается сразу.
+
+## Лицензия
+
+MIT — см. [LICENSE](LICENSE).
