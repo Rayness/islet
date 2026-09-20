@@ -19,7 +19,11 @@ if (-not $Version) {
 }
 if (-not $Version) { throw "Не удалось определить версию: передайте -Version" }
 
-Write-Host "Islet $Version ($Runtime)" -ForegroundColor Cyan
+# Каналы Velopack: x64 остаётся в "win" — на него смотрят уже установленные копии,
+# ARM64 живёт отдельным каналом, иначе второй прогон затрёт файлы первого.
+$channel = if ($Runtime -eq "win-x64") { "win" } else { $Runtime }
+
+Write-Host "Islet $Version ($Runtime, канал $channel)" -ForegroundColor Cyan
 
 if (Test-Path $publish) { Remove-Item $publish -Recurse -Force }
 
@@ -27,12 +31,17 @@ if (Test-Path $publish) { Remove-Item $publish -Recurse -Force }
 dotnet publish $project -c Release -r $Runtime --self-contained -o $publish
 if ($LASTEXITCODE -ne 0) { throw "dotnet publish завершился с кодом $LASTEXITCODE" }
 
+# Без PRI приложения WinUI не найдёт скомпилированный XAML и exe упадёт на первом окне.
+if (-not (Test-Path (Join-Path $publish "Islet.pri"))) { throw "В $publish нет Islet.pri — собирать установщик нельзя" }
+
 # vpk собирает Setup.exe, портативный zip и nupkg, которым обновляются установленные копии.
 vpk pack `
     --packId Islet `
     --packVersion $Version `
     --packDir $publish `
     --mainExe Islet.exe `
+    --channel $channel `
+    --runtime $Runtime `
     --packTitle Islet `
     --packAuthors Rayness `
     --icon (Join-Path $root "src\Islet\Assets\islet.ico") `

@@ -32,8 +32,10 @@ Grab the latest build from [Releases](https://github.com/Rayness/islet/releases)
 
 | File | What it is |
 |---|---|
-| `Islet-win-Setup.exe` | Installer. Adds a Start menu shortcut, an entry in Installed apps, and keeps itself updated. |
-| `Islet-win-Portable.zip` | Unpack anywhere and run `Islet.exe`. Updates by hand. |
+| `Islet-win-Setup.exe` | Installer, x64. Adds a Start menu shortcut, an entry in Installed apps, and keeps itself updated. |
+| `Islet-win-Portable.zip` | Portable, x64. Unpack anywhere and run `Islet.exe`. Updates by hand. |
+| `Islet-win-arm64-Setup.exe` | The installer for ARM64 machines. |
+| `Islet-win-arm64-Portable.zip` | The portable build for ARM64 machines. |
 
 Everything is bundled, so you do **not** need .NET or the Windows App SDK installed. The builds
 are not code-signed yet, so SmartScreen will warn on first run: *More info → Run anyway*.

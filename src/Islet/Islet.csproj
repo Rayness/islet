@@ -18,7 +18,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <ApplicationIcon>Assets\islet.ico</ApplicationIcon>
     <!-- Язык по умолчанию: на него падаем, если языка системы в ресурсах нет. -->
     <DefaultLanguage>en-US</DefaultLanguage>
@@ -28,6 +28,16 @@
     <Content Include="Assets\**" CopyToOutputDirectory="PreserveNewest" />
     <PRIResource Include="Strings\**\*.resw" />
   </ItemGroup>
+
+  <!-- dotnet publish не переносит PRI приложения рядом с exe, а без него WinUI не находит
+       скомпилированный XAML и окно падает на запуске. Дописываем файл в список публикуемого. -->
+  <Target Name="PublishProjectPri" AfterTargets="ComputeResolvedFilesToPublishList">
+    <ItemGroup>
+      <ResolvedFileToPublish Include="$(ProjectPriFullPath)"
+                             RelativePath="$(ProjectPriFileName)"
+                             CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
+  </Target>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260804001" />
