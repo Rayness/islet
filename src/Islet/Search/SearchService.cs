@@ -58,7 +58,7 @@ internal sealed class SearchService
         var engine = SearchEngine.Find(SettingsStore.Current.SearchEngine);
         return new()
         {
-            Title = $"Найти «{query}» в интернете",
+            Title = Loc.T("Result_Web", query),
             Subtitle = engine.Title,
             Kind = ResultKind.Web,
             Target = engine.UrlPrefix + Uri.EscapeDataString(query),

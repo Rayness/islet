@@ -18,11 +18,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
+    <Version>0.1.0</Version>
     <ApplicationIcon>Assets\islet.ico</ApplicationIcon>
+    <!-- Язык по умолчанию: на него падаем, если языка системы в ресурсах нет. -->
+    <DefaultLanguage>en-US</DefaultLanguage>
   </PropertyGroup>
 
   <ItemGroup>
     <Content Include="Assets\**" CopyToOutputDirectory="PreserveNewest" />
+    <PRIResource Include="Strings\**\*.resw" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,6 +35,7 @@
     <PackageReference Include="System.Data.OleDb" Version="10.0.12" />
     <!-- Только описания эффектов для стекла (маска по форме островка). -->
     <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.4.0" />
+    <PackageReference Include="Velopack" Version="1.2.0" />
   </ItemGroup>
 
 </Project>

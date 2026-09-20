@@ -22,7 +22,7 @@ internal sealed class DriveIndex : IDisposable
 {
     private const int CacheVersion = 2;
     private static readonly TimeSpan MaxCacheAge = TimeSpan.FromHours(24);
-    private static readonly string CachePath = Path.Combine(Pins.PinStore.Directory, "drive-index.bin");
+    private static readonly string CachePath = Path.Combine(Paths.Cache, "drive-index.bin");
 
     private sealed class Snapshot
     {
@@ -338,7 +338,7 @@ internal sealed class DriveIndex : IDisposable
     {
         try
         {
-            Directory.CreateDirectory(Pins.PinStore.Directory);
+            Directory.CreateDirectory(Paths.Cache);
             var tmp = CachePath + ".tmp";
             using (var stream = File.Create(tmp))
             using (var w = new BinaryWriter(stream))

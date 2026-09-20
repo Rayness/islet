@@ -3,7 +3,7 @@
     x:Class="Islet.SettingsWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="Islet — настройки">
+    Title="Islet">
 
     <Window.SystemBackdrop>
         <MicaBackdrop />
@@ -67,7 +67,7 @@
             <TextBlock
                 VerticalAlignment="Center"
                 FontSize="12"
-                Text="Islet — настройки" />
+                x:Uid="SettingsHeader" />
         </StackPanel>
 
         <NavigationView
@@ -80,27 +80,32 @@
             PaneDisplayMode="Left"
             SelectionChanged="Nav_SelectionChanged">
             <NavigationView.MenuItems>
-                <NavigationViewItem Content="Общие" Tag="general">
+                <NavigationViewItem x:Uid="NavGeneral" Tag="general">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE713;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Внешний вид" Tag="look">
+                <NavigationViewItem x:Uid="NavBehavior" Tag="behavior">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE7C4;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Uid="NavLook" Tag="look">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE790;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Поиск" Tag="search">
+                <NavigationViewItem x:Uid="NavSearch" Tag="search">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE721;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Кнопки" Tag="pins">
+                <NavigationViewItem x:Uid="NavPins" Tag="pins">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE718;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="О программе" Tag="about">
+                <NavigationViewItem x:Uid="NavAbout" Tag="about">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE946;" />
                     </NavigationViewItem.Icon>
@@ -111,7 +116,7 @@
                 <!-- ============ Общие ============ -->
                 <ScrollViewer x:Name="GeneralPage">
                     <StackPanel Style="{StaticResource PageStack}">
-                        <TextBlock Style="{StaticResource PageTitle}" Text="Общие" />
+                        <TextBlock Style="{StaticResource PageTitle}" x:Uid="PageGeneral" />
 
                         <Border Style="{StaticResource Card}">
                             <Grid ColumnSpacing="16">
@@ -120,11 +125,11 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Spacing="2">
-                                    <TextBlock Style="{StaticResource CardTitle}" Text="Горячая клавиша" />
+                                    <TextBlock Style="{StaticResource CardTitle}" x:Uid="HotkeyTitle" />
                                     <TextBlock
                                         x:Name="HotkeyStatusText"
                                         Style="{StaticResource CardHint}"
-                                        Text="Раскрывает островок с курсором в поиске" />
+ />
                                 </StackPanel>
                                 <StackPanel
                                     Grid.Column="1"
@@ -137,11 +142,11 @@
                                         CornerRadius="6">
                                         <TextBlock x:Name="HotkeyText" FontFamily="Consolas" />
                                     </Border>
-                                    <Button x:Name="HotkeyButton" Click="HotkeyButton_Click" Content="Изменить" />
+                                    <Button x:Name="HotkeyButton" Click="HotkeyButton_Click" x:Uid="HotkeyButton" />
                                     <Button
                                         x:Name="HotkeyResetButton"
                                         Click="HotkeyResetButton_Click"
-                                        ToolTipService.ToolTip="По умолчанию: Ctrl + Alt + Пробел">
+>
                                         <FontIcon FontSize="14" Glyph="&#xE777;" />
                                     </Button>
                                 </StackPanel>
@@ -155,8 +160,8 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Spacing="2">
-                                    <TextBlock Style="{StaticResource CardTitle}" Text="Запускать вместе с Windows" />
-                                    <TextBlock Style="{StaticResource CardHint}" Text="Островок появится сразу после входа в систему" />
+                                    <TextBlock Style="{StaticResource CardTitle}" x:Uid="AutoStartTitle" />
+                                    <TextBlock Style="{StaticResource CardHint}" x:Uid="AutoStartHint" />
                                 </StackPanel>
                                 <ToggleSwitch
                                     x:Name="AutoStartToggle"
@@ -175,8 +180,8 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Spacing="2">
-                                    <TextBlock Style="{StaticResource CardTitle}" Text="Поиск в интернете" />
-                                    <TextBlock Style="{StaticResource CardHint}" Text="Последняя строка выдачи открывает этот поисковик" />
+                                    <TextBlock Style="{StaticResource CardTitle}" x:Uid="WebSearchTitle" />
+                                    <TextBlock Style="{StaticResource CardHint}" x:Uid="WebSearchHint" />
                                 </StackPanel>
                                 <ComboBox
                                     x:Name="EngineCombo"
@@ -187,13 +192,6 @@
                                     SelectionChanged="EngineCombo_SelectionChanged" />
                             </Grid>
                         </Border>
-                    </StackPanel>
-                </ScrollViewer>
-
-                <!-- ============ Внешний вид ============ -->
-                <ScrollViewer x:Name="LookPage" Visibility="Collapsed">
-                    <StackPanel Style="{StaticResource PageStack}">
-                        <TextBlock Style="{StaticResource PageTitle}" Text="Внешний вид" />
 
                         <Border Style="{StaticResource Card}">
                             <Grid ColumnSpacing="16">
@@ -202,8 +200,158 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Spacing="2">
-                                    <TextBlock Style="{StaticResource CardTitle}" Text="Стекло" />
-                                    <TextBlock Style="{StaticResource CardHint}" Text="Размытый рабочий стол под островком, как на сайте. Нужны включённые «Эффекты прозрачности» в Windows." />
+                                    <TextBlock Style="{StaticResource CardTitle}" x:Uid="LanguageTitle" />
+                                    <TextBlock Style="{StaticResource CardHint}" x:Uid="LanguageHint" />
+                                </StackPanel>
+                                <ComboBox
+                                    x:Name="LanguageCombo"
+                                    Grid.Column="1"
+                                    MinWidth="160"
+                                    VerticalAlignment="Center"
+                                    SelectionChanged="LanguageCombo_SelectionChanged" />
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- ============ Поведение ============ -->
+                <ScrollViewer x:Name="BehaviorPage" Visibility="Collapsed">
+                    <StackPanel Style="{StaticResource PageStack}">
+                        <TextBlock Style="{StaticResource PageTitle}" x:Uid="PageBehavior" />
+
+                        <Border Style="{StaticResource Card}">
+                            <Grid ColumnSpacing="16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Spacing="2">
+                                    <TextBlock Style="{StaticResource CardTitle}" x:Uid="HoverOpenTitle" />
+                                    <TextBlock Style="{StaticResource CardHint}" x:Uid="HoverOpenHint" />
+                                </StackPanel>
+                                <ToggleSwitch
+                                    x:Name="HoverOpenToggle"
+                                    Grid.Column="1"
+                                    MinWidth="0"
+                                    OffContent=""
+                                    OnContent=""
+                                    Toggled="HoverOpenToggle_Toggled" />
+                            </Grid>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="4">
+                                <Grid>
+                                    <TextBlock Style="{StaticResource CardTitle}" x:Uid="OpenDelayTitle" />
+                                    <TextBlock
+                                        x:Name="OpenDelayValue"
+                                        HorizontalAlignment="Right"
+                                        Style="{StaticResource CardHint}" />
+                                </Grid>
+                                <TextBlock Style="{StaticResource CardHint}" x:Uid="OpenDelayHint" />
+                                <Slider
+                                    x:Name="OpenDelaySlider"
+                                    Maximum="1000"
+                                    Minimum="0"
+                                    StepFrequency="50"
+                                    ValueChanged="OpenDelaySlider_ValueChanged" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="4">
+                                <Grid>
+                                    <TextBlock Style="{StaticResource CardTitle}" x:Uid="CloseDelayTitle" />
+                                    <TextBlock
+                                        x:Name="CloseDelayValue"
+                                        HorizontalAlignment="Right"
+                                        Style="{StaticResource CardHint}" />
+                                </Grid>
+                                <TextBlock Style="{StaticResource CardHint}" x:Uid="CloseDelayHint" />
+                                <Slider
+                                    x:Name="CloseDelaySlider"
+                                    Maximum="2000"
+                                    Minimum="0"
+                                    StepFrequency="50"
+                                    ValueChanged="CloseDelaySlider_ValueChanged" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <Grid ColumnSpacing="16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Spacing="2">
+                                    <TextBlock Style="{StaticResource CardTitle}" x:Uid="HideCollapsedTitle" />
+                                    <TextBlock Style="{StaticResource CardHint}" x:Uid="HideCollapsedHint" />
+                                </StackPanel>
+                                <ToggleSwitch
+                                    x:Name="HideCollapsedToggle"
+                                    Grid.Column="1"
+                                    MinWidth="0"
+                                    OffContent=""
+                                    OnContent=""
+                                    Toggled="HideCollapsedToggle_Toggled" />
+                            </Grid>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <Grid ColumnSpacing="16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Spacing="2">
+                                    <TextBlock Style="{StaticResource CardTitle}" x:Uid="FullscreenTitle" />
+                                    <TextBlock Style="{StaticResource CardHint}" x:Uid="FullscreenHint" />
+                                </StackPanel>
+                                <ToggleSwitch
+                                    x:Name="FullscreenToggle"
+                                    Grid.Column="1"
+                                    MinWidth="0"
+                                    OffContent=""
+                                    OnContent=""
+                                    Toggled="FullscreenToggle_Toggled" />
+                            </Grid>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <Grid ColumnSpacing="16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Spacing="2">
+                                    <TextBlock Style="{StaticResource CardTitle}" x:Uid="MonitorTitle" />
+                                    <TextBlock Style="{StaticResource CardHint}" x:Uid="MonitorHint" />
+                                </StackPanel>
+                                <ComboBox
+                                    x:Name="MonitorCombo"
+                                    Grid.Column="1"
+                                    MinWidth="200"
+                                    VerticalAlignment="Center"
+                                    SelectionChanged="MonitorCombo_SelectionChanged" />
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- ============ Внешний вид ============ -->
+                <ScrollViewer x:Name="LookPage" Visibility="Collapsed">
+                    <StackPanel Style="{StaticResource PageStack}">
+                        <TextBlock Style="{StaticResource PageTitle}" x:Uid="PageLook" />
+
+                        <Border Style="{StaticResource Card}">
+                            <Grid ColumnSpacing="16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Spacing="2">
+                                    <TextBlock Style="{StaticResource CardTitle}" x:Uid="GlassTitle" />
+                                    <TextBlock Style="{StaticResource CardHint}" x:Uid="GlassHint" />
                                 </StackPanel>
                                 <ToggleSwitch
                                     x:Name="GlassToggle"
@@ -218,13 +366,13 @@
                         <Border Style="{StaticResource Card}">
                             <StackPanel Spacing="4">
                                 <Grid>
-                                    <TextBlock Style="{StaticResource CardTitle}" Text="Плотность фона" />
+                                    <TextBlock Style="{StaticResource CardTitle}" x:Uid="SurfaceTitle" />
                                     <TextBlock
                                         x:Name="OpacityValue"
                                         HorizontalAlignment="Right"
                                         Style="{StaticResource CardHint}" />
                                 </Grid>
-                                <TextBlock Style="{StaticResource CardHint}" Text="Меньше — прозрачнее. Без стекла фон не бывает жиже 90%, иначе текст теряется." />
+                                <TextBlock Style="{StaticResource CardHint}" x:Uid="SurfaceHint" />
                                 <Slider
                                     x:Name="OpacitySlider"
                                     Maximum="100"
@@ -237,7 +385,7 @@
                         <Border Style="{StaticResource Card}">
                             <StackPanel Spacing="4">
                                 <Grid>
-                                    <TextBlock Style="{StaticResource CardTitle}" Text="Ширина островка" />
+                                    <TextBlock Style="{StaticResource CardTitle}" x:Uid="WidthTitle" />
                                     <TextBlock
                                         x:Name="WidthValue"
                                         HorizontalAlignment="Right"
@@ -253,6 +401,61 @@
                         </Border>
 
                         <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="4">
+                                <Grid>
+                                    <TextBlock Style="{StaticResource CardTitle}" x:Uid="CollapsedWidthTitle" />
+                                    <TextBlock
+                                        x:Name="CollapsedWidthValue"
+                                        HorizontalAlignment="Right"
+                                        Style="{StaticResource CardHint}" />
+                                </Grid>
+                                <Slider
+                                    x:Name="CollapsedWidthSlider"
+                                    Maximum="400"
+                                    Minimum="60"
+                                    StepFrequency="10"
+                                    ValueChanged="CollapsedWidthSlider_ValueChanged" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="4">
+                                <Grid>
+                                    <TextBlock Style="{StaticResource CardTitle}" x:Uid="CollapsedHeightTitle" />
+                                    <TextBlock
+                                        x:Name="CollapsedHeightValue"
+                                        HorizontalAlignment="Right"
+                                        Style="{StaticResource CardHint}" />
+                                </Grid>
+                                <Slider
+                                    x:Name="CollapsedHeightSlider"
+                                    Maximum="24"
+                                    Minimum="3"
+                                    StepFrequency="1"
+                                    ValueChanged="CollapsedHeightSlider_ValueChanged" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="4">
+                                <Grid>
+                                    <TextBlock Style="{StaticResource CardTitle}" x:Uid="MaxRowsTitle" />
+                                    <TextBlock
+                                        x:Name="MaxRowsValue"
+                                        HorizontalAlignment="Right"
+                                        Style="{StaticResource CardHint}" />
+                                </Grid>
+                                <TextBlock Style="{StaticResource CardHint}" x:Uid="MaxRowsHint" />
+                                <Slider
+                                    x:Name="MaxRowsSlider"
+                                    Maximum="12"
+                                    Minimum="3"
+                                    StepFrequency="1"
+                                    ValueChanged="MaxRowsSlider_ValueChanged" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
                             <Grid ColumnSpacing="16">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -261,7 +464,7 @@
                                 <TextBlock
                                     VerticalAlignment="Center"
                                     Style="{StaticResource CardTitle}"
-                                    Text="Показывать часы" />
+                                    x:Uid="ClockToggle" />
                                 <ToggleSwitch
                                     x:Name="ClockToggle"
                                     Grid.Column="1"
@@ -277,7 +480,7 @@
                 <!-- ============ Поиск ============ -->
                 <ScrollViewer x:Name="SearchPage" Visibility="Collapsed">
                     <StackPanel Style="{StaticResource PageStack}">
-                        <TextBlock Style="{StaticResource PageTitle}" Text="Поиск" />
+                        <TextBlock Style="{StaticResource PageTitle}" x:Uid="PageSearch" />
 
                         <Border Style="{StaticResource Card}">
                             <Grid ColumnSpacing="16">
@@ -286,8 +489,8 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Spacing="2">
-                                    <TextBlock Style="{StaticResource CardTitle}" Text="Искать на других дисках" />
-                                    <TextBlock Style="{StaticResource CardHint}" Text="Индекс Windows по умолчанию видит только папки пользователя на системном диске. Островок сам индексирует имена файлов в папках ниже." />
+                                    <TextBlock Style="{StaticResource CardTitle}" x:Uid="DriveIndexTitle" />
+                                    <TextBlock Style="{StaticResource CardHint}" x:Uid="DriveIndexHint" />
                                 </StackPanel>
                                 <ToggleSwitch
                                     x:Name="IndexToggle"
@@ -306,7 +509,7 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Spacing="2">
-                                    <TextBlock Style="{StaticResource CardTitle}" Text="Состояние индекса" />
+                                    <TextBlock Style="{StaticResource CardTitle}" x:Uid="IndexStatusTitle" />
                                     <TextBlock x:Name="IndexStatusText" Style="{StaticResource CardHint}" />
                                 </StackPanel>
                                 <Button
@@ -314,26 +517,26 @@
                                     Grid.Column="1"
                                     VerticalAlignment="Center"
                                     Click="RescanButton_Click"
-                                    Content="Переиндексировать" />
+                                    x:Uid="ReindexButton" />
                             </Grid>
                         </Border>
 
-                        <TextBlock Style="{StaticResource Section}" Text="Папки и диски" />
+                        <TextBlock Style="{StaticResource Section}" x:Uid="RootsSection" />
                         <StackPanel x:Name="RootsPanel" Spacing="6" />
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <Button Click="AddRoot_Click">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon FontSize="14" Glyph="&#xE710;" />
-                                    <TextBlock Text="Добавить папку" />
+                                    <TextBlock x:Uid="AddRootText" />
                                 </StackPanel>
                             </Button>
-                            <Button Click="ResetRoots_Click" Content="Все диски, кроме системного" />
+                            <Button Click="ResetRoots_Click" x:Uid="ResetRootsButton" />
                         </StackPanel>
 
-                        <TextBlock Style="{StaticResource Section}" Text="Не заходить в папки" />
+                        <TextBlock Style="{StaticResource Section}" x:Uid="ExcludesSection" />
                         <Border Style="{StaticResource Card}">
                             <StackPanel Spacing="8">
-                                <TextBlock Style="{StaticResource CardHint}" Text="По одному имени в строке. Папка с таким именем пропускается на любой глубине — например node_modules." />
+                                <TextBlock Style="{StaticResource CardHint}" x:Uid="ExcludesHint" />
                                 <TextBox
                                     x:Name="ExcludesBox"
                                     MinHeight="120"
@@ -343,24 +546,24 @@
                                 <Button
                                     HorizontalAlignment="Right"
                                     Click="SaveExcludes_Click"
-                                    Content="Сохранить и переиндексировать"
+                                    x:Uid="SaveExcludesButton"
                                     Style="{StaticResource AccentButtonStyle}" />
                             </StackPanel>
                         </Border>
 
-                        <TextBlock Style="{StaticResource Section}" Text="Системный диск" />
+                        <TextBlock Style="{StaticResource Section}" x:Uid="SystemDriveSection" />
                         <Border Style="{StaticResource Card}">
                             <Grid ColumnSpacing="16">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Style="{StaticResource CardHint}" Text="Файлы на системном диске ищутся через индекс Windows. Чтобы он видел весь диск, включите «Расширенный» режим в параметрах поиска Windows." />
+                                <TextBlock Style="{StaticResource CardHint}" x:Uid="SystemDriveHint" />
                                 <Button
                                     Grid.Column="1"
                                     VerticalAlignment="Center"
                                     Click="OpenWindowsSearch_Click"
-                                    Content="Открыть параметры" />
+                                    x:Uid="OpenSearchSettingsButton" />
                             </Grid>
                         </Border>
                     </StackPanel>
@@ -369,8 +572,8 @@
                 <!-- ============ Кнопки ============ -->
                 <ScrollViewer x:Name="PinsPage" Visibility="Collapsed">
                     <StackPanel Style="{StaticResource PageStack}">
-                        <TextBlock Style="{StaticResource PageTitle}" Text="Кнопки" />
-                        <TextBlock Style="{StaticResource CardHint}" Text="Кнопки слева от поиска, до шести. Приложения из Microsoft Store удобнее закреплять из выдачи: правый клик → «Закрепить на островке»." />
+                        <TextBlock Style="{StaticResource PageTitle}" x:Uid="PagePins" />
+                        <TextBlock Style="{StaticResource CardHint}" x:Uid="PinsHint" />
 
                         <StackPanel x:Name="PinsList" Margin="0,8,0,0" Spacing="6" />
 
@@ -378,21 +581,21 @@
                             <Button x:Name="AddPinButton" Style="{StaticResource AccentButtonStyle}">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon FontSize="14" Glyph="&#xE710;" />
-                                    <TextBlock Text="Добавить" />
+                                    <TextBlock x:Uid="AddPinText" />
                                 </StackPanel>
                                 <Button.Flyout>
                                     <MenuFlyout Placement="BottomEdgeAlignedLeft">
-                                        <MenuFlyoutItem Click="AddPinFile_Click" Text="Программу или файл…">
+                                        <MenuFlyoutItem Click="AddPinFile_Click" x:Uid="AddPinFile">
                                             <MenuFlyoutItem.Icon>
                                                 <FontIcon Glyph="&#xE7AC;" />
                                             </MenuFlyoutItem.Icon>
                                         </MenuFlyoutItem>
-                                        <MenuFlyoutItem Click="AddPinFolder_Click" Text="Папку…">
+                                        <MenuFlyoutItem Click="AddPinFolder_Click" x:Uid="AddPinFolder">
                                             <MenuFlyoutItem.Icon>
                                                 <FontIcon Glyph="&#xE8B7;" />
                                             </MenuFlyoutItem.Icon>
                                         </MenuFlyoutItem>
-                                        <MenuFlyoutItem Click="AddPinUrl_Click" Text="Ссылку…">
+                                        <MenuFlyoutItem Click="AddPinUrl_Click" x:Uid="AddPinUrl">
                                             <MenuFlyoutItem.Icon>
                                                 <FontIcon Glyph="&#xE71B;" />
                                             </MenuFlyoutItem.Icon>
@@ -400,7 +603,7 @@
                                     </MenuFlyout>
                                 </Button.Flyout>
                             </Button>
-                            <Button Click="ResetPins_Click" Content="Вернуть стандартные" />
+                            <Button Click="ResetPins_Click" x:Uid="ResetPinsButton" />
                         </StackPanel>
                     </StackPanel>
                 </ScrollViewer>
@@ -408,7 +611,7 @@
                 <!-- ============ О программе ============ -->
                 <ScrollViewer x:Name="AboutPage" Visibility="Collapsed">
                     <StackPanel Style="{StaticResource PageStack}">
-                        <TextBlock Style="{StaticResource PageTitle}" Text="О программе" />
+                        <TextBlock Style="{StaticResource PageTitle}" x:Uid="PageAbout" />
                         <Border Style="{StaticResource Card}">
                             <StackPanel Orientation="Horizontal" Spacing="16">
                                 <Image Width="48" Height="48" Source="ms-appx:///Assets/islet.ico" />
@@ -425,7 +628,7 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Spacing="2">
-                                    <TextBlock Style="{StaticResource CardTitle}" Text="Папка данных" />
+                                    <TextBlock Style="{StaticResource CardTitle}" x:Uid="DataFolderTitle" />
                                     <TextBlock
                                         x:Name="DataFolderText"
                                         IsTextSelectionEnabled="True"
@@ -435,13 +638,43 @@
                                     Grid.Column="1"
                                     VerticalAlignment="Center"
                                     Click="OpenDataFolder_Click"
-                                    Content="Открыть" />
+                                    x:Uid="OpenDataFolderButton" />
                             </Grid>
                         </Border>
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="8">
+                                <Grid ColumnSpacing="16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Style="{StaticResource CardTitle}" x:Uid="UpdateTitle" />
+                                        <TextBlock
+                                            x:Name="UpdateStatusText"
+                                            Style="{StaticResource CardHint}"
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <Button
+                                        x:Name="UpdateCheckButton"
+                                        x:Uid="UpdateCheckButton"
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Click="UpdateCheck_Click" />
+                                </Grid>
+                                <Button
+                                    x:Name="UpdateApplyButton"
+                                    HorizontalAlignment="Stretch"
+                                    Click="UpdateApply_Click"
+                                    Style="{StaticResource AccentButtonStyle}"
+                                    Visibility="Collapsed" />
+                            </StackPanel>
+                        </Border>
+
                         <Button
                             Margin="0,12,0,0"
                             Click="Exit_Click"
-                            Content="Закрыть островок" />
+                            x:Uid="QuitButton" />
                     </StackPanel>
                 </ScrollViewer>
             </Grid>

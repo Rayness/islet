@@ -40,16 +40,12 @@ public sealed partial class IslandWindow : Window
 {
     private const int HotkeyId = 1;
 
-    private const double CollapsedWidth = 160;
-    private const double CollapsedHeight = 8;
     private const double BarHeight = 56;
     private const double RowHeight = 52;
-    private const int MaxRows = 8;
     private const double ListBottomPadding = 10;
     private const double MaxCornerRadius = 28;
     private const double TopMargin = 8;
     private const int AnimationMs = 220;
-    private const int HoverLeaveDelayMs = 350;
     private const int TopmostCheckEveryTicks = 10;
 
     private enum Mode { Collapsed, Hover, Pinned }
@@ -65,6 +61,9 @@ public sealed partial class IslandWindow : Window
     private bool _activatedOnce;
 
     private static double ExpandedWidth => SettingsStore.Current.IslandWidth;
+    private static double CollapsedWidth => SettingsStore.Current.CollapsedWidth;
+    private static double CollapsedHeight => SettingsStore.Current.CollapsedHeight;
+    private static int MaxRows => SettingsStore.Current.MaxRows;
 
     private readonly DispatcherQueueTimer _pollTimer;
     private readonly DispatcherQueueTimer _animationTimer;
@@ -76,6 +75,8 @@ public sealed partial class IslandWindow : Window
     private SizeD _windowSize;
     private int _openFlyouts;
     private long _pointerLeftAt;
+    private long _pointerEnteredAt;
+    private ulong _windowDisplay;
     private bool _hiddenForFullscreen;
     private int _searchGeneration;
     private nint _previousForeground;
@@ -145,6 +146,7 @@ public sealed partial class IslandWindow : Window
     {
         AppWindow.Title = "Islet";
         TrySetIcon();
+        ApplyStaticText();
         try { AppWindow.IsShownInSwitchers = false; }
         catch { /* старые сборки Windows: окно просто будет видно в Alt+Tab */ }
 
@@ -171,10 +173,8 @@ public sealed partial class IslandWindow : Window
     // Настройки
     // ------------------------------------------------------------------
 
-    private string _hotkeyStatus = "";
-
-    /// <summary>Текущее состояние горячей клавиши — для окна настроек.</summary>
-    public string HotkeyStatus => _hotkeyStatus;
+    /// <summary>false — сочетание занято другой программой. Окно настроек показывает это словами.</summary>
+    public bool HotkeyRegistered { get; private set; } = true;
 
     /// <summary>Перерегистрировать горячую клавишу из настроек. false — занята другой программой.</summary>
     public bool ApplyHotkey()
@@ -182,8 +182,8 @@ public sealed partial class IslandWindow : Window
         var hotkey = SettingsStore.Current.Hotkey;
         _host.UnregisterHotkey(HotkeyId);
         var ok = _host.RegisterHotkey(HotkeyId, hotkey.Modifiers, hotkey.Key);
-        _hotkeyStatus = ok ? $"Открыть: {hotkey.Label}" : $"{hotkey.Label} занято другой программой";
-        HotkeyInfo.Text = _hotkeyStatus;
+        HotkeyRegistered = ok;
+        HotkeyInfo.Text = ok ? Loc.T("Hotkey_Open", hotkey.Label) : Loc.T("Hotkey_Taken", hotkey.Label);
         if (!ok) Log.Write($"hotkey {hotkey.Label} is taken");
         return ok;
     }
@@ -205,11 +205,23 @@ public sealed partial class IslandWindow : Window
         Pill.Background = new SolidColorBrush(ColorHelper.FromArgb(alpha, 0x06, 0x0B, 0x0F));
         ClockText.Visibility = s.ShowClock ? Visibility.Visible : Visibility.Collapsed;
         Panel.Width = s.IslandWidth - 2;
+        UpdatePillVisibility();
 
         if (_mode != Mode.Collapsed)
             AnimateToTarget();
         else
             ApplyPill(_current);
+    }
+
+    private void ApplyStaticText()
+    {
+        ToolTipService.SetToolTip(MenuButton, Loc.T("Island_MenuTooltip"));
+    }
+
+    /// <summary>Свёрнутую капсулу можно спрятать: окно остаётся на месте, наведение работает.</summary>
+    private void UpdatePillVisibility()
+    {
+        Pill.Opacity = SettingsStore.Current.HideCollapsed && _mode == Mode.Collapsed ? 0 : 1;
     }
 
     private void TrySetIcon()
@@ -219,14 +231,28 @@ public sealed partial class IslandWindow : Window
             AppWindow.SetIcon(icon);
     }
 
+    /// <summary>Экран, на котором висит островок: основной или тот, где сейчас курсор.</summary>
+    private static DisplayArea CurrentDisplay()
+    {
+        if (SettingsStore.Current.MonitorMode == "cursor" && Win32.GetCursorPos(out var cursor))
+        {
+            var area = DisplayArea.GetFromPoint(new PointInt32(cursor.X, cursor.Y), DisplayAreaFallback.Primary);
+            if (area is not null)
+                return area;
+        }
+        return DisplayArea.Primary;
+    }
+
     /// <summary>Окно по центру у верхнего края, размер в DIP. Одинаковый размер повторно не применяется.</summary>
     private void ResizeWindow(SizeD size, bool force = false)
     {
-        if (!force && size == _windowSize) return;
+        var display = CurrentDisplay();
+        if (!force && size == _windowSize && display.DisplayId.Value == _windowDisplay) return;
         _windowSize = size;
+        _windowDisplay = display.DisplayId.Value;
 
         var scale = Win32.GetScale(_hwnd);
-        var area = DisplayArea.Primary.WorkArea;
+        var area = display.WorkArea;
         var width = (int)Math.Ceiling(size.Width * scale);
         var height = (int)Math.Ceiling(size.Height * scale);
         var x = area.X + (area.Width - width) / 2;
@@ -305,6 +331,8 @@ public sealed partial class IslandWindow : Window
         var wasCollapsed = _mode == Mode.Collapsed;
         _mode = mode;
         _pointerLeftAt = 0;
+        _pointerEnteredAt = 0;
+        UpdatePillVisibility();
 
         if (mode == Mode.Collapsed)
         {
@@ -405,9 +433,16 @@ public sealed partial class IslandWindow : Window
 
     private void OnPoll()
     {
-        UpdateFullscreenState();
-        if (_hiddenForFullscreen)
-            return;
+        if (SettingsStore.Current.HideOnFullscreen)
+        {
+            UpdateFullscreenState();
+            if (_hiddenForFullscreen)
+                return;
+        }
+        else if (_hiddenForFullscreen)
+        {
+            _hiddenForFullscreen = false;
+        }
 
         if (++_pollTicks % TopmostCheckEveryTicks == 0 && Win32.EnsureTopmost(_hwnd))
             Log.Write("topmost was lost, restored");
@@ -419,18 +454,30 @@ public sealed partial class IslandWindow : Window
             return;
 
         var scale = Win32.GetScale(_hwnd);
-        var area = DisplayArea.Primary.WorkArea;
+        var area = CurrentDisplay().WorkArea;
         var pos = AppWindow.Position;
         var size = AppWindow.Size;
 
         if (_mode == Mode.Collapsed)
         {
+            // Курсор ушёл на другой монитор — переезжаем следом.
+            if (SettingsStore.Current.MonitorMode == "cursor")
+                ResizeWindow(_windowSize, force: true);
+
             // Зона наведения шире полоски и доходит до самого края экрана:
             // курсор, упёртый в верх, должен попадать.
             var pad = (int)(24 * scale);
             var inside = cursor.X >= pos.X - pad && cursor.X <= pos.X + size.Width + pad
                 && cursor.Y >= area.Y && cursor.Y <= pos.Y + size.Height + (int)(4 * scale);
-            if (inside)
+
+            if (!inside || !SettingsStore.Current.HoverOpen)
+            {
+                _pointerEnteredAt = 0;
+                return;
+            }
+            if (_pointerEnteredAt == 0)
+                _pointerEnteredAt = Environment.TickCount64;
+            if (Environment.TickCount64 - _pointerEnteredAt >= SettingsStore.Current.HoverOpenDelayMs)
                 SetMode(Mode.Hover);
         }
         else if (_mode == Mode.Hover)
@@ -447,7 +494,7 @@ public sealed partial class IslandWindow : Window
             {
                 _pointerLeftAt = Environment.TickCount64;
             }
-            else if (Environment.TickCount64 - _pointerLeftAt > HoverLeaveDelayMs)
+            else if (Environment.TickCount64 - _pointerLeftAt > SettingsStore.Current.HoverCloseDelayMs)
             {
                 SetMode(Mode.Collapsed);
             }
@@ -656,12 +703,12 @@ public sealed partial class IslandWindow : Window
             return;
 
         var menu = NewMenu();
-        menu.Items.Add(MenuItem("Открыть", "", () => Launch(item, reveal: false)));
+        menu.Items.Add(MenuItem(Loc.T("Ctx_Open"), "", () => Launch(item, reveal: false)));
         if (item.CanReveal)
-            menu.Items.Add(MenuItem("Показать в папке", "", () => Launch(item, reveal: true)));
+            menu.Items.Add(MenuItem(Loc.T("Ctx_Reveal"), "", () => Launch(item, reveal: true)));
         if (item.CanPin && Pin.FromResult(item) is { } pin)
         {
-            var add = MenuItem("Закрепить на островке", "", () => _pins.Add(pin));
+            var add = MenuItem(Loc.T("Ctx_Pin"), "", () => _pins.Add(pin));
             add.IsEnabled = _pins.Items.Count < PinStore.MaxPins;
             menu.Items.Add(add);
         }
@@ -698,7 +745,7 @@ public sealed partial class IslandWindow : Window
             button.ContextRequested += (s, args) =>
             {
                 var menu = NewMenu();
-                menu.Items.Add(MenuItem("Открепить", "", () => _pins.Remove(pin)));
+                menu.Items.Add(MenuItem(Loc.T("Ctx_Unpin"), "", () => _pins.Remove(pin)));
                 ShowMenu(menu, (FrameworkElement)s, args);
             };
             PinsPanel.Children.Add(button);

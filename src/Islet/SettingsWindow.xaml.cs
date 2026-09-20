@@ -34,6 +34,9 @@ public sealed partial class SettingsWindow : Window
         InitializeComponent();
         _hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
 
+        Title = Loc.T("Settings_Title");
+        ToolTipService.SetToolTip(HotkeyResetButton, Loc.T("Hotkey_DefaultTip"));
+
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(TitleBar);
         AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
@@ -51,6 +54,7 @@ public sealed partial class SettingsWindow : Window
 
         _pins.Changed += RenderPins;
         App.Current.DriveIndex.StatusChanged += OnIndexStatusChanged;
+        Updater.Changed += OnUpdateStateChanged;
         Closed += OnClosed;
         _loading = false;
     }
@@ -82,8 +86,27 @@ public sealed partial class SettingsWindow : Window
         OpacitySlider.Value = Math.Round(s.SurfaceOpacity * 100);
         OpacityValue.Text = $"{OpacitySlider.Value:0}%";
         WidthSlider.Value = s.IslandWidth;
-        WidthValue.Text = $"{s.IslandWidth:0} px";
+        WidthValue.Text = Loc.T("Px_Format", s.IslandWidth.ToString("0"));
+        CollapsedWidthSlider.Value = s.CollapsedWidth;
+        CollapsedWidthValue.Text = Loc.T("Px_Format", s.CollapsedWidth.ToString("0"));
+        CollapsedHeightSlider.Value = s.CollapsedHeight;
+        CollapsedHeightValue.Text = Loc.T("Px_Format", s.CollapsedHeight.ToString("0"));
+        MaxRowsSlider.Value = s.MaxRows;
+        MaxRowsValue.Text = s.MaxRows.ToString();
         ClockToggle.IsOn = s.ShowClock;
+
+        HoverOpenToggle.IsOn = s.HoverOpen;
+        OpenDelaySlider.Value = s.HoverOpenDelayMs;
+        OpenDelayValue.Text = Loc.T("Ms_Format", s.HoverOpenDelayMs);
+        CloseDelaySlider.Value = s.HoverCloseDelayMs;
+        CloseDelayValue.Text = Loc.T("Ms_Format", s.HoverCloseDelayMs);
+        HideCollapsedToggle.IsOn = s.HideCollapsed;
+        FullscreenToggle.IsOn = s.HideOnFullscreen;
+        MonitorCombo.ItemsSource = new[] { Loc.T("Monitor_Primary"), Loc.T("Monitor_Cursor") };
+        MonitorCombo.SelectedIndex = s.MonitorMode == "cursor" ? 1 : 0;
+
+        LanguageCombo.ItemsSource = LanguageOptions.Select(o => o.Label).ToList();
+        LanguageCombo.SelectedIndex = Math.Max(0, Array.FindIndex(LanguageOptions, o => o.Id == s.Language));
 
         IndexToggle.IsOn = s.DriveIndexEnabled;
         ExcludesBox.Text = string.Join(Environment.NewLine, s.IndexExcludes);
@@ -93,11 +116,12 @@ public sealed partial class SettingsWindow : Window
         RenderPins();
 
         var version = Assembly.GetExecutingAssembly().GetName().Version;
-        VersionText.Text = $"Версия {version?.ToString(3)} · WinUI 3";
-        DataFolderText.Text = PinStore.Directory;
+        VersionText.Text = Loc.T("About_Version", version?.ToString(3));
+        DataFolderText.Text = Paths.Config;
+        RenderUpdateState();
     }
 
-    /// <summary>Открыть раздел по тегу: general, look, search, pins, about.</summary>
+    /// <summary>Открыть раздел по тегу: general, behavior, look, search, pins, about.</summary>
     public void ShowPage(string tag)
     {
         var item = Nav.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(i => (string)i.Tag == tag);
@@ -115,6 +139,7 @@ public sealed partial class SettingsWindow : Window
     {
         var tag = (args.SelectedItem as NavigationViewItem)?.Tag as string;
         GeneralPage.Visibility = tag == "general" ? Visibility.Visible : Visibility.Collapsed;
+        BehaviorPage.Visibility = tag == "behavior" ? Visibility.Visible : Visibility.Collapsed;
         LookPage.Visibility = tag == "look" ? Visibility.Visible : Visibility.Collapsed;
         SearchPage.Visibility = tag == "search" ? Visibility.Visible : Visibility.Collapsed;
         PinsPage.Visibility = tag == "pins" ? Visibility.Visible : Visibility.Collapsed;
@@ -127,11 +152,8 @@ public sealed partial class SettingsWindow : Window
 
     private void UpdateHotkeyStatus()
     {
-        var status = App.Current.Island?.HotkeyStatus ?? "";
-        var taken = status.Contains("занято", StringComparison.Ordinal);
-        HotkeyStatusText.Text = taken
-            ? "Это сочетание уже занято другой программой — выберите другое"
-            : "Раскрывает островок с курсором в поиске";
+        var taken = App.Current.Island?.HotkeyRegistered == false;
+        HotkeyStatusText.Text = taken ? Loc.T("Hotkey_TakenHint") : Loc.T("HotkeyHint");
         _hintBrush ??= HotkeyStatusText.Foreground;
         HotkeyStatusText.Foreground = taken
             ? new SolidColorBrush(ColorHelper.FromArgb(0xFF, 0xE5, 0x64, 0x5A))
@@ -149,9 +171,9 @@ public sealed partial class SettingsWindow : Window
         }
         _recordingHotkey = true;
         App.Current.Island?.SuspendHotkey();
-        HotkeyText.Text = "Нажмите сочетание…";
-        HotkeyButton.Content = "Отмена";
-        HotkeyStatusText.Text = "Ctrl, Alt, Shift или Win плюс клавиша. Esc — отмена.";
+        HotkeyText.Text = Loc.T("Hotkey_Press");
+        HotkeyButton.Content = Loc.T("Cancel");
+        HotkeyStatusText.Text = Loc.T("Hotkey_Help");
         Root.Focus(FocusState.Programmatic);
     }
 
@@ -187,13 +209,13 @@ public sealed partial class SettingsWindow : Window
         var isFunctionKey = e.Key is >= VirtualKey.F1 and <= VirtualKey.F24;
         if (mods == 0 && !isFunctionKey)
         {
-            HotkeyStatusText.Text = "Нужен хотя бы один модификатор: Ctrl, Alt, Shift или Win.";
+            HotkeyStatusText.Text = Loc.T("Hotkey_NeedModifier");
             return;
         }
         // Одинокий Shift с буквой — это просто заглавная буква при наборе.
         if (mods == Win32.MOD_SHIFT && !isFunctionKey)
         {
-            HotkeyStatusText.Text = "Shift с клавишей мешал бы печатать — добавьте Ctrl, Alt или Win.";
+            HotkeyStatusText.Text = Loc.T("Hotkey_ShiftOnly");
             return;
         }
 
@@ -207,7 +229,7 @@ public sealed partial class SettingsWindow : Window
     {
         if (!_recordingHotkey) return;
         _recordingHotkey = false;
-        HotkeyButton.Content = "Изменить";
+        HotkeyButton.Content = Loc.T("Change");
 
         if (chosen is not null)
             SettingsStore.Update(s => s.Hotkey = chosen);
@@ -257,6 +279,142 @@ public sealed partial class SettingsWindow : Window
         SettingsStore.Update(s => s.IslandWidth = e.NewValue);
     }
 
+    private void CollapsedWidthSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (CollapsedWidthValue is null) return;
+        CollapsedWidthValue.Text = Loc.T("Px_Format", e.NewValue.ToString("0"));
+        if (_loading) return;
+        SettingsStore.Update(s => s.CollapsedWidth = e.NewValue);
+    }
+
+    private void CollapsedHeightSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (CollapsedHeightValue is null) return;
+        CollapsedHeightValue.Text = Loc.T("Px_Format", e.NewValue.ToString("0"));
+        if (_loading) return;
+        SettingsStore.Update(s => s.CollapsedHeight = e.NewValue);
+    }
+
+    private void MaxRowsSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (MaxRowsValue is null) return;
+        MaxRowsValue.Text = e.NewValue.ToString("0");
+        if (_loading) return;
+        SettingsStore.Update(s => s.MaxRows = (int)e.NewValue);
+    }
+
+    // ------------------------------------------------------------------
+    // Поведение
+    // ------------------------------------------------------------------
+
+    private void HoverOpenToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_loading) return;
+        SettingsStore.Update(s => s.HoverOpen = HoverOpenToggle.IsOn);
+    }
+
+    private void OpenDelaySlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (OpenDelayValue is null) return;
+        OpenDelayValue.Text = Loc.T("Ms_Format", (int)e.NewValue);
+        if (_loading) return;
+        SettingsStore.Update(s => s.HoverOpenDelayMs = (int)e.NewValue);
+    }
+
+    private void CloseDelaySlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (CloseDelayValue is null) return;
+        CloseDelayValue.Text = Loc.T("Ms_Format", (int)e.NewValue);
+        if (_loading) return;
+        SettingsStore.Update(s => s.HoverCloseDelayMs = (int)e.NewValue);
+    }
+
+    private void HideCollapsedToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_loading) return;
+        SettingsStore.Update(s => s.HideCollapsed = HideCollapsedToggle.IsOn);
+    }
+
+    private void FullscreenToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_loading) return;
+        SettingsStore.Update(s => s.HideOnFullscreen = FullscreenToggle.IsOn);
+    }
+
+    private void MonitorCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_loading) return;
+        var mode = MonitorCombo.SelectedIndex == 1 ? "cursor" : "primary";
+        SettingsStore.Update(s => s.MonitorMode = mode);
+    }
+
+    // ------------------------------------------------------------------
+    // Язык
+    // ------------------------------------------------------------------
+
+    /// <summary>Пустой Id — язык системы. Названия языков не переводятся.</summary>
+    private static readonly (string Id, string Label)[] LanguageOptions =
+    [
+        ("", Loc.T("Language_System")),
+        ("ru", "Русский"),
+        ("en", "English"),
+    ];
+
+    private void LanguageCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_loading || LanguageCombo.SelectedIndex < 0) return;
+        var id = LanguageOptions[LanguageCombo.SelectedIndex].Id;
+        if (id == SettingsStore.Current.Language) return;
+
+        SettingsStore.Update(s => s.Language = id);
+        Loc.Apply(id);
+
+        // x:Uid разбирается один раз при загрузке окна, поэтому язык меняем перезапуском.
+        try
+        {
+            Microsoft.Windows.AppLifecycle.AppInstance.Restart("");
+        }
+        catch (Exception ex)
+        {
+            Log.Write($"restart after language change failed: {ex.Message}");
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Обновления
+    // ------------------------------------------------------------------
+
+    private void OnUpdateStateChanged() =>
+        DispatcherQueue.TryEnqueue(RenderUpdateState);
+
+    private void RenderUpdateState()
+    {
+        if (UpdateStatusText is null) return;
+
+        UpdateStatusText.Text = Updater.State switch
+        {
+            UpdateState.NotInstalled => Loc.T("Update_Portable"),
+            UpdateState.Checking => Loc.T("Update_Checking"),
+            UpdateState.Downloading => Loc.T("Update_Downloading"),
+            UpdateState.UpToDate => Loc.T("Update_UpToDate"),
+            UpdateState.Ready => Loc.T("Update_Ready", Updater.ReadyVersion),
+            UpdateState.Failed => Loc.T("Update_Failed", Updater.Error),
+            _ => "",
+        };
+
+        var busy = Updater.State is UpdateState.Checking or UpdateState.Downloading;
+        UpdateCheckButton.IsEnabled = !busy && Updater.State != UpdateState.NotInstalled;
+
+        var ready = Updater.State == UpdateState.Ready;
+        UpdateApplyButton.Visibility = ready ? Visibility.Visible : Visibility.Collapsed;
+        if (ready)
+            UpdateApplyButton.Content = Loc.T("Update_Restart");
+    }
+
+    private void UpdateCheck_Click(object sender, RoutedEventArgs e) => _ = Updater.CheckAsync();
+
+    private void UpdateApply_Click(object sender, RoutedEventArgs e) => Updater.ApplyAndRestart();
+
     private void ClockToggle_Toggled(object sender, RoutedEventArgs e)
     {
         if (_loading) return;
@@ -284,15 +442,17 @@ public sealed partial class SettingsWindow : Window
         RescanButton.IsEnabled = s.DriveIndexEnabled && !index.IsScanning;
 
         if (!s.DriveIndexEnabled)
-            IndexStatusText.Text = "Выключен — ищем только через индекс Windows";
+            IndexStatusText.Text = Loc.T("Index_Off");
         else if (index.IsScanning)
-            IndexStatusText.Text = $"Индексирую… Уже в индексе: {index.Count:N0}";
+            IndexStatusText.Text = Loc.T("Index_Building", index.Count.ToString("N0"));
         else if (index.LastError is { } error)
-            IndexStatusText.Text = $"Ошибка: {error}";
+            IndexStatusText.Text = Loc.T("Index_Error", error);
         else if (index.BuiltAt == default)
-            IndexStatusText.Text = "Ещё не построен";
+            IndexStatusText.Text = Loc.T("Index_NotBuilt");
         else
-            IndexStatusText.Text = $"{index.Count:N0} файлов и папок · обновлён {index.BuiltAt.ToLocalTime():dd.MM HH:mm}";
+            IndexStatusText.Text = Loc.T("Index_Ready",
+                index.Count.ToString("N0"),
+                index.BuiltAt.ToLocalTime().ToString("dd.MM HH:mm"));
     }
 
     private void RescanButton_Click(object sender, RoutedEventArgs e)
@@ -309,7 +469,7 @@ public sealed partial class SettingsWindow : Window
         {
             RootsPanel.Children.Add(new TextBlock
             {
-                Text = "Других дисков нет — добавьте папку вручную.",
+                Text = Loc.T("Roots_Empty"),
                 Style = (Style)Root.Resources["CardHint"],
             });
             return;
@@ -330,7 +490,7 @@ public sealed partial class SettingsWindow : Window
             grid.Children.Add(text);
 
             var remove = new Button { Content = new FontIcon { Glyph = "", FontSize = 14 } };
-            ToolTipService.SetToolTip(remove, "Не индексировать");
+            ToolTipService.SetToolTip(remove, Loc.T("Roots_Remove"));
             remove.Click += (_, _) => UpdateRoots(list => list.RemoveAll(r => string.Equals(r, root, StringComparison.OrdinalIgnoreCase)));
             Grid.SetColumn(remove, 2);
             grid.Children.Add(remove);
@@ -425,9 +585,9 @@ public sealed partial class SettingsWindow : Window
             grid.Children.Add(texts);
 
             var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4 };
-            buttons.Children.Add(IconButton("", "Выше", i > 0, () => _pins.Move(pin, -1)));
-            buttons.Children.Add(IconButton("", "Ниже", i < items.Count - 1, () => _pins.Move(pin, +1)));
-            buttons.Children.Add(IconButton("", "Убрать", true, () => _pins.Remove(pin)));
+            buttons.Children.Add(IconButton("", Loc.T("Pin_Up"), i > 0, () => _pins.Move(pin, -1)));
+            buttons.Children.Add(IconButton("", Loc.T("Pin_Down"), i < items.Count - 1, () => _pins.Move(pin, +1)));
+            buttons.Children.Add(IconButton("", Loc.T("Pin_Remove"), true, () => _pins.Remove(pin)));
             Grid.SetColumn(buttons, 2);
             grid.Children.Add(buttons);
 
@@ -475,8 +635,8 @@ public sealed partial class SettingsWindow : Window
 
     private async void AddPinUrl_Click(object sender, RoutedEventArgs e)
     {
-        var title = new TextBox { Header = "Название", PlaceholderText = "GitHub" };
-        var url = new TextBox { Header = "Адрес", PlaceholderText = "https://github.com" };
+        var title = new TextBox { Header = Loc.T("PinDialog_Name"), PlaceholderText = "GitHub" };
+        var url = new TextBox { Header = Loc.T("PinDialog_Url"), PlaceholderText = "https://github.com" };
         var content = new StackPanel { Spacing = 12, MinWidth = 360 };
         content.Children.Add(title);
         content.Children.Add(url);
@@ -485,10 +645,10 @@ public sealed partial class SettingsWindow : Window
         {
             XamlRoot = Root.XamlRoot,
             RequestedTheme = ElementTheme.Dark,
-            Title = "Кнопка-ссылка",
+            Title = Loc.T("PinDialog_Title"),
             Content = content,
-            PrimaryButtonText = "Добавить",
-            CloseButtonText = "Отмена",
+            PrimaryButtonText = Loc.T("Add"),
+            CloseButtonText = Loc.T("Cancel"),
             DefaultButton = ContentDialogButton.Primary,
         };
         if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
@@ -509,7 +669,7 @@ public sealed partial class SettingsWindow : Window
     // О программе
     // ------------------------------------------------------------------
 
-    private void OpenDataFolder_Click(object sender, RoutedEventArgs e) => Launcher.Open(PinStore.Directory);
+    private void OpenDataFolder_Click(object sender, RoutedEventArgs e) => Launcher.Open(Paths.Config);
 
     private void Exit_Click(object sender, RoutedEventArgs e) => App.Current.Shutdown();
 
@@ -519,5 +679,6 @@ public sealed partial class SettingsWindow : Window
             StopRecording(null);
         _pins.Changed -= RenderPins;
         App.Current.DriveIndex.StatusChanged -= OnIndexStatusChanged;
+        Updater.Changed -= OnUpdateStateChanged;
     }
 }

@@ -53,7 +53,7 @@ internal sealed class AppIndex
             .Select(x => new ResultItem
             {
                 Title = x.Entry.Name,
-                Subtitle = "Приложение",
+                Subtitle = Loc.T("Result_App"),
                 Kind = ResultKind.App,
                 Target = x.Entry.Id,
                 IconSource = $"shell:AppsFolder\\{x.Entry.Id}",
@@ -81,7 +81,7 @@ internal sealed class AppIndex
     private static List<Entry> Enumerate()
     {
         var type = Type.GetTypeFromProgID("Shell.Application")
-            ?? throw new InvalidOperationException("Shell.Application недоступен");
+            ?? throw new InvalidOperationException("Shell.Application is unavailable");
         dynamic shell = Activator.CreateInstance(type)!;
         try
         {

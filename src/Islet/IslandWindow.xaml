@@ -72,9 +72,9 @@
 
                     <TextBox
                         x:Name="SearchBox"
+                        x:Uid="SearchBox"
                         Grid.Column="1"
                         VerticalAlignment="Center"
-                        PlaceholderText="Приложения, файлы, интернет"
                         Background="{StaticResource IslandFieldBrush}"
                         BorderThickness="0"
                         CornerRadius="16"
@@ -102,22 +102,21 @@
                     <Button
                         x:Name="MenuButton"
                         Grid.Column="3"
-                        Style="{StaticResource IslandIconButton}"
-                        ToolTipService.ToolTip="Меню">
+                        Style="{StaticResource IslandIconButton}">
                         <FontIcon FontSize="16" Glyph="&#xE712;" />
                         <Button.Flyout>
                             <MenuFlyout
                                 x:Name="MainMenu"
                                 Placement="BottomEdgeAlignedRight"
                                 ShouldConstrainToRootBounds="False">
-                                <MenuFlyoutItem Click="Settings_Click" Text="Настройки">
+                                <MenuFlyoutItem x:Uid="MenuSettings" Click="Settings_Click">
                                     <MenuFlyoutItem.Icon>
                                         <FontIcon Glyph="&#xE713;" />
                                     </MenuFlyoutItem.Icon>
                                 </MenuFlyoutItem>
                                 <MenuFlyoutSeparator />
                                 <MenuFlyoutItem x:Name="HotkeyInfo" IsEnabled="False" />
-                                <MenuFlyoutItem Click="Exit_Click" Text="Закрыть островок">
+                                <MenuFlyoutItem x:Uid="MenuExit" Click="Exit_Click">
                                     <MenuFlyoutItem.Icon>
                                         <FontIcon Glyph="&#xE8BB;" />
                                     </MenuFlyoutItem.Icon>

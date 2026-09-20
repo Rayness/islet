@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SearchBox.PlaceholderText" xml:space="preserve">
+    <value>Приложения, файлы, интернет</value>
+  </data>
+  <data name="MenuSettings.Text" xml:space="preserve">
+    <value>Настройки</value>
+  </data>
+  <data name="MenuExit.Text" xml:space="preserve">
+    <value>Закрыть островок</value>
+  </data>
+  <data name="Island_MenuTooltip" xml:space="preserve">
+    <value>Меню</value>
+  </data>
+  <data name="Hotkey_Open" xml:space="preserve">
+    <value>Открыть: {0}</value>
+  </data>
+  <data name="Hotkey_Taken" xml:space="preserve">
+    <value>{0} занято другой программой</value>
+  </data>
+  <data name="Ctx_Open" xml:space="preserve">
+    <value>Открыть</value>
+  </data>
+  <data name="Ctx_Reveal" xml:space="preserve">
+    <value>Показать в папке</value>
+  </data>
+  <data name="Ctx_Pin" xml:space="preserve">
+    <value>Закрепить на островке</value>
+  </data>
+  <data name="Ctx_Unpin" xml:space="preserve">
+    <value>Открепить</value>
+  </data>
+  <data name="Result_App" xml:space="preserve">
+    <value>Приложение</value>
+  </data>
+  <data name="Result_Web" xml:space="preserve">
+    <value>Найти «{0}» в интернете</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Islet — настройки</value>
+  </data>
+  <data name="SettingsHeader.Text" xml:space="preserve">
+    <value>Islet — настройки</value>
+  </data>
+  <data name="NavGeneral.Content" xml:space="preserve">
+    <value>Общие</value>
+  </data>
+  <data name="NavBehavior.Content" xml:space="preserve">
+    <value>Поведение</value>
+  </data>
+  <data name="NavLook.Content" xml:space="preserve">
+    <value>Внешний вид</value>
+  </data>
+  <data name="NavSearch.Content" xml:space="preserve">
+    <value>Поиск</value>
+  </data>
+  <data name="NavPins.Content" xml:space="preserve">
+    <value>Кнопки</value>
+  </data>
+  <data name="NavAbout.Content" xml:space="preserve">
+    <value>О программе</value>
+  </data>
+  <data name="PageGeneral.Text" xml:space="preserve">
+    <value>Общие</value>
+  </data>
+  <data name="HotkeyTitle.Text" xml:space="preserve">
+    <value>Горячая клавиша</value>
+  </data>
+  <data name="HotkeyHint" xml:space="preserve">
+    <value>Раскрывает островок с курсором в поиске</value>
+  </data>
+  <data name="Hotkey_DefaultTip" xml:space="preserve">
+    <value>По умолчанию: Ctrl + Alt + Пробел</value>
+  </data>
+  <data name="Hotkey_Press" xml:space="preserve">
+    <value>Нажмите сочетание…</value>
+  </data>
+  <data name="Hotkey_Help" xml:space="preserve">
+    <value>Ctrl, Alt, Shift или Win плюс клавиша. Esc — отмена.</value>
+  </data>
+  <data name="Hotkey_NeedModifier" xml:space="preserve">
+    <value>Нужен хотя бы один модификатор: Ctrl, Alt, Shift или Win.</value>
+  </data>
+  <data name="Hotkey_ShiftOnly" xml:space="preserve">
+    <value>Shift с клавишей мешал бы печатать — добавьте Ctrl, Alt или Win.</value>
+  </data>
+  <data name="Hotkey_TakenHint" xml:space="preserve">
+    <value>Это сочетание уже занято другой программой — выберите другое</value>
+  </data>
+  <data name="AutoStartTitle.Text" xml:space="preserve">
+    <value>Запускать вместе с Windows</value>
+  </data>
+  <data name="AutoStartHint.Text" xml:space="preserve">
+    <value>Островок появится сразу после входа в систему</value>
+  </data>
+  <data name="WebSearchTitle.Text" xml:space="preserve">
+    <value>Поиск в интернете</value>
+  </data>
+  <data name="WebSearchHint.Text" xml:space="preserve">
+    <value>Последняя строка выдачи открывает этот поисковик</value>
+  </data>
+  <data name="LanguageTitle.Text" xml:space="preserve">
+    <value>Язык</value>
+  </data>
+  <data name="LanguageHint.Text" xml:space="preserve">
+    <value>Островок перезапустится, чтобы применить язык</value>
+  </data>
+  <data name="Language_System" xml:space="preserve">
+    <value>Как в Windows</value>
+  </data>
+  <data name="PageBehavior.Text" xml:space="preserve">
+    <value>Поведение</value>
+  </data>
+  <data name="HoverOpenTitle.Text" xml:space="preserve">
+    <value>Раскрывать по наведению</value>
+  </data>
+  <data name="HoverOpenHint.Text" xml:space="preserve">
+    <value>Если выключить, островок будет открываться только горячей клавишей</value>
+  </data>
+  <data name="OpenDelayTitle.Text" xml:space="preserve">
+    <value>Задержка раскрытия</value>
+  </data>
+  <data name="OpenDelayHint.Text" xml:space="preserve">
+    <value>Сколько курсор должен побыть у верхнего края, прежде чем островок раскроется</value>
+  </data>
+  <data name="CloseDelayTitle.Text" xml:space="preserve">
+    <value>Задержка сворачивания</value>
+  </data>
+  <data name="CloseDelayHint.Text" xml:space="preserve">
+    <value>Сколько островок ждёт после того, как курсор ушёл</value>
+  </data>
+  <data name="FullscreenTitle.Text" xml:space="preserve">
+    <value>Прятать поверх полноэкранных окон</value>
+  </data>
+  <data name="FullscreenHint.Text" xml:space="preserve">
+    <value>Игра или видео во весь экран не будут перекрыты капсулой</value>
+  </data>
+  <data name="HideCollapsedTitle.Text" xml:space="preserve">
+    <value>Прятать капсулу, пока не наведёшь</value>
+  </data>
+  <data name="HideCollapsedHint.Text" xml:space="preserve">
+    <value>Свёрнутый островок становится невидимым, но по-прежнему раскрывается наведением</value>
+  </data>
+  <data name="MonitorTitle.Text" xml:space="preserve">
+    <value>Монитор</value>
+  </data>
+  <data name="MonitorHint.Text" xml:space="preserve">
+    <value>На каком экране висит островок</value>
+  </data>
+  <data name="Monitor_Primary" xml:space="preserve">
+    <value>Основной</value>
+  </data>
+  <data name="Monitor_Cursor" xml:space="preserve">
+    <value>Тот, где курсор</value>
+  </data>
+  <data name="PageLook.Text" xml:space="preserve">
+    <value>Внешний вид</value>
+  </data>
+  <data name="GlassTitle.Text" xml:space="preserve">
+    <value>Стекло</value>
+  </data>
+  <data name="GlassHint.Text" xml:space="preserve">
+    <value>Размытый рабочий стол под островком. Нужны включённые «Эффекты прозрачности» в Windows.</value>
+  </data>
+  <data name="SurfaceTitle.Text" xml:space="preserve">
+    <value>Плотность фона</value>
+  </data>
+  <data name="SurfaceHint.Text" xml:space="preserve">
+    <value>Меньше — прозрачнее. Без стекла фон не бывает жиже 90%, иначе текст теряется.</value>
+  </data>
+  <data name="WidthTitle.Text" xml:space="preserve">
+    <value>Ширина островка</value>
+  </data>
+  <data name="CollapsedWidthTitle.Text" xml:space="preserve">
+    <value>Ширина свёрнутой капсулы</value>
+  </data>
+  <data name="CollapsedHeightTitle.Text" xml:space="preserve">
+    <value>Толщина свёрнутой капсулы</value>
+  </data>
+  <data name="MaxRowsTitle.Text" xml:space="preserve">
+    <value>Строк в выдаче</value>
+  </data>
+  <data name="MaxRowsHint.Text" xml:space="preserve">
+    <value>Сколько результатов помещается на островке</value>
+  </data>
+  <data name="ClockToggle.Text" xml:space="preserve">
+    <value>Показывать часы</value>
+  </data>
+  <data name="PageSearch.Text" xml:space="preserve">
+    <value>Поиск</value>
+  </data>
+  <data name="DriveIndexTitle.Text" xml:space="preserve">
+    <value>Искать на других дисках</value>
+  </data>
+  <data name="DriveIndexHint.Text" xml:space="preserve">
+    <value>Индекс Windows по умолчанию видит только папки пользователя на системном диске. Островок сам индексирует имена файлов в папках ниже.</value>
+  </data>
+  <data name="IndexStatusTitle.Text" xml:space="preserve">
+    <value>Состояние индекса</value>
+  </data>
+  <data name="ReindexButton.Content" xml:space="preserve">
+    <value>Переиндексировать</value>
+  </data>
+  <data name="Index_Off" xml:space="preserve">
+    <value>Выключен — ищем только через индекс Windows</value>
+  </data>
+  <data name="Index_Building" xml:space="preserve">
+    <value>Индексирую… Уже в индексе: {0}</value>
+  </data>
+  <data name="Index_Error" xml:space="preserve">
+    <value>Ошибка: {0}</value>
+  </data>
+  <data name="Index_NotBuilt" xml:space="preserve">
+    <value>Ещё не построен</value>
+  </data>
+  <data name="Index_Ready" xml:space="preserve">
+    <value>{0} файлов и папок · обновлён {1}</value>
+  </data>
+  <data name="RootsSection.Text" xml:space="preserve">
+    <value>Папки и диски</value>
+  </data>
+  <data name="AddRootText.Text" xml:space="preserve">
+    <value>Добавить папку</value>
+  </data>
+  <data name="ResetRootsButton.Content" xml:space="preserve">
+    <value>Все диски, кроме системного</value>
+  </data>
+  <data name="Roots_Empty" xml:space="preserve">
+    <value>Других дисков нет — добавьте папку вручную.</value>
+  </data>
+  <data name="Roots_Remove" xml:space="preserve">
+    <value>Не индексировать</value>
+  </data>
+  <data name="ExcludesSection.Text" xml:space="preserve">
+    <value>Не заходить в папки</value>
+  </data>
+  <data name="ExcludesHint.Text" xml:space="preserve">
+    <value>По одному имени в строке. Папка с таким именем пропускается на любой глубине — например node_modules.</value>
+  </data>
+  <data name="SaveExcludesButton.Content" xml:space="preserve">
+    <value>Сохранить и переиндексировать</value>
+  </data>
+  <data name="SystemDriveSection.Text" xml:space="preserve">
+    <value>Системный диск</value>
+  </data>
+  <data name="SystemDriveHint.Text" xml:space="preserve">
+    <value>Файлы на системном диске ищутся через индекс Windows. Чтобы он видел весь диск, включите «Расширенный» режим в параметрах поиска Windows.</value>
+  </data>
+  <data name="OpenSearchSettingsButton.Content" xml:space="preserve">
+    <value>Открыть параметры</value>
+  </data>
+  <data name="PagePins.Text" xml:space="preserve">
+    <value>Кнопки</value>
+  </data>
+  <data name="PinsHint.Text" xml:space="preserve">
+    <value>Кнопки слева от поиска, до шести. Приложения из Microsoft Store удобнее закреплять из выдачи: правый клик → «Закрепить на островке».</value>
+  </data>
+  <data name="AddPinText.Text" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="AddPinFile.Text" xml:space="preserve">
+    <value>Программу или файл…</value>
+  </data>
+  <data name="AddPinFolder.Text" xml:space="preserve">
+    <value>Папку…</value>
+  </data>
+  <data name="AddPinUrl.Text" xml:space="preserve">
+    <value>Ссылку…</value>
+  </data>
+  <data name="ResetPinsButton.Content" xml:space="preserve">
+    <value>Вернуть стандартные</value>
+  </data>
+  <data name="Pin_Up" xml:space="preserve">
+    <value>Выше</value>
+  </data>
+  <data name="Pin_Down" xml:space="preserve">
+    <value>Ниже</value>
+  </data>
+  <data name="Pin_Remove" xml:space="preserve">
+    <value>Убрать</value>
+  </data>
+  <data name="PinDialog_Title" xml:space="preserve">
+    <value>Кнопка-ссылка</value>
+  </data>
+  <data name="PinDialog_Name" xml:space="preserve">
+    <value>Название</value>
+  </data>
+  <data name="PinDialog_Url" xml:space="preserve">
+    <value>Адрес</value>
+  </data>
+  <data name="PageAbout.Text" xml:space="preserve">
+    <value>О программе</value>
+  </data>
+  <data name="About_Version" xml:space="preserve">
+    <value>Версия {0} · WinUI 3</value>
+  </data>
+  <data name="DataFolderTitle.Text" xml:space="preserve">
+    <value>Папка данных</value>
+  </data>
+  <data name="OpenDataFolderButton.Content" xml:space="preserve">
+    <value>Открыть</value>
+  </data>
+  <data name="QuitButton.Content" xml:space="preserve">
+    <value>Закрыть островок</value>
+  </data>
+  <data name="UpdateTitle.Text" xml:space="preserve">
+    <value>Обновления</value>
+  </data>
+  <data name="UpdateCheckButton.Content" xml:space="preserve">
+    <value>Проверить</value>
+  </data>
+  <data name="Update_Restart" xml:space="preserve">
+    <value>Перезапустить и обновить</value>
+  </data>
+  <data name="Update_Checking" xml:space="preserve">
+    <value>Проверяю…</value>
+  </data>
+  <data name="Update_Downloading" xml:space="preserve">
+    <value>Скачиваю…</value>
+  </data>
+  <data name="Update_UpToDate" xml:space="preserve">
+    <value>Установлена последняя версия</value>
+  </data>
+  <data name="Update_Ready" xml:space="preserve">
+    <value>Готово к установке: {0}</value>
+  </data>
+  <data name="Update_Failed" xml:space="preserve">
+    <value>Не удалось проверить: {0}</value>
+  </data>
+  <data name="Update_Portable" xml:space="preserve">
+    <value>Портативная копия обновляется вручную</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="Change" xml:space="preserve">
+    <value>Изменить</value>
+  </data>
+  <data name="HotkeyButton.Content" xml:space="preserve">
+    <value>Изменить</value>
+  </data>
+  <data name="Ms_Format" xml:space="preserve">
+    <value>{0} мс</value>
+  </data>
+  <data name="Px_Format" xml:space="preserve">
+    <value>{0} px</value>
+  </data>
+  <data name="Key_Space" xml:space="preserve">
+    <value>Пробел</value>
+  </data>
+  <data name="Key_Oem3" xml:space="preserve">
+    <value>Ё</value>
+  </data>
+  <data name="Engine_Yandex" xml:space="preserve">
+    <value>Яндекс</value>
+  </data>
+  <data name="Pin_Explorer" xml:space="preserve">
+    <value>Проводник</value>
+  </data>
+  <data name="Pin_Terminal" xml:space="preserve">
+    <value>Терминал</value>
+  </data>
+  <data name="Pin_WinSettings" xml:space="preserve">
+    <value>Параметры</value>
+  </data>
+  <data name="Pin_TaskManager" xml:space="preserve">
+    <value>Диспетчер задач</value>
+  </data>
+</root>

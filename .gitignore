@@ -4,3 +4,7 @@ obj/
 *.user
 *.suo
 publish/
+
+# результаты сборки установщика
+build/publish-*/
+build/releases/

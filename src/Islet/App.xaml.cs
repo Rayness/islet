@@ -17,6 +17,9 @@ public partial class App : Application
 
     public App()
     {
+        // Первым делом: на установке и удалении Velopack запускает exe со своими ключами,
+        // и до создания окон он должен успеть отработать.
+        Velopack.VelopackApp.Build().Run();
         InitializeComponent();
     }
 
@@ -30,11 +33,15 @@ public partial class App : Application
         }
 
         SettingsStore.Load();
+        Loc.Apply(SettingsStore.Current.Language);
         Pins.Load();
         DriveIndex.Start();
 
         _island = new IslandWindow();
         _island.Activate();
+
+        // Проверка обновлений не должна задерживать запуск островка.
+        _ = Shell.Updater.CheckAsync();
 
         // Ключи для проверки вида без клавиатуры и мыши.
         var cli = Environment.GetCommandLineArgs();

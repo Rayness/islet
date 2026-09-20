@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SearchBox.PlaceholderText" xml:space="preserve">
+    <value>Apps, files, web</value>
+  </data>
+  <data name="MenuSettings.Text" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="MenuExit.Text" xml:space="preserve">
+    <value>Quit Islet</value>
+  </data>
+  <data name="Island_MenuTooltip" xml:space="preserve">
+    <value>Menu</value>
+  </data>
+  <data name="Hotkey_Open" xml:space="preserve">
+    <value>Open: {0}</value>
+  </data>
+  <data name="Hotkey_Taken" xml:space="preserve">
+    <value>{0} is taken by another app</value>
+  </data>
+  <data name="Ctx_Open" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Ctx_Reveal" xml:space="preserve">
+    <value>Show in folder</value>
+  </data>
+  <data name="Ctx_Pin" xml:space="preserve">
+    <value>Pin to the island</value>
+  </data>
+  <data name="Ctx_Unpin" xml:space="preserve">
+    <value>Unpin</value>
+  </data>
+  <data name="Result_App" xml:space="preserve">
+    <value>App</value>
+  </data>
+  <data name="Result_Web" xml:space="preserve">
+    <value>Search the web for “{0}”</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Islet — Settings</value>
+  </data>
+  <data name="SettingsHeader.Text" xml:space="preserve">
+    <value>Islet — Settings</value>
+  </data>
+  <data name="NavGeneral.Content" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="NavBehavior.Content" xml:space="preserve">
+    <value>Behavior</value>
+  </data>
+  <data name="NavLook.Content" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="NavSearch.Content" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="NavPins.Content" xml:space="preserve">
+    <value>Buttons</value>
+  </data>
+  <data name="NavAbout.Content" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="PageGeneral.Text" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="HotkeyTitle.Text" xml:space="preserve">
+    <value>Hotkey</value>
+  </data>
+  <data name="HotkeyHint" xml:space="preserve">
+    <value>Opens the island with the cursor in the search box</value>
+  </data>
+  <data name="Hotkey_DefaultTip" xml:space="preserve">
+    <value>Default: Ctrl + Alt + Space</value>
+  </data>
+  <data name="Hotkey_Press" xml:space="preserve">
+    <value>Press a shortcut…</value>
+  </data>
+  <data name="Hotkey_Help" xml:space="preserve">
+    <value>Ctrl, Alt, Shift or Win plus a key. Esc cancels.</value>
+  </data>
+  <data name="Hotkey_NeedModifier" xml:space="preserve">
+    <value>Needs at least one modifier: Ctrl, Alt, Shift or Win.</value>
+  </data>
+  <data name="Hotkey_ShiftOnly" xml:space="preserve">
+    <value>Shift plus a key would get in the way of typing — add Ctrl, Alt or Win.</value>
+  </data>
+  <data name="Hotkey_TakenHint" xml:space="preserve">
+    <value>That shortcut is already taken by another app — pick a different one</value>
+  </data>
+  <data name="AutoStartTitle.Text" xml:space="preserve">
+    <value>Start with Windows</value>
+  </data>
+  <data name="AutoStartHint.Text" xml:space="preserve">
+    <value>The island shows up right after you sign in</value>
+  </data>
+  <data name="WebSearchTitle.Text" xml:space="preserve">
+    <value>Web search</value>
+  </data>
+  <data name="WebSearchHint.Text" xml:space="preserve">
+    <value>The last row of results opens this search engine</value>
+  </data>
+  <data name="LanguageTitle.Text" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="LanguageHint.Text" xml:space="preserve">
+    <value>Islet will restart to apply the language</value>
+  </data>
+  <data name="Language_System" xml:space="preserve">
+    <value>Same as Windows</value>
+  </data>
+  <data name="PageBehavior.Text" xml:space="preserve">
+    <value>Behavior</value>
+  </data>
+  <data name="HoverOpenTitle.Text" xml:space="preserve">
+    <value>Open on hover</value>
+  </data>
+  <data name="HoverOpenHint.Text" xml:space="preserve">
+    <value>When off, the island only opens with the hotkey</value>
+  </data>
+  <data name="OpenDelayTitle.Text" xml:space="preserve">
+    <value>Open delay</value>
+  </data>
+  <data name="OpenDelayHint.Text" xml:space="preserve">
+    <value>How long the pointer must rest at the top edge before the island opens</value>
+  </data>
+  <data name="CloseDelayTitle.Text" xml:space="preserve">
+    <value>Close delay</value>
+  </data>
+  <data name="CloseDelayHint.Text" xml:space="preserve">
+    <value>How long the island waits after the pointer leaves</value>
+  </data>
+  <data name="FullscreenTitle.Text" xml:space="preserve">
+    <value>Hide over fullscreen windows</value>
+  </data>
+  <data name="FullscreenHint.Text" xml:space="preserve">
+    <value>A fullscreen game or video will not be covered by the capsule</value>
+  </data>
+  <data name="HideCollapsedTitle.Text" xml:space="preserve">
+    <value>Hide the capsule until you point at it</value>
+  </data>
+  <data name="HideCollapsedHint.Text" xml:space="preserve">
+    <value>The collapsed island turns invisible but still opens on hover</value>
+  </data>
+  <data name="MonitorTitle.Text" xml:space="preserve">
+    <value>Monitor</value>
+  </data>
+  <data name="MonitorHint.Text" xml:space="preserve">
+    <value>Which screen the island lives on</value>
+  </data>
+  <data name="Monitor_Primary" xml:space="preserve">
+    <value>Primary</value>
+  </data>
+  <data name="Monitor_Cursor" xml:space="preserve">
+    <value>The one with the pointer</value>
+  </data>
+  <data name="PageLook.Text" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="GlassTitle.Text" xml:space="preserve">
+    <value>Glass</value>
+  </data>
+  <data name="GlassHint.Text" xml:space="preserve">
+    <value>A blurred desktop behind the island. Needs Transparency effects turned on in Windows.</value>
+  </data>
+  <data name="SurfaceTitle.Text" xml:space="preserve">
+    <value>Background density</value>
+  </data>
+  <data name="SurfaceHint.Text" xml:space="preserve">
+    <value>Lower is more transparent. Without glass it never goes below 90%, or the text gets lost.</value>
+  </data>
+  <data name="WidthTitle.Text" xml:space="preserve">
+    <value>Island width</value>
+  </data>
+  <data name="CollapsedWidthTitle.Text" xml:space="preserve">
+    <value>Collapsed capsule width</value>
+  </data>
+  <data name="CollapsedHeightTitle.Text" xml:space="preserve">
+    <value>Collapsed capsule thickness</value>
+  </data>
+  <data name="MaxRowsTitle.Text" xml:space="preserve">
+    <value>Result rows</value>
+  </data>
+  <data name="MaxRowsHint.Text" xml:space="preserve">
+    <value>How many results fit on the island</value>
+  </data>
+  <data name="ClockToggle.Text" xml:space="preserve">
+    <value>Show the clock</value>
+  </data>
+  <data name="PageSearch.Text" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="DriveIndexTitle.Text" xml:space="preserve">
+    <value>Search other drives</value>
+  </data>
+  <data name="DriveIndexHint.Text" xml:space="preserve">
+    <value>By default Windows Search only sees your user folders on the system drive. Islet indexes file names in the folders below on its own.</value>
+  </data>
+  <data name="IndexStatusTitle.Text" xml:space="preserve">
+    <value>Index status</value>
+  </data>
+  <data name="ReindexButton.Content" xml:space="preserve">
+    <value>Rebuild index</value>
+  </data>
+  <data name="Index_Off" xml:space="preserve">
+    <value>Off — searching through Windows Search only</value>
+  </data>
+  <data name="Index_Building" xml:space="preserve">
+    <value>Indexing… {0} entries so far</value>
+  </data>
+  <data name="Index_Error" xml:space="preserve">
+    <value>Error: {0}</value>
+  </data>
+  <data name="Index_NotBuilt" xml:space="preserve">
+    <value>Not built yet</value>
+  </data>
+  <data name="Index_Ready" xml:space="preserve">
+    <value>{0} files and folders · updated {1}</value>
+  </data>
+  <data name="RootsSection.Text" xml:space="preserve">
+    <value>Folders and drives</value>
+  </data>
+  <data name="AddRootText.Text" xml:space="preserve">
+    <value>Add folder</value>
+  </data>
+  <data name="ResetRootsButton.Content" xml:space="preserve">
+    <value>All drives except the system one</value>
+  </data>
+  <data name="Roots_Empty" xml:space="preserve">
+    <value>No other drives — add a folder by hand.</value>
+  </data>
+  <data name="Roots_Remove" xml:space="preserve">
+    <value>Stop indexing</value>
+  </data>
+  <data name="ExcludesSection.Text" xml:space="preserve">
+    <value>Skip these folders</value>
+  </data>
+  <data name="ExcludesHint.Text" xml:space="preserve">
+    <value>One name per line. A folder with that name is skipped at any depth — node_modules, for example.</value>
+  </data>
+  <data name="SaveExcludesButton.Content" xml:space="preserve">
+    <value>Save and rebuild</value>
+  </data>
+  <data name="SystemDriveSection.Text" xml:space="preserve">
+    <value>System drive</value>
+  </data>
+  <data name="SystemDriveHint.Text" xml:space="preserve">
+    <value>Files on the system drive come from Windows Search. To make it cover the whole drive, switch it to Enhanced mode in Windows search settings.</value>
+  </data>
+  <data name="OpenSearchSettingsButton.Content" xml:space="preserve">
+    <value>Open Windows settings</value>
+  </data>
+  <data name="PagePins.Text" xml:space="preserve">
+    <value>Buttons</value>
+  </data>
+  <data name="PinsHint.Text" xml:space="preserve">
+    <value>Buttons to the left of the search box, up to six. Microsoft Store apps are easier to pin from the results: right-click → “Pin to the island”.</value>
+  </data>
+  <data name="AddPinText.Text" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="AddPinFile.Text" xml:space="preserve">
+    <value>App or file…</value>
+  </data>
+  <data name="AddPinFolder.Text" xml:space="preserve">
+    <value>Folder…</value>
+  </data>
+  <data name="AddPinUrl.Text" xml:space="preserve">
+    <value>Link…</value>
+  </data>
+  <data name="ResetPinsButton.Content" xml:space="preserve">
+    <value>Restore defaults</value>
+  </data>
+  <data name="Pin_Up" xml:space="preserve">
+    <value>Move up</value>
+  </data>
+  <data name="Pin_Down" xml:space="preserve">
+    <value>Move down</value>
+  </data>
+  <data name="Pin_Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="PinDialog_Title" xml:space="preserve">
+    <value>Link button</value>
+  </data>
+  <data name="PinDialog_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="PinDialog_Url" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="PageAbout.Text" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="About_Version" xml:space="preserve">
+    <value>Version {0} · WinUI 3</value>
+  </data>
+  <data name="DataFolderTitle.Text" xml:space="preserve">
+    <value>Data folder</value>
+  </data>
+  <data name="OpenDataFolderButton.Content" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="QuitButton.Content" xml:space="preserve">
+    <value>Quit Islet</value>
+  </data>
+  <data name="UpdateTitle.Text" xml:space="preserve">
+    <value>Updates</value>
+  </data>
+  <data name="UpdateCheckButton.Content" xml:space="preserve">
+    <value>Check</value>
+  </data>
+  <data name="Update_Restart" xml:space="preserve">
+    <value>Restart and update</value>
+  </data>
+  <data name="Update_Checking" xml:space="preserve">
+    <value>Checking…</value>
+  </data>
+  <data name="Update_Downloading" xml:space="preserve">
+    <value>Downloading…</value>
+  </data>
+  <data name="Update_UpToDate" xml:space="preserve">
+    <value>You have the latest version</value>
+  </data>
+  <data name="Update_Ready" xml:space="preserve">
+    <value>Ready to install: {0}</value>
+  </data>
+  <data name="Update_Failed" xml:space="preserve">
+    <value>Could not check: {0}</value>
+  </data>
+  <data name="Update_Portable" xml:space="preserve">
+    <value>A portable copy is updated by hand</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Change" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="HotkeyButton.Content" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="Ms_Format" xml:space="preserve">
+    <value>{0} ms</value>
+  </data>
+  <data name="Px_Format" xml:space="preserve">
+    <value>{0} px</value>
+  </data>
+  <data name="Key_Space" xml:space="preserve">
+    <value>Space</value>
+  </data>
+  <data name="Key_Oem3" xml:space="preserve">
+    <value>`</value>
+  </data>
+  <data name="Engine_Yandex" xml:space="preserve">
+    <value>Yandex</value>
+  </data>
+  <data name="Pin_Explorer" xml:space="preserve">
+    <value>File Explorer</value>
+  </data>
+  <data name="Pin_Terminal" xml:space="preserve">
+    <value>Terminal</value>
+  </data>
+  <data name="Pin_WinSettings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Pin_TaskManager" xml:space="preserve">
+    <value>Task Manager</value>
+  </data>
+</root>

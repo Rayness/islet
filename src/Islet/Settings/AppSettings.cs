@@ -26,10 +26,10 @@ public sealed record Hotkey(uint Modifiers, uint Key)
 
     private static string KeyName(uint vk) => vk switch
     {
-        0x20 => "Пробел",
+        0x20 => Loc.T("Key_Space"),
         0x0D => "Enter",
         0x09 => "Tab",
-        0xC0 => "Ё",
+        0xC0 => Loc.T("Key_Oem3"),
         >= 0x30 and <= 0x39 or >= 0x41 and <= 0x5A => ((char)vk).ToString(),
         >= 0x70 and <= 0x87 => $"F{vk - 0x6F}",
         _ => ((Windows.System.VirtualKey)vk).ToString(),
@@ -40,7 +40,7 @@ public sealed record SearchEngine(string Id, string Title, string UrlPrefix)
 {
     public static readonly IReadOnlyList<SearchEngine> All =
     [
-        new("yandex", "Яндекс", "https://yandex.ru/search/?text="),
+        new("yandex", Loc.T("Engine_Yandex"), "https://yandex.ru/search/?text="),
         new("google", "Google", "https://www.google.com/search?q="),
         new("bing", "Bing", "https://www.bing.com/search?q="),
         new("duckduckgo", "DuckDuckGo", "https://duckduckgo.com/?q="),
@@ -49,17 +49,34 @@ public sealed record SearchEngine(string Id, string Title, string UrlPrefix)
     public static SearchEngine Find(string? id) => All.FirstOrDefault(e => e.Id == id) ?? All[0];
 }
 
-/// <summary>Все настройки островка. Хранятся в %LOCALAPPDATA%\Islet\settings.json.</summary>
+/// <summary>Все настройки островка. Хранятся в %APPDATA%\Islet\settings.json.</summary>
 public sealed class AppSettings
 {
     public Hotkey Hotkey { get; set; } = Hotkey.Default;
     public string SearchEngine { get; set; } = "yandex";
+    /// <summary>Пусто — язык Windows; иначе "ru" или "en".</summary>
+    public string Language { get; set; } = "";
+
+    public bool HoverOpen { get; set; } = true;
+    /// <summary>Сколько курсор должен побыть на капсуле до раскрытия, мс.</summary>
+    public int HoverOpenDelayMs { get; set; } = 0;
+    /// <summary>Сколько островок ждёт после ухода курсора, мс.</summary>
+    public int HoverCloseDelayMs { get; set; } = 350;
+    public bool HideOnFullscreen { get; set; } = true;
+    /// <summary>Свёрнутая капсула невидима, но на неё всё так же можно навести.</summary>
+    public bool HideCollapsed { get; set; } = false;
+    /// <summary>"primary" — всегда основной монитор, "cursor" — тот, где курсор.</summary>
+    public string MonitorMode { get; set; } = "primary";
 
     public bool Glass { get; set; } = true;
     /// <summary>Плотность заливки пилюли, 0..1. Со стеклом — насколько тонирован фон.</summary>
     public double SurfaceOpacity { get; set; } = 0.62;
     public double IslandWidth { get; set; } = 680;
     public bool ShowClock { get; set; } = true;
+    public double CollapsedWidth { get; set; } = 160;
+    public double CollapsedHeight { get; set; } = 8;
+    /// <summary>Сколько строк выдачи помещается на островке.</summary>
+    public int MaxRows { get; set; } = 8;
 
     public bool DriveIndexEnabled { get; set; } = true;
     /// <summary>null — все несистемные диски; иначе ровно этот список папок.</summary>
@@ -87,7 +104,7 @@ public sealed class AppSettings
 
 internal static class SettingsStore
 {
-    private static readonly string FilePath = Path.Combine(Pins.PinStore.Directory, "settings.json");
+    private static readonly string FilePath = Path.Combine(Paths.Config, "settings.json");
 
     private static readonly JsonSerializerOptions Json = new()
     {
@@ -116,6 +133,13 @@ internal static class SettingsStore
         }
         Current.IslandWidth = Math.Clamp(Current.IslandWidth, 560, 960);
         Current.SurfaceOpacity = Math.Clamp(Current.SurfaceOpacity, 0.2, 1);
+        Current.CollapsedWidth = Math.Clamp(Current.CollapsedWidth, 60, 400);
+        Current.CollapsedHeight = Math.Clamp(Current.CollapsedHeight, 3, 24);
+        Current.MaxRows = Math.Clamp(Current.MaxRows, 3, 12);
+        Current.HoverOpenDelayMs = Math.Clamp(Current.HoverOpenDelayMs, 0, 1000);
+        Current.HoverCloseDelayMs = Math.Clamp(Current.HoverCloseDelayMs, 0, 2000);
+        if (Current.MonitorMode is not ("primary" or "cursor"))
+            Current.MonitorMode = "primary";
     }
 
     public static void Update(Action<AppSettings> change)
@@ -123,7 +147,7 @@ internal static class SettingsStore
         change(Current);
         try
         {
-            Directory.CreateDirectory(Pins.PinStore.Directory);
+            Directory.CreateDirectory(Paths.Config);
             File.WriteAllText(FilePath, JsonSerializer.Serialize(Current, Json));
         }
         catch (Exception e)
