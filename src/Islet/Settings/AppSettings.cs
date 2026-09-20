@@ -1,9 +1,9 @@
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using KawakiIsland.Native;
+using Islet.Native;
 
-namespace KawakiIsland.Settings;
+namespace Islet.Settings;
 
 public sealed record Hotkey(uint Modifiers, uint Key)
 {
@@ -49,7 +49,7 @@ public sealed record SearchEngine(string Id, string Title, string UrlPrefix)
     public static SearchEngine Find(string? id) => All.FirstOrDefault(e => e.Id == id) ?? All[0];
 }
 
-/// <summary>Все настройки островка. Хранятся в %LOCALAPPDATA%\KawakiIsland\settings.json.</summary>
+/// <summary>Все настройки островка. Хранятся в %LOCALAPPDATA%\Islet\settings.json.</summary>
 public sealed class AppSettings
 {
     public Hotkey Hotkey { get; set; } = Hotkey.Default;

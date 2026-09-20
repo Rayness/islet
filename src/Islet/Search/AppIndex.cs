@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
-using KawakiIsland.Shell;
+using Islet.Shell;
 
-namespace KawakiIsland.Search;
+namespace Islet.Search;
 
 /// <summary>
 /// Список «Все приложения» из меню Пуск: и обычные программы, и приложения из Store.

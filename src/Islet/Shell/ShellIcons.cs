@@ -1,10 +1,10 @@
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
-using KawakiIsland.Native;
+using Islet.Native;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 
-namespace KawakiIsland.Shell;
+namespace Islet.Shell;
 
 /// <summary>
 /// Иконки из оболочки Windows: те же, что показывают Пуск и Проводник.

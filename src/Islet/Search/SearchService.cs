@@ -1,6 +1,6 @@
-using KawakiIsland.Settings;
+using Islet.Settings;
 
-namespace KawakiIsland.Search;
+namespace Islet.Search;
 
 internal sealed class SearchService
 {

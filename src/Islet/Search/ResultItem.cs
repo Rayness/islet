@@ -2,7 +2,7 @@ using System.ComponentModel;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 
-namespace KawakiIsland.Search;
+namespace Islet.Search;
 
 public enum ResultKind
 {

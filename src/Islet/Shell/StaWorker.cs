@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace KawakiIsland.Shell;
+namespace Islet.Shell;
 
 /// <summary>
 /// Отдельный STA-поток для COM-объектов оболочки. На UI-потоке они тормозят
@@ -8,7 +8,7 @@ namespace KawakiIsland.Shell;
 /// </summary>
 internal sealed class StaWorker
 {
-    public static readonly StaWorker Shell = new("KawakiIsland.Shell");
+    public static readonly StaWorker Shell = new("Islet.Shell");
 
     private readonly BlockingCollection<Action> _queue = [];
 

@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using KawakiIsland.Settings;
+using Islet.Settings;
 
-namespace KawakiIsland.Search;
+namespace Islet.Search;
 
 /// <summary>
 /// Свой индекс имён файлов для дисков и папок, которых нет в Windows Search

@@ -1,9 +1,9 @@
-using KawakiIsland.Pins;
-using KawakiIsland.Search;
-using KawakiIsland.Settings;
+using Islet.Pins;
+using Islet.Search;
+using Islet.Settings;
 using Microsoft.UI.Xaml;
 
-namespace KawakiIsland;
+namespace Islet;
 
 public partial class App : Application
 {

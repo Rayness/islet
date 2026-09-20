@@ -1,8 +1,8 @@
 using System.Reflection;
-using KawakiIsland.Native;
-using KawakiIsland.Pins;
-using KawakiIsland.Settings;
-using KawakiIsland.Shell;
+using Islet.Native;
+using Islet.Pins;
+using Islet.Settings;
+using Islet.Shell;
 using Microsoft.UI;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
@@ -16,7 +16,7 @@ using Windows.Storage.Pickers;
 using Windows.UI.Core;
 using VirtualKey = Windows.System.VirtualKey;
 
-namespace KawakiIsland;
+namespace Islet;
 
 /// <summary>
 /// Окно настроек. Каждое изменение сразу сохраняется в SettingsStore —
@@ -37,7 +37,7 @@ public sealed partial class SettingsWindow : Window
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(TitleBar);
         AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
-        var icon = Path.Combine(AppContext.BaseDirectory, "Assets", "kawaki.ico");
+        var icon = Path.Combine(AppContext.BaseDirectory, "Assets", "islet.ico");
         if (File.Exists(icon)) AppWindow.SetIcon(icon);
         if (AppWindow.Presenter is OverlappedPresenter presenter)
         {
@@ -475,8 +475,8 @@ public sealed partial class SettingsWindow : Window
 
     private async void AddPinUrl_Click(object sender, RoutedEventArgs e)
     {
-        var title = new TextBox { Header = "Название", PlaceholderText = "Kawaki" };
-        var url = new TextBox { Header = "Адрес", PlaceholderText = "https://kawaki.ru" };
+        var title = new TextBox { Header = "Название", PlaceholderText = "GitHub" };
+        var url = new TextBox { Header = "Адрес", PlaceholderText = "https://github.com" };
         var content = new StackPanel { Spacing = 12, MinWidth = 360 };
         content.Children.Add(title);
         content.Children.Add(url);

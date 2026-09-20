@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace KawakiIsland.Shell;
+namespace Islet.Shell;
 
 internal static class Launcher
 {

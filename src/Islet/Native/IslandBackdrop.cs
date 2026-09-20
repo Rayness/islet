@@ -5,7 +5,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using WinComp = Windows.UI.Composition;
 
-namespace KawakiIsland.Native;
+namespace Islet.Native;
 
 /// <summary>
 /// Подложка окна островка. Окно прозрачное; под пилюлей — размытый рабочий

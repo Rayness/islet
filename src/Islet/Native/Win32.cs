@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace KawakiIsland.Native;
+namespace Islet.Native;
 
 internal static unsafe partial class Win32
 {

@@ -1,4 +1,4 @@
-namespace KawakiIsland.Native;
+namespace Islet.Native;
 
 /// <summary>
 /// Перехват оконных сообщений, которых WinUI наружу не отдаёт: глобальная

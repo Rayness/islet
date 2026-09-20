@@ -1,7 +1,7 @@
 using System.Data.OleDb;
 using System.Text;
 
-namespace KawakiIsland.Search;
+namespace Islet.Search;
 
 /// <summary>
 /// Файлы и папки через индекс Windows Search — тот же, что у поиска в Пуске и

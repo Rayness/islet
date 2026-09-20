@@ -1,10 +1,10 @@
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using KawakiIsland.Search;
-using KawakiIsland.Shell;
+using Islet.Search;
+using Islet.Shell;
 
-namespace KawakiIsland.Pins;
+namespace Islet.Pins;
 
 public enum PinKind
 {
@@ -39,15 +39,32 @@ public sealed record Pin(string Title, PinKind Kind, string Target, string? Argu
 }
 
 /// <summary>
-/// Кнопки на островке. Лежат в %LOCALAPPDATA%\KawakiIsland\pins.json —
+/// Кнопки на островке. Лежат в %LOCALAPPDATA%\Islet\pins.json —
 /// файл можно править руками, островок перечитывает его при запуске.
 /// </summary>
 internal sealed class PinStore
 {
     public const int MaxPins = 6;
 
-    public static readonly string Directory =
-        System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "KawakiIsland");
+    public static readonly string Directory = ResolveDirectory();
+
+    /// <summary>
+    /// %LOCALAPPDATA%\Islet. Раньше приложение звалось Kawaki Island: если рядом лежит
+    /// папка со старым именем, переносим её, чтобы настройки и кнопки не пропали.
+    /// </summary>
+    private static string ResolveDirectory()
+    {
+        var local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        var path = System.IO.Path.Combine(local, "Islet");
+        var legacy = System.IO.Path.Combine(local, "KawakiIsland");
+        try
+        {
+            if (!System.IO.Directory.Exists(path) && System.IO.Directory.Exists(legacy))
+                System.IO.Directory.Move(legacy, path);
+        }
+        catch { /* не вышло — начнём с чистой папки, это не повод не запускаться */ }
+        return path;
+    }
 
     public static readonly string FilePath = System.IO.Path.Combine(Directory, "pins.json");
 
@@ -87,7 +104,6 @@ internal sealed class PinStore
         new("Терминал", PinKind.App, "Microsoft.WindowsTerminal_8wekyb3d8bbwe!App"),
         new("Параметры", PinKind.App, "windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel"),
         new("Диспетчер задач", PinKind.Path, @"%WINDIR%\System32\Taskmgr.exe"),
-        new("Kawaki", PinKind.Url, "https://kawaki.ru", Icon: "ms-appx:///Assets/kawaki.ico"),
     ];
 
     public void Load()

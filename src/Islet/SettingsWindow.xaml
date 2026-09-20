@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Window
-    x:Class="KawakiIsland.SettingsWindow"
+    x:Class="Islet.SettingsWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="Kawaki Island — настройки">
+    Title="Islet — настройки">
 
     <Window.SystemBackdrop>
         <MicaBackdrop />
@@ -63,11 +63,11 @@
             VerticalAlignment="Center"
             Orientation="Horizontal"
             Spacing="12">
-            <Image Width="18" Height="18" Source="ms-appx:///Assets/kawaki.ico" />
+            <Image Width="18" Height="18" Source="ms-appx:///Assets/islet.ico" />
             <TextBlock
                 VerticalAlignment="Center"
                 FontSize="12"
-                Text="Kawaki Island — настройки" />
+                Text="Islet — настройки" />
         </StackPanel>
 
         <NavigationView
@@ -411,9 +411,9 @@
                         <TextBlock Style="{StaticResource PageTitle}" Text="О программе" />
                         <Border Style="{StaticResource Card}">
                             <StackPanel Orientation="Horizontal" Spacing="16">
-                                <Image Width="48" Height="48" Source="ms-appx:///Assets/kawaki.ico" />
+                                <Image Width="48" Height="48" Source="ms-appx:///Assets/islet.ico" />
                                 <StackPanel VerticalAlignment="Center" Spacing="2">
-                                    <TextBlock FontSize="18" FontWeight="SemiBold" Text="Kawaki Island" />
+                                    <TextBlock FontSize="18" FontWeight="SemiBold" Text="Islet" />
                                     <TextBlock x:Name="VersionText" Style="{StaticResource CardHint}" />
                                 </StackPanel>
                             </StackPanel>

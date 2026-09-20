@@ -1,4 +1,4 @@
-namespace KawakiIsland;
+namespace Islet;
 
 internal static class SingleInstance
 {
@@ -7,7 +7,7 @@ internal static class SingleInstance
 
     public static bool TryAcquire()
     {
-        _mutex = new Mutex(initiallyOwned: true, @"Local\KawakiIsland.SingleInstance", out var createdNew);
+        _mutex = new Mutex(initiallyOwned: true, @"Local\Islet.SingleInstance", out var createdNew);
         return createdNew;
     }
 }

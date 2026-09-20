@@ -1,8 +1,8 @@
 using System.Collections.ObjectModel;
-using KawakiIsland.Native;
-using KawakiIsland.Pins;
-using KawakiIsland.Search;
-using KawakiIsland.Shell;
+using Islet.Native;
+using Islet.Pins;
+using Islet.Search;
+using Islet.Shell;
 using Microsoft.UI;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Composition.SystemBackdrops;
@@ -14,12 +14,12 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using System.Numerics;
-using KawakiIsland.Settings;
+using Islet.Settings;
 using Windows.Graphics;
 using WinRT;
 using VirtualKey = Windows.System.VirtualKey;
 
-namespace KawakiIsland;
+namespace Islet;
 
 /// <summary>
 /// Островок у верхнего края экрана.
@@ -143,7 +143,7 @@ public sealed partial class IslandWindow : Window
 
     private void ConfigureAppWindow()
     {
-        AppWindow.Title = "Kawaki Island";
+        AppWindow.Title = "Islet";
         TrySetIcon();
         try { AppWindow.IsShownInSwitchers = false; }
         catch { /* старые сборки Windows: окно просто будет видно в Alt+Tab */ }
@@ -214,7 +214,7 @@ public sealed partial class IslandWindow : Window
 
     private void TrySetIcon()
     {
-        var icon = Path.Combine(AppContext.BaseDirectory, "Assets", "kawaki.ico");
+        var icon = Path.Combine(AppContext.BaseDirectory, "Assets", "islet.ico");
         if (File.Exists(icon))
             AppWindow.SetIcon(icon);
     }

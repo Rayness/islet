@@ -1,8 +1,8 @@
 using System.Diagnostics;
 
-namespace KawakiIsland;
+namespace Islet;
 
-/// <summary>Короткий лог в %LOCALAPPDATA%\KawakiIsland\island.log — чтобы разбирать поведение без отладчика.</summary>
+/// <summary>Короткий лог в %LOCALAPPDATA%\Islet\island.log — чтобы разбирать поведение без отладчика.</summary>
 internal static class Log
 {
     private const long MaxBytes = 512 * 1024;
