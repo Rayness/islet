@@ -1,5 +1,6 @@
 using Islet.Core;
 using Islet.Integrations;
+using Islet.Integrations.Devices;
 using Islet.Plugins;
 using Islet.Search;
 using Islet.Settings;
@@ -276,6 +277,20 @@ public sealed partial class SettingsWindow
     // Интеграции: Kawaki, ClipTide, свои программы
     // ------------------------------------------------------------------
 
+    private const string DevicesGuideUrl = "https://github.com/Rayness/islet/blob/master/docs/devices.md";
+
+    private const string LocalRecipesTemplate = """
+        // Свои рецепты заряда. Островок подхватывает этот файл сразу после сохранения;
+        // рецепт с тем же id заменяет рецепт из общей базы.
+        // Как писать: https://github.com/Rayness/islet/blob/master/docs/devices.md
+        // «Настройки → Интеграции → Отчёт» покажет коллекции устройства и его ответы.
+        {
+          "devices": [
+          ]
+        }
+
+        """;
+
     private void BuildIntegrationsPage()
     {
         var s = SettingsStore.Current;
@@ -350,17 +365,44 @@ public sealed partial class SettingsWindow
         stack.Children.Add(Toggle(Loc.T("S_WdcPeeks"), Loc.T("S_WdcPeeksHint"), s.WirelessBatteryPeeks, on =>
         {
             SettingsStore.Update(x => x.WirelessBatteryPeeks = on);
-            devices.Reevaluate();
+            App.Current.BatteryAlerts?.Evaluate();
         }));
         string[] thresholds = ["30", "20", "15", "10"];
         stack.Children.Add(Choice(Loc.T("S_WdcThreshold"), Loc.T("S_WdcThresholdHint"), thresholds,
             thresholds.Select(t => $"{t}%").ToArray(), s.WirelessLowBattery.ToString(), value =>
             {
                 SettingsStore.Update(x => x.WirelessLowBattery = int.Parse(value));
-                devices.Reevaluate();
+                App.Current.BatteryAlerts?.Evaluate();
             }));
         stack.Children.Add(Toggle(Loc.T("S_WdcSearch"), Loc.T("S_WdcSearchHint"), s.WirelessSearch,
             on => SettingsStore.Update(x => x.WirelessSearch = on)));
+        stack.Children.Add(Toggle(Loc.T("S_DevicesOnline"), Loc.T("S_DevicesOnlineHint"), s.DevicesOnlineBase, on =>
+        {
+            SettingsStore.Update(x => x.DevicesOnlineBase = on);
+            if (on) _ = devices.Store.FetchAsync();
+        }));
+
+        // Для тех, кто добавляет своё устройство: отчёт, свой файл рецептов, инструкция.
+        stack.Children.Add(Row(Loc.T("S_DevicesDev"), Loc.T("S_DevicesDevHint"), Buttons(
+            ActionButton(Loc.T("S_DevicesReport"), () => _ = Task.Run(() => Guard.Run(() =>
+            {
+                // Сначала опросить всё, чтобы в отчёте был свежий разговор с устройствами.
+                devices.PollAllAndWait(TimeSpan.FromSeconds(8));
+                var path = Path.Combine(Paths.Cache, "devices-report.txt");
+                Directory.CreateDirectory(Paths.Cache);
+                File.WriteAllText(path, devices.BuildReport());
+                Launcher.Open("notepad.exe", $"\"{path}\"");
+            }))),
+            ActionButton(Loc.T("S_DevicesOwnFile"), () =>
+            {
+                if (!File.Exists(RecipeStore.LocalPath))
+                {
+                    Directory.CreateDirectory(Paths.Config);
+                    File.WriteAllText(RecipeStore.LocalPath, LocalRecipesTemplate);
+                }
+                Launcher.Open("notepad.exe", $"\"{RecipeStore.LocalPath}\"");
+            }),
+            ActionButton(Loc.T("S_DevicesGuide"), () => Launcher.Open(DevicesGuideUrl)))));
 
         // --- Свои программы ---
         stack.Children.Add(Section(Loc.T("S_ExternalSection")));

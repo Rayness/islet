@@ -1,0 +1,271 @@
+{
+  "revision": 1,
+  "devices": [
+    {
+      "id": "ajazz-aj159-apex",
+      "name": "Ajazz AJ159 APEX",
+      "kind": "mouse",
+      "connection": "dongle",
+      "match": { "vid": "3151", "pid": "5007", "page": "FFFF", "usage": "0002" },
+      "steps": [
+        { "setFeature": "00 F7" },
+        { "wait": 40 },
+        { "getFeature": "05", "require": { "1": "00", "2": "00" }, "battery": { "at": 3, "valid": [1, 100] } }
+      ],
+      "source": "https://github.com/Aiacos/ajazz-control-center"
+    },
+    {
+      "id": "aula-f75",
+      "name": "Aula F75",
+      "kind": "keyboard",
+      "connection": "dongle",
+      "match": { "vid": "3554", "pid": "FA09", "page": "FF02", "usage": "0002" },
+      "steps": [
+        { "flush": true },
+        { "write": "13 4A 01", "length": 20, "checksum": { "from": 0, "to": 18, "at": 19 } },
+        { "read": { "timeout": 1500, "attempts": 25 }, "match": { "0": "13", "1": "4A/7F" }, "battery": { "at": 5, "valid": [1, 100] } }
+      ],
+      "source": "https://github.com/deepan-alve/womier-l65-linux"
+    },
+    {
+      "id": "aula-f75-wired",
+      "name": "Aula F75",
+      "kind": "keyboard",
+      "connection": "wired",
+      "match": { "vid": "258A", "pid": "010C" }
+    },
+    {
+      "id": "ajazz-akp153",
+      "name": "Ajazz AKP153 (Stream Dock)",
+      "kind": "other",
+      "connection": "wired",
+      "match": { "vid": "0300", "pid": ["1020", "1010"] }
+    },
+
+    {
+      "id": "steelseries-arctis-7",
+      "name": "SteelSeries Arctis 7",
+      "kind": "headset",
+      "match": { "vid": "1038", "pid": ["1260", "12AD", "1252", "1280"], "interface": 5 },
+      "steps": [
+        { "flush": true },
+        { "write": "06 18" },
+        { "read": {}, "battery": { "at": 2, "valid": [0, 100] } }
+      ],
+      "source": "https://github.com/Sapd/HeadsetControl"
+    },
+    {
+      "id": "steelseries-arctis-1",
+      "name": "SteelSeries Arctis 1 / 7X / 7P",
+      "kind": "headset",
+      "match": { "vid": "1038", "pid": ["12B3", "12B6", "12D7", "12D5"], "page": "FF43", "usage": "0202" },
+      "steps": [
+        { "flush": true },
+        { "write": "06 12" },
+        { "read": {}, "offline": { "2": "01" }, "battery": { "at": 3, "valid": [0, 100] } }
+      ],
+      "source": "https://github.com/Sapd/HeadsetControl"
+    },
+    {
+      "id": "steelseries-arctis-9",
+      "name": "SteelSeries Arctis 9",
+      "kind": "headset",
+      "match": { "vid": "1038", "pid": "12C2", "interface": 0 },
+      "steps": [
+        { "flush": true },
+        { "write": "00 20" },
+        { "read": {}, "charging": { "at": 4, "equals": ["01"] }, "battery": { "at": 3, "range": [100, 154] } }
+      ],
+      "source": "https://github.com/Sapd/HeadsetControl"
+    },
+    {
+      "id": "steelseries-arctis-pro-wireless",
+      "name": "SteelSeries Arctis Pro Wireless",
+      "kind": "headset",
+      "match": { "vid": "1038", "pid": "1290", "interface": 0 },
+      "steps": [
+        { "flush": true },
+        { "write": "41 AA" },
+        { "read": {}, "offline": { "0": "02" } },
+        { "write": "40 AA" },
+        { "read": {}, "battery": { "at": 0, "range": [0, 4] } }
+      ],
+      "source": "https://github.com/Sapd/HeadsetControl"
+    },
+    {
+      "id": "steelseries-arctis-nova-pro-wireless",
+      "name": "SteelSeries Arctis Nova Pro Wireless",
+      "kind": "headset",
+      "match": { "vid": "1038", "pid": ["12E0", "12E5"], "interface": 4 },
+      "steps": [
+        { "flush": true },
+        { "write": "06 B0" },
+        { "read": {}, "offline": { "15": "01" }, "charging": { "at": 15, "equals": ["02"] }, "battery": { "at": 6, "range": [0, 8] } }
+      ],
+      "source": "https://github.com/Sapd/HeadsetControl"
+    },
+    {
+      "id": "steelseries-arctis-7-plus",
+      "name": "SteelSeries Arctis 7+",
+      "kind": "headset",
+      "match": { "vid": "1038", "pid": ["220E", "2212", "2216", "2236"], "page": "FFC0", "usage": "0001" },
+      "steps": [
+        { "flush": true },
+        { "write": "00 B0" },
+        { "read": {}, "offline": { "1": "01" }, "charging": { "at": 3, "equals": ["01"] }, "battery": { "at": 2, "range": [0, 4] } }
+      ],
+      "source": "https://github.com/Sapd/HeadsetControl"
+    },
+    {
+      "id": "steelseries-arctis-nova-5",
+      "name": "SteelSeries Arctis Nova 5 / 3P / 3X",
+      "kind": "headset",
+      "match": { "vid": "1038", "pid": ["2232", "2253", "2269", "226D"], "page": "FFC0", "usage": "0001" },
+      "steps": [
+        { "flush": true },
+        { "write": "00 B0" },
+        { "read": {}, "offline": { "1": "02" }, "charging": { "at": 4, "equals": ["01"] }, "battery": { "at": 3, "valid": [0, 100] } }
+      ],
+      "source": "https://github.com/Sapd/HeadsetControl"
+    },
+    {
+      "id": "steelseries-arctis-nova-7-levels",
+      "name": "SteelSeries Arctis Nova 7",
+      "kind": "headset",
+      "match": { "vid": "1038", "pid": ["2202", "2206", "220A", "223A", "227A", "22A4"], "page": "FFC0", "usage": "0001" },
+      "steps": [
+        { "flush": true },
+        { "write": "00 B0" },
+        { "read": {}, "offline": { "3": "00" }, "charging": { "at": 3, "equals": ["01", "02"] }, "battery": { "at": 2, "range": [0, 4] } }
+      ],
+      "source": "https://github.com/Sapd/HeadsetControl"
+    },
+    {
+      "id": "steelseries-arctis-nova-7",
+      "name": "SteelSeries Arctis Nova 7",
+      "kind": "headset",
+      "match": { "vid": "1038", "pid": ["22A1", "227E", "2258", "229E", "22AD", "22A9", "22A7", "2298"], "page": "FFC0", "usage": "0001" },
+      "steps": [
+        { "flush": true },
+        { "write": "00 B0" },
+        { "read": {}, "offline": { "3": "00" }, "charging": { "at": 3, "equals": ["01", "02"] }, "battery": { "at": 2, "valid": [0, 100] } }
+      ],
+      "source": "https://github.com/Sapd/HeadsetControl"
+    },
+    {
+      "id": "corsair-void",
+      "name": "Corsair Void / HS",
+      "kind": "headset",
+      "match": {
+        "vid": "1B1C",
+        "pid": ["1B27", "0A14", "0A16", "0A17", "0A1D", "0A1A", "1B2A", "1B23", "1B29", "0A55", "0A51", "0A52", "0A38", "0A4F", "0A2B", "0A75", "0A56"],
+        "page": "FFC5", "usage": "0001"
+      },
+      "steps": [
+        { "flush": true },
+        { "write": "C9 64" },
+        { "read": {}, "offline": { "4": "00" }, "charging": { "at": 4, "equals": ["04", "05"] }, "battery": { "at": 2, "mask": "7F", "valid": [0, 100] } }
+      ],
+      "source": "https://github.com/Sapd/HeadsetControl"
+    },
+    {
+      "id": "corsair-virtuoso",
+      "name": "Corsair Virtuoso",
+      "kind": "headset",
+      "match": { "vid": "1B1C", "pid": ["0A64", "0A62", "0A3E", "0A3D"], "page": "FF42", "usage": "0001" },
+      "steps": [
+        { "flush": true },
+        { "write": "02 00" },
+        { "read": { "attempts": 8 }, "match": { "0": "01" }, "offline": { "1": "00" }, "battery": { "at": 2, "valid": [0, 100] } }
+      ],
+      "source": "https://github.com/Sapd/HeadsetControl"
+    },
+    {
+      "id": "hyperx-cloud-alpha-wireless",
+      "name": "HyperX Cloud Alpha Wireless",
+      "kind": "headset",
+      "match": { "vid": "03F0", "pid": "098D", "interface": 0 },
+      "steps": [
+        { "flush": true },
+        { "write": "21 BB 03" },
+        { "read": {}, "offline": { "3": "01" } },
+        { "write": "21 BB 0C" },
+        { "read": {}, "charging": { "at": 3, "equals": ["01"] } },
+        { "write": "21 BB 0B" },
+        { "read": {}, "battery": { "at": 3, "valid": [0, 100] } }
+      ],
+      "source": "https://github.com/Sapd/HeadsetControl"
+    },
+    {
+      "id": "hyperx-cloud-flight",
+      "name": "HyperX Cloud Flight",
+      "kind": "headset",
+      "match": { "vid": "0951", "pid": ["16C4", "1723"], "interface": 0 },
+      "steps": [
+        { "flush": true },
+        { "write": "21 FF 05" },
+        {
+          "read": {},
+          "battery": {
+            "at": 3, "word": "be", "valid": [3000, 4500],
+            "curve": [[3000, 0], [3648, 5], [3680, 10], [3700, 16], [3740, 32], [3780, 48], [3820, 62], [3860, 73], [3900, 82], [3940, 90], [3975, 100]]
+          }
+        }
+      ],
+      "source": "https://github.com/Sapd/HeadsetControl"
+    },
+
+    {
+      "id": "steelseries-aerox-wired",
+      "name": "SteelSeries Aerox / Prime Wireless",
+      "kind": "mouse",
+      "connection": "wired",
+      "match": { "vid": "1038", "pid": ["183A", "187A", "1854", "185E", "1862", "185A", "1876", "1842", "184A"], "interface": 3 },
+      "steps": [
+        { "flush": true },
+        { "write": "00 92" },
+        { "read": {}, "charging": { "at": 1, "mask": "80" }, "battery": { "at": 1, "mask": "7F", "range": [1, 21], "valid": [1, 21] } }
+      ],
+      "source": "https://github.com/flozz/rivalcfg"
+    },
+    {
+      "id": "steelseries-aerox-wireless",
+      "name": "SteelSeries Aerox / Prime Wireless",
+      "kind": "mouse",
+      "connection": "dongle",
+      "match": { "vid": "1038", "pid": ["1838", "1878", "1852", "185C", "1860", "1858", "1874", "1840", "1848"], "interface": 3 },
+      "steps": [
+        { "flush": true },
+        { "write": "00 D2" },
+        { "read": {}, "charging": { "at": 1, "mask": "80" }, "battery": { "at": 1, "mask": "7F", "range": [1, 21], "valid": [1, 21] } }
+      ],
+      "source": "https://github.com/flozz/rivalcfg"
+    },
+    {
+      "id": "steelseries-rival-3-wireless",
+      "name": "SteelSeries Rival 3 Wireless",
+      "kind": "mouse",
+      "connection": "dongle",
+      "match": { "vid": "1038", "pid": ["1830", "1872"], "interface": 3 },
+      "steps": [
+        { "flush": true },
+        { "write": "00 AA 01" },
+        { "read": {}, "charging": { "at": 2 }, "battery": { "at": 0, "valid": [0, 100] } }
+      ],
+      "source": "https://github.com/flozz/rivalcfg"
+    },
+    {
+      "id": "steelseries-rival-650",
+      "name": "SteelSeries Rival 650 Wireless",
+      "kind": "mouse",
+      "connection": "dongle",
+      "match": { "vid": "1038", "pid": ["172B", "1726"], "interface": 0 },
+      "steps": [
+        { "flush": true },
+        { "write": "00 AA 01" },
+        { "read": {}, "charging": { "at": 2 }, "battery": { "at": 0, "valid": [0, 100] } }
+      ],
+      "source": "https://github.com/flozz/rivalcfg"
+    }
+  ]
+}

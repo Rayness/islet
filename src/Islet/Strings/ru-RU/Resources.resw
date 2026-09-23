@@ -1107,7 +1107,7 @@
     <value>Пока ClipTide качает, капсула показывает название, проценты и превью; щелчок открывает ClipTide</value>
   </data>
   <data name="Provider_WdcHint" xml:space="preserve">
-    <value>Заряд беспроводной мыши и клавиатуры</value>
+    <value>Заряд мышей, клавиатур, гарнитур и геймпадов</value>
   </data>
   <data name="Wdc_LowTitle" xml:space="preserve">
     <value>{0}: заряд {1}%</value>
@@ -1134,10 +1134,10 @@
     <value>Нет подключённых устройств</value>
   </data>
   <data name="Wdc_NotRunningHint" xml:space="preserve">
-    <value>Островок знает Ajazz AJ159 APEX и Aula F75 (приёмник 2,4 ГГц), видит Stream Dock AKP153</value>
+    <value>Поддерживаются Logitech, Bluetooth-устройства с зарядом в Windows и устройства из общей базы — список растёт</value>
   </data>
   <data name="S_WdcHint" xml:space="preserve">
-    <value>Островок сам спрашивает заряд у приёмников Ajazz AJ159 APEX и Aula F75 — раз в пару минут, пока они подключены. Отдельная программа не нужна.</value>
+    <value>Островок сам спрашивает заряд: Logitech (приёмники Unifying, Lightspeed, Bolt и напрямую), Bluetooth-устройства, чей заряд знает Windows, и устройства из общей базы рецептов — SteelSeries, Corsair, HyperX, Ajazz, Aula и другие. Раз в пару минут, только пока устройство подключено.</value>
   </data>
   <data name="S_WdcPeeks" xml:space="preserve">
     <value>Предупреждать о заряде</value>
@@ -1159,5 +1159,32 @@
   </data>
   <data name="S_DevicesSection" xml:space="preserve">
     <value>Устройства</value>
+  </data>
+  <data name="Wdc_Offline" xml:space="preserve">
+    <value>не на связи</value>
+  </data>
+  <data name="Wdc_Charging" xml:space="preserve">
+    <value>заряжается</value>
+  </data>
+  <data name="S_DevicesOnline" xml:space="preserve">
+    <value>Обновлять базу устройств</value>
+  </data>
+  <data name="S_DevicesOnlineHint" xml:space="preserve">
+    <value>Раз в сутки брать свежий список поддерживаемых устройств из репозитория Islet</value>
+  </data>
+  <data name="S_DevicesDev" xml:space="preserve">
+    <value>Своё устройство</value>
+  </data>
+  <data name="S_DevicesDevHint" xml:space="preserve">
+    <value>Нет заряда для вашей мыши или гарнитуры? Отчёт покажет, что она умеет, а рецепт можно проверить в своём файле и прислать в общую базу</value>
+  </data>
+  <data name="S_DevicesReport" xml:space="preserve">
+    <value>Отчёт</value>
+  </data>
+  <data name="S_DevicesOwnFile" xml:space="preserve">
+    <value>Свой devices.json</value>
+  </data>
+  <data name="S_DevicesGuide" xml:space="preserve">
+    <value>Как добавить</value>
   </data>
 </root>

@@ -1107,7 +1107,7 @@
     <value>While ClipTide downloads, the capsule shows the title, percent and thumbnail; click to open ClipTide</value>
   </data>
   <data name="Provider_WdcHint" xml:space="preserve">
-    <value>Wireless mouse and keyboard battery</value>
+    <value>Mouse, keyboard, headset and gamepad battery</value>
   </data>
   <data name="Wdc_LowTitle" xml:space="preserve">
     <value>{0}: {1}% battery</value>
@@ -1134,10 +1134,10 @@
     <value>No devices connected</value>
   </data>
   <data name="Wdc_NotRunningHint" xml:space="preserve">
-    <value>The island knows the Ajazz AJ159 APEX and the Aula F75 (2.4 GHz receiver) and sees the Stream Dock AKP153</value>
+    <value>Logitech, Bluetooth devices whose battery Windows knows, and devices from the shared database are supported — the list keeps growing</value>
   </data>
   <data name="S_WdcHint" xml:space="preserve">
-    <value>The island asks the Ajazz AJ159 APEX and Aula F75 receivers for their charge itself — every couple of minutes while they're plugged in. No separate app needed.</value>
+    <value>The island asks for the charge itself: Logitech (Unifying, Lightspeed and Bolt receivers, and direct), Bluetooth devices whose battery Windows knows, and devices from the shared recipe database — SteelSeries, Corsair, HyperX, Ajazz, Aula and more. Every couple of minutes, only while the device is connected.</value>
   </data>
   <data name="S_WdcPeeks" xml:space="preserve">
     <value>Battery warnings</value>
@@ -1159,5 +1159,32 @@
   </data>
   <data name="S_DevicesSection" xml:space="preserve">
     <value>Devices</value>
+  </data>
+  <data name="Wdc_Offline" xml:space="preserve">
+    <value>not connected</value>
+  </data>
+  <data name="Wdc_Charging" xml:space="preserve">
+    <value>charging</value>
+  </data>
+  <data name="S_DevicesOnline" xml:space="preserve">
+    <value>Update the device database</value>
+  </data>
+  <data name="S_DevicesOnlineHint" xml:space="preserve">
+    <value>Once a day, fetch the latest list of supported devices from the Islet repository</value>
+  </data>
+  <data name="S_DevicesDev" xml:space="preserve">
+    <value>Your own device</value>
+  </data>
+  <data name="S_DevicesDevHint" xml:space="preserve">
+    <value>No battery for your mouse or headset? The report shows what it can do; test a recipe in your own file and send it to the shared database</value>
+  </data>
+  <data name="S_DevicesReport" xml:space="preserve">
+    <value>Report</value>
+  </data>
+  <data name="S_DevicesOwnFile" xml:space="preserve">
+    <value>Your devices.json</value>
+  </data>
+  <data name="S_DevicesGuide" xml:space="preserve">
+    <value>How to add</value>
   </data>
 </root>

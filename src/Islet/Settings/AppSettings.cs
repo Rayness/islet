@@ -137,12 +137,14 @@ public sealed class AppSettings
     /// <summary>Живой прогресс загрузок ClipTide в капсуле.</summary>
     public bool ClipTideProgress { get; set; } = true;
 
-    /// <summary>Wireless Device Connect: пик, когда садится заряд, и капсула, когда почти сел.</summary>
+    /// <summary>Заряд устройств: пик, когда садится, и капсула, когда почти сел.</summary>
     public bool WirelessBatteryPeeks { get; set; } = true;
     /// <summary>Порог «садится», %; «почти сел» — вдвое ниже.</summary>
     public int WirelessLowBattery { get; set; } = 20;
     /// <summary>«bat » и имена устройств в поиске.</summary>
     public bool WirelessSearch { get; set; } = true;
+    /// <summary>Раз в сутки брать свежую базу рецептов устройств из репозитория Islet.</summary>
+    public bool DevicesOnlineBase { get; set; } = true;
 
     /// <summary>Выключенные плагины по id.</summary>
     public List<string> DisabledPlugins { get; set; } = [];

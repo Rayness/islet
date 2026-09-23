@@ -6,7 +6,7 @@ namespace Islet.Native;
 /// <summary>
 /// HID-коллекция по пути интерфейса (\\?\HID#VID_…): вендорские feature-, output- и
 /// input-отчёты. Островку это нужно только чтобы спросить заряд у приёмников
-/// мыши и клавиатуры — см. Integrations/Devices.cs.
+/// мыши, клавиатуры и гарнитуры — см. Integrations/Devices/.
 /// </summary>
 internal static unsafe class Hid
 {
@@ -56,6 +56,15 @@ internal static unsafe class Hid
         return null;
     }
 
+    /// <summary>Открыть без чтения и записи — только спросить имя и размеры отчётов. Так открываются даже мышь и клавиатура.</summary>
+    public static SafeFileHandle? OpenQuery(string path)
+    {
+        var handle = CreateFileW(path, 0, FILE_SHARE_READ_WRITE, 0, OPEN_EXISTING, 0, 0);
+        if (!handle.IsInvalid) return handle;
+        handle.Dispose();
+        return null;
+    }
+
     public static Caps? GetCaps(SafeFileHandle device)
     {
         if (!HidD_GetPreparsedData(device, out var data)) return null;
@@ -67,6 +76,25 @@ internal static unsafe class Hid
         {
             HidD_FreePreparsedData(data);
         }
+    }
+
+    [DllImport("hid.dll", CharSet = CharSet.Unicode)]
+    private static extern bool HidD_GetProductString(SafeFileHandle device, char[] buffer, int length);
+
+    [DllImport("hid.dll", CharSet = CharSet.Unicode)]
+    private static extern bool HidD_GetManufacturerString(SafeFileHandle device, char[] buffer, int length);
+
+    /// <summary>Название устройства из его дескриптора — для отчёта диагностики.</summary>
+    public static string ProductString(SafeFileHandle device) => ReadString(device, HidD_GetProductString);
+
+    public static string ManufacturerString(SafeFileHandle device) => ReadString(device, HidD_GetManufacturerString);
+
+    private static string ReadString(SafeFileHandle device, Func<SafeFileHandle, char[], int, bool> read)
+    {
+        var buffer = new char[128];
+        if (!read(device, buffer, buffer.Length * 2)) return "";
+        var end = Array.IndexOf(buffer, '\0');
+        return new string(buffer, 0, end < 0 ? buffer.Length : end).Trim();
     }
 
     public static bool SetFeature(SafeFileHandle device, byte[] report) => HidD_SetFeature(device, report, report.Length);

@@ -30,6 +30,8 @@
     <Content Include="Assets\**" CopyToOutputDirectory="PreserveNewest" />
     <!-- Встроенные плагины лежат рядом с exe и обновляются вместе с приложением. -->
     <Content Include="..\..\plugins\**" Link="plugins\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <!-- База рецептов заряда устройств: встроенная копия рядом с exe (общая лежит в репозитории, docs/devices.md). -->
+    <Content Include="..\..\devices\devices.json" Link="devices.json" CopyToOutputDirectory="PreserveNewest" />
     <PRIResource Include="Strings\**\*.resw" />
   </ItemGroup>
 

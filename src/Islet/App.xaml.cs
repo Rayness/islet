@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Islet.Core;
 using Islet.Integrations;
+using Islet.Integrations.Devices;
 using Islet.Ipc;
 using Islet.Media;
 using Islet.Pins;
@@ -33,7 +34,8 @@ public partial class App : Application
     internal ClipboardHistory Clipboard { get; } = new();
     internal KawakiClient Kawaki { get; } = new();
     internal ClipTideBridge ClipTide { get; } = new();
-    internal DeviceMonitor Devices { get; } = new();
+    internal DeviceMonitor Devices { get; } = new(new RecipeStore(() => SettingsStore.Current.DevicesOnlineBase));
+    internal BatteryAlerts? BatteryAlerts { get; private set; }
     internal PluginManager Plugins { get; } = new();
     internal SearchService Search { get; private set; } = null!;
 
@@ -76,6 +78,8 @@ public partial class App : Application
         _ = Media.StartAsync(_queue);
         Kawaki.Start();
         ClipTide.Start();
+        BatteryAlerts = new BatteryAlerts(Devices);
+        Devices.Store.Start();
         Devices.Start();
 
         // Проверка обновлений не должна задерживать запуск островка.
@@ -148,6 +152,7 @@ public partial class App : Application
         Kawaki.Stop();
         ClipTide.Dispose();
         Devices.Dispose();
+        Devices.Store.Dispose();
         Media.Stop();
         Notifications.Save();
         DriveIndex.Dispose();
