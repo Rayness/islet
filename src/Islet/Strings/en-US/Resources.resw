@@ -1040,4 +1040,10 @@
   <data name="S_VisInCard" xml:space="preserve">
     <value>Visualizer in the “Now playing” card</value>
   </data>
+  <data name="RecentTitle.Text" xml:space="preserve">
+    <value>Recent</value>
+  </data>
+  <data name="RecentHint.Text" xml:space="preserve">
+    <value>Shift+Del removes · can be turned off in Search settings</value>
+  </data>
 </root>

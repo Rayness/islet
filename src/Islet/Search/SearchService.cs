@@ -177,7 +177,9 @@ internal sealed class SearchService
                     ResultKind.Command => Commands.Find(e.Target),
                     _ => null,
                 };
-                if (item is not null) list.Add(item);
+                if (item is null) continue;
+                item.IsRecent = true;
+                list.Add(item);
             }
             return list;
         });

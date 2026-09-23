@@ -60,6 +60,9 @@ public sealed class ResultItem : INotifyPropertyChanged
     /// <summary>Оценка внутри провайдера — для смешивания и частоты запусков.</summary>
     public int Score { get; set; }
 
+    /// <summary>Строка из «Недавнего» — у команд она приходит от провайдера команд, поэтому отдельный флаг.</summary>
+    public bool IsRecent { get; set; }
+
     /// <summary>Запоминать ли запуск для «Недавних» и поднятия в выдаче.</summary>
     public bool Remember { get; init; } = true;
 

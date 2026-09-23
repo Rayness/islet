@@ -243,6 +243,26 @@
                                 </TextBox.Resources>
                             </TextBox>
 
+                            <!-- Невидимая копия плейсхолдера: её ширину считает сама раскладка.
+                                 TextBlock вне дерева элементов меряется в ноль. -->
+                            <TextBlock
+                                x:Name="PlaceholderProbe"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                FontSize="{x:Bind SearchBox.FontSize, Mode=OneWay}"
+                                IsHitTestVisible="False"
+                                Opacity="0"
+                                Text="{x:Bind SearchBox.PlaceholderText, Mode=OneWay}" />
+                            <!-- И копия подписи клавиши: спрятанная подсказка меряется в ноль. -->
+                            <TextBlock
+                                x:Name="HotkeyProbe"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                FontSize="10"
+                                IsHitTestVisible="False"
+                                Opacity="0"
+                                Text="{x:Bind HotkeyHintText.Text, Mode=OneWay}" />
+
                             <!-- Горячая клавиша прямо в строке, как «Ctrl Q» у Kawaki: сочетание, о котором
                                  негде узнать, всё равно что его отсутствие. Прячется, как только начали печатать. -->
                             <Border
@@ -464,6 +484,23 @@
                     </Border>
 
                     <!-- Заголовок колокола. -->
+                    <!-- Подпись над «Недавним»: без неё строки на пустом запросе выглядели зависшей выдачей. -->
+                    <Grid x:Name="RecentHeader" Grid.Row="2" Height="26" Padding="6,0,6,0" Visibility="Collapsed">
+                        <TextBlock
+                            x:Uid="RecentTitle"
+                            VerticalAlignment="Center"
+                            FontSize="12"
+                            FontWeight="SemiBold"
+                            Foreground="{StaticResource IslandMutedBrush}" />
+                        <TextBlock
+                            x:Uid="RecentHint"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            FontSize="11"
+                            Foreground="{StaticResource IslandMutedBrush}"
+                            Opacity="0.7" />
+                    </Grid>
+
                     <Grid x:Name="NotificationsHeader" Grid.Row="2" Height="30" Padding="6,0,0,0" Visibility="Collapsed">
                         <TextBlock
                             x:Uid="NotificationsTitle"

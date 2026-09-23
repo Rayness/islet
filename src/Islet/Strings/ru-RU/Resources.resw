@@ -1040,4 +1040,10 @@
   <data name="S_VisInCard" xml:space="preserve">
     <value>Визуализатор в карточке «Сейчас играет»</value>
   </data>
+  <data name="RecentTitle.Text" xml:space="preserve">
+    <value>Недавнее</value>
+  </data>
+  <data name="RecentHint.Text" xml:space="preserve">
+    <value>Shift+Del — убрать · отключается в настройках поиска</value>
+  </data>
 </root>

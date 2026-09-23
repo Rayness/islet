@@ -56,6 +56,7 @@ public sealed partial class IslandWindow : Window
     private const double RowHeight = 52;
     private const double NotificationRowHeight = 56;
     private const double NotificationsHeaderHeight = 30;
+    private const double RecentHeaderHeight = 26;
     private const double MediaCardHeight = 72;
     private const double ListBottomPadding = 10;
     private const double MaxCornerRadius = 28;
@@ -188,6 +189,8 @@ public sealed partial class IslandWindow : Window
 
         ResultsList.ItemsSource = _results;
         SearchBox.SizeChanged += (_, _) => UpdateHotkeyHint();
+        PlaceholderProbe.SizeChanged += (_, _) => UpdateHotkeyHint();
+        HotkeyProbe.SizeChanged += (_, _) => UpdateHotkeyHint();
         NotificationsList.ItemsSource = _notificationRows;
         ResultsList.SelectionChanged += (_, _) => OnSelectionChanged();
 
@@ -467,6 +470,8 @@ public sealed partial class IslandWindow : Window
         var height = BarHeight;
         if (MediaCard.Visibility == Visibility.Visible)
             height += MediaCardHeight;
+        if (RecentHeader.Visibility == Visibility.Visible)
+            height += RecentHeaderHeight;
 
         if (_view == View.Notifications)
         {
@@ -1398,6 +1403,7 @@ public sealed partial class IslandWindow : Window
         _view = view;
         var notifications = view == View.Notifications;
         NotificationsHeader.Visibility = notifications ? Visibility.Visible : Visibility.Collapsed;
+        if (notifications) RecentHeader.Visibility = Visibility.Collapsed;
         NotificationsList.Visibility = notifications ? Visibility.Visible : Visibility.Collapsed;
         ResultsList.Visibility = notifications ? Visibility.Collapsed : Visibility.Visible;
         BellGlyph.Glyph = notifications ? "" : "";
@@ -1528,7 +1534,6 @@ public sealed partial class IslandWindow : Window
         OnSearchTextChanged();
     }
 
-    private readonly TextBlock _placeholderProbe = new() { FontSize = 15 };
 
     /// <summary>
     /// Подсказка клавиши — только пока строка пуста и только если помещается рядом
@@ -1539,12 +1544,12 @@ public sealed partial class IslandWindow : Window
         var show = HotkeyRegistered && _scope is null && SearchBox.Text.Length == 0;
         if (show)
         {
-            _placeholderProbe.Text = SearchBox.PlaceholderText;
-            _placeholderProbe.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
             HotkeyHint.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
             // Ширины ещё нет (островок не раскрывался) — не показываем: проверим при раскрытии.
-            var free = SearchBox.ActualWidth - 14 - 10 - _placeholderProbe.DesiredSize.Width;
-            show = SearchBox.ActualWidth > 0 && free >= HotkeyHint.DesiredSize.Width + 24;
+            var free = SearchBox.ActualWidth - 14 - 10 - PlaceholderProbe.ActualWidth;
+            // Ширина подсказки — текст плюс поля и рамка (6 + 6 + 2).
+            var hint = HotkeyProbe.ActualWidth + 14;
+            show = SearchBox.ActualWidth > 0 && PlaceholderProbe.ActualWidth > 0 && HotkeyProbe.ActualWidth > 0 && free >= hint + 24;
         }
         HotkeyHint.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
     }
@@ -1667,12 +1672,17 @@ public sealed partial class IslandWindow : Window
             ResultsList.SelectedIndex = index >= 0 ? index : 0;
         }
 
+        // «Недавнее» подписано: иначе строки на пустом запросе выглядят зависшей выдачей.
+        RecentHeader.Visibility = _view == View.Results && _results.Count > 0 && _results.All(r => r.IsRecent)
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+
         AnimateToTarget();
         _ = LoadIconsAsync(items);
     }
 
     private static bool SameResult(ResultItem a, ResultItem b) =>
-        a.Kind == b.Kind && a.Title == b.Title && a.ProviderId == b.ProviderId
+        a.Kind == b.Kind && a.Title == b.Title && a.ProviderId == b.ProviderId && a.IsRecent == b.IsRecent
         && string.Equals(a.Target, b.Target, StringComparison.OrdinalIgnoreCase);
 
     private static async Task LoadIconsAsync(List<ResultItem> items)
@@ -1794,10 +1804,11 @@ public sealed partial class IslandWindow : Window
 
             case VirtualKey.Delete when IsDown(VirtualKey.Shift):
                 // Shift+Delete — убрать из «Недавних».
-                if (!notifications && ResultsList.SelectedItem is ResultItem { ProviderId: "recent" } recent)
+                if (!notifications && ResultsList.SelectedItem is ResultItem { IsRecent: true } recent)
                 {
                     Frecency.Forget(recent);
                     _results.Remove(recent);
+                    if (_results.Count == 0) RecentHeader.Visibility = Visibility.Collapsed;
                     AnimateToTarget();
                     e.Handled = true;
                 }
@@ -1927,12 +1938,13 @@ public sealed partial class IslandWindow : Window
             add.IsEnabled = _pins.Items.Count < PinStore.MaxPins;
             menu.Items.Add(add);
         }
-        if (item.ProviderId == "recent")
+        if (item.IsRecent)
         {
             menu.Items.Add(MenuItem(Loc.T("Ctx_Forget"), "", () =>
             {
                 Frecency.Forget(item);
                 _results.Remove(item);
+                if (_results.Count == 0) RecentHeader.Visibility = Visibility.Collapsed;
                 AnimateToTarget();
             }));
         }
