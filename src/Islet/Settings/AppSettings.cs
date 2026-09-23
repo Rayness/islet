@@ -91,6 +91,23 @@ public sealed class AppSettings
     public bool MediaCard { get; set; } = true;
     /// <summary>Играющая музыка — обложка и эквалайзер в свёрнутой капсуле.</summary>
     public bool MediaInCapsule { get; set; } = true;
+    /// <summary>Где стоит островок по горизонтали: 0 — у левого края, 0.5 — по центру, 1 — у правого.</summary>
+    public double IslandPosition { get; set; } = 0.5;
+
+    /// <summary>"reactive" — столбики по настоящему звуку, "animated" — просто покачиваются, "off" — без визуализатора.</summary>
+    public string VisualizerMode { get; set; } = "reactive";
+    public int VisualizerBars { get; set; } = 4;
+    /// <summary>"album" — цвет обложки, "accent" — фирменная аква, "white" — белый.</summary>
+    public string VisualizerColor { get; set; } = "album";
+    /// <summary>Множитель чувствительности к звуку.</summary>
+    public double VisualizerSensitivity { get; set; } = 1.0;
+    /// <summary>Кадров в секунду: 15, 30 или 60 — плавность против нагрузки.</summary>
+    public int VisualizerFps { get; set; } = 30;
+    /// <summary>Визуализатор и в карточке «Сейчас играет».</summary>
+    public bool VisualizerInCard { get; set; } = true;
+    /// <summary>Ползунок громкости играющего приложения в карточке.</summary>
+    public bool MediaVolume { get; set; } = true;
+
     /// <summary>Первый запуск уже был: знакомство показано.</summary>
     public bool Onboarded { get; set; } = false;
 
@@ -181,6 +198,14 @@ internal static class SettingsStore
         if (Current.NotifyMode is not ("peek" or "badge" or "off"))
             Current.NotifyMode = "peek";
         Current.PeekSeconds = Math.Clamp(Current.PeekSeconds, 2, 15);
+        Current.IslandPosition = Math.Clamp(Current.IslandPosition, 0, 1);
+        if (Current.VisualizerMode is not ("reactive" or "animated" or "off"))
+            Current.VisualizerMode = "reactive";
+        if (Current.VisualizerColor is not ("album" or "accent" or "white"))
+            Current.VisualizerColor = "album";
+        Current.VisualizerBars = Math.Clamp(Current.VisualizerBars, 3, 8);
+        Current.VisualizerSensitivity = Math.Clamp(Current.VisualizerSensitivity, 0.5, 3);
+        Current.VisualizerFps = Current.VisualizerFps switch { <= 15 => 15, <= 30 => 30, _ => 60 };
         Current.ClipboardMax = Math.Clamp(Current.ClipboardMax, 5, 100);
         Current.DisabledPlugins ??= [];
         Current.IndexExcludes ??= [.. AppSettings.DefaultExcludes];

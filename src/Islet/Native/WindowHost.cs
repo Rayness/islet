@@ -10,6 +10,8 @@ internal sealed unsafe class WindowHost : IDisposable
     private const int WM_SETTEXT = 0x000C;
     private const int WM_NCPAINT = 0x0085;
     private const int WM_NCACTIVATE = 0x0086;
+    private const int WM_MOUSEACTIVATE = 0x0021;
+    private const nint MA_NOACTIVATE = 3;
 
     private readonly nint _hwnd;
     // Делегат обязан жить столько же, сколько подкласс, иначе сборщик мусора
@@ -22,6 +24,9 @@ internal sealed unsafe class WindowHost : IDisposable
     public event Action? ClipboardChanged;
 
     private bool _clipboardListening;
+
+    /// <summary>true — щелчок по окну не активирует его (WM_MOUSEACTIVATE → MA_NOACTIVATE).</summary>
+    public Func<bool>? NoActivate { get; set; }
 
     public void ListenClipboard(bool listen)
     {
@@ -93,6 +98,9 @@ internal sealed unsafe class WindowHost : IDisposable
             case Win32.WM_ERASEBKGND:
                 Win32.EraseTransparent(hWnd, wParam);
                 return 1;
+
+            case WM_MOUSEACTIVATE when NoActivate?.Invoke() == true:
+                return MA_NOACTIVATE;
 
             case Win32.WM_CLIPBOARDUPDATE:
                 ClipboardChanged?.Invoke();

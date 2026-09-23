@@ -51,6 +51,7 @@ public sealed partial class SettingsWindow : Window
 
         LoadValues();
         BuildSearchSources();
+        BuildLookExtras();
         BuildNotificationsPage();
         BuildIntegrationsPage();
         RenderPlugins();

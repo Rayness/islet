@@ -462,4 +462,21 @@ internal static unsafe partial class Win32
     /// <summary>Окно этого же процесса (всплывающие меню островка, окно настроек).</summary>
     public static bool IsOwnWindow(nint hWnd) =>
         GetWindowThreadProcessId(hWnd, out var pid) != 0 && pid == (uint)Environment.ProcessId;
+
+    [DllImport("gdi32.dll")]
+    private static extern nint CreateRoundRectRgn(int x1, int y1, int x2, int y2, int w, int h);
+
+    [DllImport("user32.dll")]
+    private static extern int SetWindowRgn(nint hWnd, nint hRgn, bool redraw);
+
+    /// <summary>
+    /// Окно видно и ловит мышь только внутри скруглённого прямоугольника. Регион
+    /// переходит системе — удалять его не нужно.
+    /// </summary>
+    public static void SetRoundRegion(nint hWnd, int left, int top, int right, int bottom, int diameter)
+    {
+        var region = CreateRoundRectRgn(left, top, right, bottom, diameter, diameter);
+        if (region != 0 && SetWindowRgn(hWnd, region, true) == 0)
+            DeleteObject(region);
+    }
 }

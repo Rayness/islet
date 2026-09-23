@@ -358,6 +358,9 @@
                     <StackPanel Style="{StaticResource PageStack}">
                         <TextBlock Style="{StaticResource PageTitle}" x:Uid="PageLook" />
 
+                        <!-- Положение по горизонтали (собирается в коде). -->
+                        <StackPanel x:Name="LookExtraStack" Spacing="6" />
+
                         <Border Style="{StaticResource Card}">
                             <Grid ColumnSpacing="16">
                                 <Grid.ColumnDefinitions>

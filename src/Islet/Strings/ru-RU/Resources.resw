@@ -959,4 +959,85 @@
   <data name="S_Forget" xml:space="preserve">
     <value>Забыть всё</value>
   </data>
+  <data name="Volume_Format" xml:space="preserve">
+    <value>Громкость {0}%</value>
+  </data>
+  <data name="S_Position" xml:space="preserve">
+    <value>Положение по горизонтали</value>
+  </data>
+  <data name="S_PositionHint" xml:space="preserve">
+    <value>У края островок растёт в сторону экрана, а не в обе стороны</value>
+  </data>
+  <data name="S_PosLeft" xml:space="preserve">
+    <value>Слева</value>
+  </data>
+  <data name="S_PosCenter" xml:space="preserve">
+    <value>По центру</value>
+  </data>
+  <data name="S_PosRight" xml:space="preserve">
+    <value>Справа</value>
+  </data>
+  <data name="S_MusicSection" xml:space="preserve">
+    <value>Музыка</value>
+  </data>
+  <data name="S_MediaVolume" xml:space="preserve">
+    <value>Громкость приложения</value>
+  </data>
+  <data name="S_MediaVolumeHint" xml:space="preserve">
+    <value>Ползунок в карточке, а колесо мыши над карточкой или капсулой меняет громкость того, что играет, — как микшер Windows</value>
+  </data>
+  <data name="S_VisualizerSection" xml:space="preserve">
+    <value>Визуализатор</value>
+  </data>
+  <data name="S_VisMode" xml:space="preserve">
+    <value>Как двигаются столбики</value>
+  </data>
+  <data name="S_VisModeHint" xml:space="preserve">
+    <value>По звуку — слушает то, что звучит в колонках (микрофон не нужен); анимация — просто покачиваются</value>
+  </data>
+  <data name="S_VisReactive" xml:space="preserve">
+    <value>По звуку</value>
+  </data>
+  <data name="S_VisAnimated" xml:space="preserve">
+    <value>Анимация</value>
+  </data>
+  <data name="S_VisOff" xml:space="preserve">
+    <value>Выключен</value>
+  </data>
+  <data name="S_VisBars" xml:space="preserve">
+    <value>Число столбиков</value>
+  </data>
+  <data name="S_VisColor" xml:space="preserve">
+    <value>Цвет</value>
+  </data>
+  <data name="S_VisColorHint" xml:space="preserve">
+    <value>Цвет обложки подстраивается под каждый трек</value>
+  </data>
+  <data name="S_VisAlbum" xml:space="preserve">
+    <value>Цвет обложки</value>
+  </data>
+  <data name="S_VisAccent" xml:space="preserve">
+    <value>Аква Islet</value>
+  </data>
+  <data name="S_VisWhite" xml:space="preserve">
+    <value>Белый</value>
+  </data>
+  <data name="S_VisSensitivity" xml:space="preserve">
+    <value>Чувствительность</value>
+  </data>
+  <data name="S_VisSensitivityHint" xml:space="preserve">
+    <value>Выше — столбики прыгают и от тихих звуков</value>
+  </data>
+  <data name="S_VisFps" xml:space="preserve">
+    <value>Плавность</value>
+  </data>
+  <data name="S_VisFpsHint" xml:space="preserve">
+    <value>Больше кадров — плавнее, но чуть больше нагрузки</value>
+  </data>
+  <data name="S_VisFpsValue" xml:space="preserve">
+    <value>{0} кадров/с</value>
+  </data>
+  <data name="S_VisInCard" xml:space="preserve">
+    <value>Визуализатор в карточке «Сейчас играет»</value>
+  </data>
 </root>

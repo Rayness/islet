@@ -9,7 +9,13 @@ capsule a couple of centimetres wide. Point at it — or press a hotkey — and 
 search box. When music plays or a timer runs, the capsule comes alive; when a notification
 arrives, the island opens by itself to show it.
 
-![Islet, open with search results](docs/island.png)
+![Islet: searching the Kawaki catalogue](docs/island.png)
+
+![Now playing: album art, visualizer, app volume](docs/media.png)
+
+![A notification peek](docs/peek.png)
+
+![A live capsule: a timer](docs/capsule.png)
 
 No background service, no account, nothing to configure before it works: one app and a
 settings file.
@@ -29,8 +35,15 @@ settings file.
 - **Remembers the clipboard.** `cb ` — recently copied text; Enter pastes it into the window
   you were in. Memory only; anything copied from password managers is skipped.
 - **Runs timers.** `timer 25 tea` — a countdown right in the capsule and a notification at the end.
-- **Shows what is playing.** Any player that reports to Windows: album art and an equalizer in
+- **Shows what is playing.** Any player that reports to Windows: album art and a visualizer in
   the capsule, a card with controls in the open island.
+- **A visualizer that hears the music.** The bars listen to what your speakers play (loopback
+  capture, no microphone), split it into frequency bands and take the album's colour. Bar
+  count, colour, sensitivity and frame rate are adjustable; a plain animation is an option too.
+- **Changes the app's volume.** A slider in the card, and the mouse wheel over the card or the
+  capsule, set the volume of whatever is playing — like the Windows volume mixer.
+- **Sits where you want.** Centre, left or right — near an edge the island grows towards the
+  screen.
 - **Takes notifications** from Kawaki, ClipTide, plugins and your own scripts: a peek on the
   island, long text scrolls, and everything waits in the bell.
 - **Falls back to the web** in the last row of results: Yandex, Google, Bing or DuckDuckGo —
@@ -75,7 +88,7 @@ The collapsed capsule changes shape by itself:
 | Shape | When |
 |---|---|
 | Stripe | nothing is going on; lit with the accent colour when the bell has something unread |
-| Live capsule | a timer or a plugin's progress is running; music plays — album art and an equalizer |
+| Live capsule | a timer or a plugin's progress is running; music plays — album art and a visualizer; the mouse wheel sets the volume |
 | Peek | a notification arrived: icon, title and scrolling text. The cursor on a peek holds it, a click runs its action, the cross dismisses it |
 
 In the results:
@@ -159,8 +172,8 @@ The drive index can be turned off, leaving only Windows Search.
 |---|---|
 | General | hotkey (recorded by pressing it), start with Windows, web search engine, language |
 | Behavior | open on hover, open and close delays, hide the collapsed capsule, hide over fullscreen windows, which monitor to live on |
-| Notifications | peek, mark on the stripe or silent; how long a peek stays; sound; live activities, music in the capsule, the *Now playing* card |
-| Appearance | glass, background density, island width, collapsed capsule size, number of result rows, clock |
+| Notifications | peek, mark on the stripe or silent; how long a peek stays; sound; live activities; music in the capsule, the *Now playing* card, app volume; the visualizer: to the sound or animated, bar count, colour, sensitivity, frame rate |
+| Appearance | horizontal position, glass, background density, island width, collapsed capsule size, number of result rows, clock |
 | Search | calculator, commands, clipboard history, recent items, remembering launches; the drive index, its folders and exclusions |
 | Buttons | order, removal, adding an app, a file, a folder or a link |
 | Integrations | Kawaki sign-in, Kawaki notifications and search, ClipTide notifications, examples for your scripts |
@@ -229,7 +242,8 @@ named pipe and exits without loading any UI. A launch with no switches opens the
 | `Core/` | notifications and the bell, live activities, timers, actions (`IsletAction`), the message protocol |
 | `Search/SearchService.cs`, `Search/Providers/` | results from providers: apps, files, calculator, addresses, commands, timer, clipboard, help, web |
 | `Search/Frecency.cs`, `KeyboardLayout.cs` | launch frequency and recency; a query in the other layout |
-| `Media/` | *Now playing* through the Windows media sessions |
+| `Media/` | *Now playing* through the Windows media sessions, the sound spectrum (WASAPI loopback + FFT), app volume through audio sessions |
+| `Native/CoreAudio.cs` | Core Audio interfaces: the output device, capture, audio sessions |
 | `Integrations/` | Kawaki (device sign-in, notifications, catalogue) and ClipTide |
 | `Plugins/` | the manifest, plugin discovery, the plugin process and the conversation with it |
 | `Ipc/` | command-line switches and the named pipe |

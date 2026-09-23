@@ -1,7 +1,9 @@
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Windows.Graphics.Imaging;
 using Windows.Media.Control;
+using Windows.UI;
 
 namespace Islet.Media;
 
@@ -29,6 +31,8 @@ internal sealed class MediaService
     public bool CanNext { get; private set; }
     public bool CanPrevious { get; private set; }
     public ImageSource? Thumbnail { get; private set; }
+    /// <summary>Яркий цвет обложки — для визуализатора «в цвет обложки». Null — обложки нет.</summary>
+    public Color? ArtColor { get; private set; }
 
     public TimeSpan Position { get; private set; }
     public TimeSpan Duration { get; private set; }
@@ -189,6 +193,7 @@ internal sealed class MediaService
             Title = Artist = AppId = "";
             IsPlaying = false;
             Thumbnail = null;
+            ArtColor = null;
             _thumbKey = "";
             Changed?.Invoke();
             return;
@@ -209,6 +214,7 @@ internal sealed class MediaService
             {
                 _thumbKey = key;
                 Thumbnail = props?.Thumbnail is { } reference ? await LoadThumbnailAsync(reference) : null;
+                ArtColor = props?.Thumbnail is { } colorSource ? await ArtColorAsync(colorSource) : null;
                 if (generation != _generation) return;
             }
         }
@@ -234,6 +240,80 @@ internal sealed class MediaService
             return null;
         }
     }
+
+    /// <summary>
+    /// Цвет обложки: картинка ужимается до 16×16, пиксели взвешиваются по
+    /// насыщенности — серый фон и чёрные поля не должны перебить сам рисунок, —
+    /// и результат дотягивается до яркости, читаемой на тёмной капсуле.
+    /// </summary>
+    private static async Task<Color?> ArtColorAsync(Windows.Storage.Streams.IRandomAccessStreamReference reference)
+    {
+        try
+        {
+            using var stream = await reference.OpenReadAsync();
+            var decoder = await BitmapDecoder.CreateAsync(stream);
+            var pixels = await decoder.GetPixelDataAsync(
+                BitmapPixelFormat.Bgra8, BitmapAlphaMode.Ignore,
+                new BitmapTransform { ScaledWidth = 16, ScaledHeight = 16, InterpolationMode = BitmapInterpolationMode.Linear },
+                ExifOrientationMode.IgnoreExifOrientation, ColorManagementMode.DoNotColorManage);
+            var data = pixels.DetachPixelData();
+
+            double r = 0, g = 0, b = 0, total = 0;
+            for (var i = 0; i + 3 < data.Length; i += 4)
+            {
+                double pb = data[i] / 255.0, pg = data[i + 1] / 255.0, pr = data[i + 2] / 255.0;
+                var max = Math.Max(pr, Math.Max(pg, pb));
+                var min = Math.Min(pr, Math.Min(pg, pb));
+                var saturation = max <= 0 ? 0 : (max - min) / max;
+                var weight = saturation * saturation * max + 0.002;
+                r += pr * weight; g += pg * weight; b += pb * weight; total += weight;
+            }
+            if (total <= 0) return null;
+            r /= total; g /= total; b /= total;
+
+            // HSV: насыщенность и яркость не ниже порога, оттенок — как есть.
+            var hi = Math.Max(r, Math.Max(g, b));
+            var lo = Math.Min(r, Math.Min(g, b));
+            var delta = hi - lo;
+            double hue = 0;
+            if (delta > 0)
+            {
+                hue = hi == r ? (g - b) / delta % 6 : hi == g ? (b - r) / delta + 2 : (r - g) / delta + 4;
+                hue *= 60;
+                if (hue < 0) hue += 360;
+            }
+            var sat = hi <= 0 ? 0 : delta / hi;
+            // Почти серая обложка — пусть лучше будет фирменный цвет островка.
+            if (sat < 0.12) return null;
+            return FromHsv(hue, Math.Max(sat, 0.55), Math.Max(hi, 0.9));
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static Color FromHsv(double h, double s, double v)
+    {
+        var c = v * s;
+        var x = c * (1 - Math.Abs(h / 60 % 2 - 1));
+        var m = v - c;
+        var (r, g, b) = h switch
+        {
+            < 60 => (c, x, 0.0),
+            < 120 => (x, c, 0.0),
+            < 180 => (0.0, c, x),
+            < 240 => (0.0, x, c),
+            < 300 => (x, 0.0, c),
+            _ => (c, 0.0, x),
+        };
+        return Color.FromArgb(255, (byte)((r + m) * 255), (byte)((g + m) * 255), (byte)((b + m) * 255));
+    }
+
+    /// <summary>Громкость играющего приложения 0…1; null — его аудиосеанс не нашёлся.</summary>
+    public Task<float?> GetVolumeAsync() => AppVolume.GetAsync(AppId);
+
+    public Task SetVolumeAsync(float level) => AppVolume.SetAsync(AppId, level);
 
     private void OnUi(Action action)
     {

@@ -86,6 +86,81 @@ public sealed partial class SettingsWindow
         return panel;
     }
 
+    /// <summary>Выбор из списка: значения в настройках, подписи — на экране.</summary>
+    private Border Choice(string title, string? hint, string[] values, string[] labels, string current, Action<string> changed)
+    {
+        var combo = new ComboBox { MinWidth = 180, ItemsSource = labels, SelectedIndex = Math.Max(0, Array.IndexOf(values, current)) };
+        combo.SelectionChanged += (_, _) => changed(values[Math.Max(0, combo.SelectedIndex)]);
+        return Row(title, hint, combo);
+    }
+
+    /// <summary>Ползунок с подписью значения справа от заголовка.</summary>
+    private Border SliderCard(string title, string? hint, double min, double max, double step, double value,
+        Func<double, string> format, Action<double> changed)
+    {
+        var valueText = Hint(format(value));
+        valueText.HorizontalAlignment = HorizontalAlignment.Right;
+        var header = new Grid();
+        header.Children.Add(new TextBlock { Text = title, Style = StyleOf("CardTitle") });
+        header.Children.Add(valueText);
+
+        var slider = new Slider { Minimum = min, Maximum = max, StepFrequency = step, Value = value };
+        slider.ValueChanged += (_, e) =>
+        {
+            valueText.Text = format(e.NewValue);
+            changed(e.NewValue);
+        };
+
+        var panel = new StackPanel { Spacing = 4 };
+        panel.Children.Add(header);
+        if (hint is not null) panel.Children.Add(Hint(hint));
+        panel.Children.Add(slider);
+        return Card(panel);
+    }
+
+    // ------------------------------------------------------------------
+    // Внешний вид: положение островка
+    // ------------------------------------------------------------------
+
+    private void BuildLookExtras()
+    {
+        var s = SettingsStore.Current;
+        static string Label(double percent) => percent switch
+        {
+            <= 0 => Loc.T("S_PosLeft"),
+            >= 100 => Loc.T("S_PosRight"),
+            50 => Loc.T("S_PosCenter"),
+            _ => $"{percent:0}%",
+        };
+
+        var valueText = Hint(Label(Math.Round(s.IslandPosition * 100)));
+        valueText.HorizontalAlignment = HorizontalAlignment.Right;
+        var header = new Grid();
+        header.Children.Add(new TextBlock { Text = Loc.T("S_Position"), Style = StyleOf("CardTitle") });
+        header.Children.Add(valueText);
+
+        // Ступень 5%: у центра и краёв ползунок встаёт ровно, а не в 49 или 1 процент.
+        var slider = new Slider { Minimum = 0, Maximum = 100, StepFrequency = 5, Value = Math.Round(s.IslandPosition * 100) };
+        slider.ValueChanged += (_, e) =>
+        {
+            valueText.Text = Label(e.NewValue);
+            SettingsStore.Update(x => x.IslandPosition = e.NewValue / 100);
+        };
+
+        var presets = Buttons(
+            ActionButton(Loc.T("S_PosLeft"), () => slider.Value = 0),
+            ActionButton(Loc.T("S_PosCenter"), () => slider.Value = 50),
+            ActionButton(Loc.T("S_PosRight"), () => slider.Value = 100));
+        presets.Margin = new Thickness(0, 4, 0, 0);
+
+        var panel = new StackPanel { Spacing = 4 };
+        panel.Children.Add(header);
+        panel.Children.Add(Hint(Loc.T("S_PositionHint")));
+        panel.Children.Add(slider);
+        panel.Children.Add(presets);
+        LookExtraStack.Children.Add(Card(panel));
+    }
+
     // ------------------------------------------------------------------
     // Поиск: источники
     // ------------------------------------------------------------------
@@ -167,10 +242,31 @@ public sealed partial class SettingsWindow
         stack.Children.Add(Section(Loc.T("S_LiveSection")));
         stack.Children.Add(Toggle(Loc.T("S_LiveActivities"), Loc.T("S_LiveActivitiesHint"), s.LiveActivities,
             on => SettingsStore.Update(x => x.LiveActivities = on)));
+
+        stack.Children.Add(Section(Loc.T("S_MusicSection")));
         stack.Children.Add(Toggle(Loc.T("S_MediaCapsule"), Loc.T("S_MediaCapsuleHint"), s.MediaInCapsule,
             on => SettingsStore.Update(x => x.MediaInCapsule = on)));
         stack.Children.Add(Toggle(Loc.T("S_MediaCard"), Loc.T("S_MediaCardHint"), s.MediaCard,
             on => SettingsStore.Update(x => x.MediaCard = on)));
+        stack.Children.Add(Toggle(Loc.T("S_MediaVolume"), Loc.T("S_MediaVolumeHint"), s.MediaVolume,
+            on => SettingsStore.Update(x => x.MediaVolume = on)));
+
+        stack.Children.Add(Section(Loc.T("S_VisualizerSection")));
+        stack.Children.Add(Choice(Loc.T("S_VisMode"), Loc.T("S_VisModeHint"),
+            ["reactive", "animated", "off"], [Loc.T("S_VisReactive"), Loc.T("S_VisAnimated"), Loc.T("S_VisOff")],
+            s.VisualizerMode, v => SettingsStore.Update(x => x.VisualizerMode = v)));
+        stack.Children.Add(Choice(Loc.T("S_VisColor"), Loc.T("S_VisColorHint"),
+            ["album", "accent", "white"], [Loc.T("S_VisAlbum"), Loc.T("S_VisAccent"), Loc.T("S_VisWhite")],
+            s.VisualizerColor, v => SettingsStore.Update(x => x.VisualizerColor = v)));
+        stack.Children.Add(SliderCard(Loc.T("S_VisBars"), null, 3, 8, 1, s.VisualizerBars,
+            v => v.ToString("0"), v => SettingsStore.Update(x => x.VisualizerBars = (int)v)));
+        stack.Children.Add(SliderCard(Loc.T("S_VisSensitivity"), Loc.T("S_VisSensitivityHint"), 50, 300, 10, s.VisualizerSensitivity * 100,
+            v => $"{v:0}%", v => SettingsStore.Update(x => x.VisualizerSensitivity = v / 100)));
+        stack.Children.Add(Choice(Loc.T("S_VisFps"), Loc.T("S_VisFpsHint"),
+            ["15", "30", "60"], [Loc.T("S_VisFpsValue", 15), Loc.T("S_VisFpsValue", 30), Loc.T("S_VisFpsValue", 60)],
+            s.VisualizerFps.ToString(), v => SettingsStore.Update(x => x.VisualizerFps = int.Parse(v))));
+        stack.Children.Add(Toggle(Loc.T("S_VisInCard"), null, s.VisualizerInCard,
+            on => SettingsStore.Update(x => x.VisualizerInCard = on)));
 
         stack.Children.Add(Section(Loc.T("S_BellSection")));
         stack.Children.Add(Buttons(ActionButton(Loc.T("S_ClearAll"), App.Current.Notifications.Clear)));

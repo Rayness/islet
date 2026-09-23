@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Numerics;
 using System.Text.RegularExpressions;
 using Islet.Core;
+using Islet.Media;
 using Islet.Native;
 using Islet.Pins;
 using Islet.Search;
@@ -88,6 +89,14 @@ public sealed partial class IslandWindow : Window
     private static double CollapsedWidth => SettingsStore.Current.CollapsedWidth;
     private static double CollapsedHeight => SettingsStore.Current.CollapsedHeight;
     private static double PeekWidth => Math.Min(ExpandedWidth, 500);
+    /// <summary>
+    /// Ширина окна постоянна — по самой широкой форме. Окно, менявшее ширину на
+    /// каждом раскрытии, сдвигалось влево, и кадр, нарисованный ещё по старой
+    /// раскладке, показывал капсулу не на месте: это и было мигание при наведении.
+    /// Лишнее по бокам отрезает регион окна — клики мимо капсулы проходят насквозь.
+    /// </summary>
+    private static double WindowWidth => Math.Max(ExpandedWidth, PeekWidth);
+    private static double Position => SettingsStore.Current.IslandPosition;
     private static int MaxRows => SettingsStore.Current.MaxRows;
 
     private readonly DispatcherQueueTimer _pollTimer;
@@ -126,6 +135,24 @@ public sealed partial class IslandWindow : Window
     private double _compactWidth = 200;
     private bool _equalizerRunning;
 
+    // Визуализатор: столбики в капсуле и в карточке, уровни — от спектра или «анимации».
+    private readonly AudioSpectrum _spectrum = new();
+    private readonly List<Rectangle> _capsuleBars = [];
+    private readonly List<Rectangle> _cardBars = [];
+    private readonly float[] _levels = new float[AudioSpectrum.MaxBands];
+    private Windows.UI.Color _barColor;
+
+    // Громкость играющего приложения.
+    private bool _suppressVolume;
+    private int _volumePercent = -1;
+    private long _volumeFlashUntil;
+    private DispatcherQueueTimer? _volumeFlashTimer;
+
+    // Где капсула в окне (пиксели) — для зоны наведения и региона окна.
+    private int _pillLeftPx;
+    private int _pillWidthPx;
+    private int _pillHeightPx;
+
     // Пик уведомления.
     private readonly Queue<IsletNotification> _peekQueue = new();
     private IsletNotification? _peek;
@@ -152,6 +179,10 @@ public sealed partial class IslandWindow : Window
         ConfigureAppWindow();
 
         _host.HotkeyPressed += OnHotkey;
+        // Свёрнутому островку фокус не нужен: щелчок по пику не должен уводить клавиатуру.
+        // Отвечаем на WM_MOUSEACTIVATE, а не переключаем WS_EX_NOACTIVATE: смена стиля
+        // окна на каждом раскрытии перерисовывала его целиком.
+        _host.NoActivate = () => _mode == Mode.Collapsed;
         _host.ClipboardChanged += () => _app.Clipboard.OnClipboardChanged();
         ApplyHotkey();
 
@@ -198,7 +229,6 @@ public sealed partial class IslandWindow : Window
         ApplyShape();
         ApplyPill(_current);
         ResizeWindow(_current);
-        Win32.SetNoActivate(_hwnd, true);
 
         Activated += OnActivated;
         Closed += OnClosed;
@@ -317,6 +347,8 @@ public sealed partial class IslandWindow : Window
         UpdateCompact();
         UpdateBell();
         ApplyShape();
+        UpdateVisualizer();
+        ResizeWindow(new(Math.Max(_current.Width, TargetSize().Width), Math.Max(_current.Height, TargetSize().Height)), force: true);
         if (_mode != Mode.Collapsed)
             AnimateToTarget();
         else
@@ -362,17 +394,31 @@ public sealed partial class IslandWindow : Window
 
         var scale = Win32.GetScale(_hwnd);
         var area = display.WorkArea;
-        var width = (int)Math.Ceiling(size.Width * scale);
+        var windowWidth = WindowWidth;
+        var width = (int)Math.Ceiling(windowWidth * scale);
         var height = (int)Math.Ceiling(size.Height * scale);
-        var x = area.X + (area.Width - width) / 2;
+        // Положение — доля свободного места по горизонтали: у края остаётся тот же отступ, что сверху.
+        var margin = (int)Math.Round(TopMargin * scale);
+        var free = Math.Max(0, area.Width - width - 2 * margin);
+        var x = area.X + margin + (int)Math.Round(free * Position);
         var y = area.Y + (int)Math.Round(TopMargin * scale);
         AppWindow.MoveAndResize(new RectInt32(x, y, width, height));
+
+        // Регион — всё, что капсула займёт за анимацию; точная форма — когда она встанет.
+        var left = (int)Math.Floor((windowWidth - size.Width) * Position * scale);
+        var right = left + (int)Math.Ceiling(size.Width * scale);
+        var radius = (int)Math.Round(Math.Min(size.Height / 2, MaxCornerRadius) * scale * 2);
+        Win32.SetRoundRegion(_hwnd, left, 0, right + 1, height + 1, radius);
         ApplyPill(_current);
     }
 
     private void ApplyPill(SizeD size)
     {
         var radius = Math.Min(size.Height / 2, MaxCornerRadius);
+        // Точка капсулы, стоящая на месте при любом её размере, — та же доля ширины, что у окна:
+        // по центру капсула растёт в обе стороны, у левого края — вправо, у правого — влево.
+        var offset = (WindowWidth - size.Width) * Position;
+        Pill.Margin = new Thickness(offset, 0, 0, 0);
         Pill.Width = size.Width;
         Pill.Height = size.Height;
         Pill.CornerRadius = new CornerRadius(radius);
@@ -391,9 +437,12 @@ public sealed partial class IslandWindow : Window
 
         // Стекло живёт в пикселях окна, пилюля — в DIP по центру сверху.
         var scale = (float)Win32.GetScale(_hwnd);
-        var window = new Vector2((float)_windowSize.Width, (float)_windowSize.Height) * scale;
+        var window = new Vector2((float)WindowWidth, (float)_windowSize.Height) * scale;
         var pill = new Vector2((float)size.Width, (float)size.Height) * scale;
-        _backdrop.UpdateShape(window, new Vector2((window.X - pill.X) / 2, 0), pill, (float)radius * scale);
+        _backdrop.UpdateShape(window, new Vector2((float)(offset * scale), 0), pill, (float)radius * scale);
+        _pillLeftPx = (int)(offset * scale);
+        _pillWidthPx = (int)pill.X;
+        _pillHeightPx = (int)pill.Y;
     }
 
     private void PeekBodyHost_SizeChanged(object sender, SizeChangedEventArgs e) =>
@@ -470,7 +519,7 @@ public sealed partial class IslandWindow : Window
         if (t >= 1)
         {
             _animationTimer.Stop();
-            ResizeWindow(_animationTo);
+            ResizeWindow(_animationTo, force: true);
         }
     }
 
@@ -501,18 +550,28 @@ public sealed partial class IslandWindow : Window
             Pill.Background = background;
         Pill.Opacity = _shape == Shape.Stripe && s.HideCollapsed && !unread ? 0 : 1;
 
-        var equalizer = _shape == Shape.Compact && _compactKind == CompactKind.Media && _app.Media.IsPlaying;
-        if (equalizer != _equalizerRunning)
-        {
-            _equalizerRunning = equalizer;
-            if (equalizer) _equalizerTimer.Start();
-            else _equalizerTimer.Stop();
-        }
+        UpdateVisualizer();
     }
 
+    /// <summary>
+    /// Появляется слой плавно, уходит — сразу. Два слоя, плавно сменяющие друг друга,
+    /// на пару кадров накладывались: текст капсулы просвечивал сквозь строку поиска.
+    /// </summary>
     private static void SetLayer(UIElement layer, bool visible)
     {
-        layer.Opacity = visible ? 1 : 0;
+        if (visible)
+        {
+            if (layer.Opacity < 1)
+            {
+                layer.OpacityTransition ??= new ScalarTransition { Duration = TimeSpan.FromMilliseconds(150) };
+                layer.Opacity = 1;
+            }
+        }
+        else
+        {
+            layer.OpacityTransition = null;
+            layer.Opacity = 0;
+        }
         layer.IsHitTestVisible = visible;
     }
 
@@ -536,8 +595,6 @@ public sealed partial class IslandWindow : Window
         _mode = mode;
         _pointerLeftAt = 0;
         _pointerEnteredAt = 0;
-        // Свёрнутому островку фокус не нужен: щелчок по пику не должен уводить клавиатуру.
-        Win32.SetNoActivate(_hwnd, mode == Mode.Collapsed);
 
         if (mode == Mode.Collapsed)
         {
@@ -564,6 +621,7 @@ public sealed partial class IslandWindow : Window
             _peekQueue.Clear();
             _pins.ReloadIfChanged();
             UpdateClock();
+            UpdateHotkeyHint();
             if (SettingsStore.Current.ShowClock) _clockTimer.Start();
             UpdateMediaCard();
             _app.Kawaki.Nudge();
@@ -656,7 +714,6 @@ public sealed partial class IslandWindow : Window
             // и ещё раз чистим стиль, который они успели вернуть.
             _host.BecomeOutermost();
             Win32.MakeBareTopmostPopup(_hwnd);
-            Win32.SetNoActivate(_hwnd, _mode == Mode.Collapsed);
         }
         if (args.WindowActivationState == WindowActivationState.Deactivated)
         {
@@ -700,7 +757,8 @@ public sealed partial class IslandWindow : Window
 
         var scale = Win32.GetScale(_hwnd);
         var pos = AppWindow.Position;
-        var size = AppWindow.Size;
+        // Окно шире капсулы: зона наведения считается по самой капсуле.
+        var pillLeft = pos.X + _pillLeftPx;
 
         // Один запрос экрана на опрос: DisplayArea — объект WinRT, а опрос идёт десять раз в секунду.
         var display = CurrentDisplay();
@@ -714,8 +772,8 @@ public sealed partial class IslandWindow : Window
             // Зона наведения шире полоски и доходит до самого края экрана:
             // курсор, упёртый в верх, должен попадать.
             var pad = (int)(24 * scale);
-            var inside = cursor.X >= pos.X - pad && cursor.X <= pos.X + size.Width + pad
-                && cursor.Y >= area.Y && cursor.Y <= pos.Y + size.Height + (int)(4 * scale);
+            var inside = cursor.X >= pillLeft - pad && cursor.X <= pillLeft + _pillWidthPx + pad
+                && cursor.Y >= area.Y && cursor.Y <= pos.Y + _pillHeightPx + (int)(4 * scale);
 
             // Пик под курсором не уезжает, пока его читают, и не раскрывается в поиск:
             // рука пришла к уведомлению, а не к строке.
@@ -740,8 +798,8 @@ public sealed partial class IslandWindow : Window
         {
             var area = display.WorkArea;
             var pad = (int)(8 * scale);
-            var inside = cursor.X >= pos.X - pad && cursor.X <= pos.X + size.Width + pad
-                && cursor.Y >= area.Y && cursor.Y <= pos.Y + size.Height + pad;
+            var inside = cursor.X >= pillLeft - pad && cursor.X <= pillLeft + _pillWidthPx + pad
+                && cursor.Y >= area.Y && cursor.Y <= pos.Y + _pillHeightPx + pad;
 
             if (inside || _openFlyouts > 0)
             {
@@ -791,8 +849,16 @@ public sealed partial class IslandWindow : Window
     // Живая капсула: музыка и активности
     // ------------------------------------------------------------------
 
+    private string _mediaApp = "";
+
     private void OnMediaChanged()
     {
+        if (_app.Media.AppId != _mediaApp)
+        {
+            _mediaApp = _app.Media.AppId;
+            _volumePercent = -1;
+            if (MediaCard.Visibility == Visibility.Visible) _ = RefreshVolumeAsync();
+        }
         UpdateCompact();
         UpdateMediaCard();
     }
@@ -835,7 +901,9 @@ public sealed partial class IslandWindow : Window
                 break;
 
             case CompactKind.Media:
-                CompactText.Text = media.Artist.Length > 0 ? $"{media.Title} · {media.Artist}" : media.Title;
+                CompactText.Text = Environment.TickCount64 < _volumeFlashUntil && _volumePercent >= 0
+                    ? Loc.T("Volume_Format", _volumePercent)
+                    : media.Artist.Length > 0 ? $"{media.Title} · {media.Artist}" : media.Title;
                 CompactText.Foreground = (Brush)Root.Resources["IslandForegroundBrush"];
                 CompactGlyph.Glyph = "";
                 CompactArtBrush.ImageSource = media.Thumbnail;
@@ -856,22 +924,190 @@ public sealed partial class IslandWindow : Window
     }
 
     /// <summary>
-    /// Эквалайзер — десять кадров в секунду по таймеру, а не бесконечная анимация.
-    /// Раскадровка «Forever» перерисовывала капсулу с частотой монитора (на 144 Гц —
-    /// 144 раза в секунду) всё время, пока играет музыка, — часы подряд. Дискретные
-    /// столбики читаются как индикатор уровня и стоят в десятки раз дешевле.
+    /// Визуализатор: столбики в капсуле и в карточке «Сейчас играет».
+    ///
+    /// Кадры — по таймеру с частотой из настроек (15/30/60), а не бесконечной
+    /// анимацией: раскадровка «Forever» перерисовывала капсулу с частотой монитора
+    /// часами подряд. Звук слушается, только пока столбики видны и выбран режим
+    /// «по звуку»: иначе захват даже не запускается.
     /// </summary>
+    private void UpdateVisualizer()
+    {
+        var s = SettingsStore.Current;
+        var media = _app.Media;
+        var on = s.VisualizerMode != "off";
+        var capsule = on && _shape == Shape.Compact && _compactKind == CompactKind.Media;
+        var card = on && s.VisualizerInCard && MediaCard.Visibility == Visibility.Visible && _mode != Mode.Collapsed;
+
+        EnsureBars(Equalizer, _capsuleBars, s.VisualizerBars, 14, 3);
+        EnsureBars(CardVisualizer, _cardBars, s.VisualizerBars, 26, 4);
+        Equalizer.Visibility = on && _compactKind == CompactKind.Media ? Visibility.Visible : Visibility.Collapsed;
+        CardVisualizer.Visibility = on && s.VisualizerInCard ? Visibility.Visible : Visibility.Collapsed;
+
+        var color = s.VisualizerColor switch
+        {
+            "white" => Microsoft.UI.Colors.White,
+            "album" when media.ArtColor is { } art => art,
+            _ => ColorHelper.FromArgb(255, 0x3B, 0xE5, 0xCE),
+        };
+        if (color != _barColor || _capsuleBars.Any(b => b.Fill is null))
+        {
+            _barColor = color;
+            var brush = new SolidColorBrush(color);
+            foreach (var bar in _capsuleBars.Concat(_cardBars)) bar.Fill = brush;
+        }
+
+        var running = (capsule || card) && media.IsPlaying;
+        var reactive = running && s.VisualizerMode == "reactive";
+        _spectrum.Configure(s.VisualizerBars, s.VisualizerSensitivity);
+        if (reactive) _spectrum.Start();
+        else _spectrum.Stop();
+
+        _equalizerTimer.Interval = TimeSpan.FromMilliseconds(1000.0 / (reactive ? s.VisualizerFps : Math.Min(s.VisualizerFps, 15)));
+        if (running != _equalizerRunning)
+        {
+            _equalizerRunning = running;
+            if (running) _equalizerTimer.Start();
+            else
+            {
+                _equalizerTimer.Stop();
+                // На паузе столбики ложатся, а не замирают посреди такта.
+                SetBars(_capsuleBars, 0.2f);
+                SetBars(_cardBars, 0.2f);
+            }
+        }
+    }
+
+    private static void EnsureBars(StackPanel host, List<Rectangle> bars, int count, double height, double width)
+    {
+        if (bars.Count == count) return;
+        host.Children.Clear();
+        bars.Clear();
+        for (var i = 0; i < count; i++)
+        {
+            var bar = new Rectangle
+            {
+                Width = width,
+                Height = height,
+                RadiusX = width / 2,
+                RadiusY = width / 2,
+                RenderTransformOrigin = new Point(0.5, 1),
+                RenderTransform = new ScaleTransform { ScaleY = 0.2 },
+                VerticalAlignment = VerticalAlignment.Bottom,
+            };
+            bars.Add(bar);
+            host.Children.Add(bar);
+        }
+    }
+
+    private static void SetBars(List<Rectangle> bars, float level)
+    {
+        foreach (var bar in bars)
+            ((ScaleTransform)bar.RenderTransform).ScaleY = level;
+    }
+
     private void OnEqualizerFrame()
     {
-        var t = Environment.TickCount64 / 1000.0;
-        ReadOnlySpan<double> speed = [7.1, 5.3, 8.7, 6.2];
-        ReadOnlySpan<double> phase = [0.0, 1.7, 3.1, 4.4];
-        Rectangle[] bars = [EqBar1, EqBar2, EqBar3, EqBar4];
-        for (var i = 0; i < bars.Length; i++)
+        var count = _capsuleBars.Count;
+        if (SettingsStore.Current.VisualizerMode == "reactive")
         {
-            var wave = Math.Abs(Math.Sin(t * speed[i] + phase[i])) * 0.6 + Math.Abs(Math.Sin(t * speed[i] * 0.37 + phase[i])) * 0.4;
-            ((ScaleTransform)bars[i].RenderTransform).ScaleY = 0.25 + 0.75 * wave;
+            _spectrum.Read(_levels);
         }
+        else
+        {
+            // «Анимация»: две синусоиды на столбик — живо, но без захвата звука.
+            var t = Environment.TickCount64 / 1000.0;
+            for (var i = 0; i < count; i++)
+            {
+                var speed = 5.3 + i * 1.37 % 3.4;
+                var phase = i * 1.7;
+                _levels[i] = (float)(Math.Abs(Math.Sin(t * speed + phase)) * 0.6 + Math.Abs(Math.Sin(t * speed * 0.37 + phase)) * 0.4);
+            }
+        }
+
+        for (var i = 0; i < count; i++)
+        {
+            var level = 0.15f + 0.85f * Math.Clamp(_levels[i], 0, 1);
+            if (i < _capsuleBars.Count) ((ScaleTransform)_capsuleBars[i].RenderTransform).ScaleY = level;
+            if (i < _cardBars.Count) ((ScaleTransform)_cardBars[i].RenderTransform).ScaleY = level;
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Громкость играющего приложения
+    // ------------------------------------------------------------------
+
+    private async Task RefreshVolumeAsync()
+    {
+        if (!SettingsStore.Current.MediaVolume || !_app.Media.HasSession)
+        {
+            VolumePanel.Visibility = Visibility.Collapsed;
+            return;
+        }
+        var volume = await _app.Media.GetVolumeAsync();
+        if (volume is not { } level)
+        {
+            // Аудиосеанс приложения не нашёлся — ползунок, который ничего не двигает, хуже его отсутствия.
+            VolumePanel.Visibility = Visibility.Collapsed;
+            _volumePercent = -1;
+            return;
+        }
+        _volumePercent = (int)Math.Round(level * 100);
+        _suppressVolume = true;
+        VolumeSlider.Value = _volumePercent;
+        _suppressVolume = false;
+        VolumeGlyph.Glyph = VolumeGlyphFor(_volumePercent);
+        VolumePanel.Visibility = Visibility.Visible;
+    }
+
+    private static string VolumeGlyphFor(int percent) => percent switch
+    {
+        0 => "\uE74F",
+        < 34 => "\uE993",
+        < 67 => "\uE994",
+        _ => "\uE995",
+    };
+
+    private void VolumeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (_suppressVolume) return;
+        _volumePercent = (int)Math.Round(e.NewValue);
+        VolumeGlyph.Glyph = VolumeGlyphFor(_volumePercent);
+        _ = _app.Media.SetVolumeAsync(_volumePercent / 100f);
+    }
+
+    /// <summary>Колесо над карточкой или живой капсулой — громкость приложения шагом 5%.</summary>
+    private async void Media_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
+    {
+        if (!SettingsStore.Current.MediaVolume || !_app.Media.HasSession) return;
+        e.Handled = true;
+        var delta = e.GetCurrentPoint(null).Properties.MouseWheelDelta;
+        if (_volumePercent < 0)
+        {
+            var current = await _app.Media.GetVolumeAsync();
+            if (current is null) return;
+            _volumePercent = (int)Math.Round(current.Value * 100);
+        }
+        _volumePercent = Math.Clamp(_volumePercent + (delta > 0 ? 5 : -5), 0, 100);
+        _ = _app.Media.SetVolumeAsync(_volumePercent / 100f);
+
+        _suppressVolume = true;
+        VolumeSlider.Value = _volumePercent;
+        _suppressVolume = false;
+        VolumeGlyph.Glyph = VolumeGlyphFor(_volumePercent);
+
+        // В капсуле на секунду вместо названия трека — громкость.
+        _volumeFlashUntil = Environment.TickCount64 + 1200;
+        if (_volumeFlashTimer is null)
+        {
+            _volumeFlashTimer = DispatcherQueue.CreateTimer();
+            _volumeFlashTimer.Interval = TimeSpan.FromMilliseconds(1250);
+            _volumeFlashTimer.IsRepeating = false;
+            _volumeFlashTimer.Tick += (_, _) => Guard.Run(UpdateCompact);
+        }
+        _volumeFlashTimer.Stop();
+        _volumeFlashTimer.Start();
+        UpdateCompact();
     }
 
     private async void SetCompactImage(string? icon)
@@ -946,12 +1182,14 @@ public sealed partial class IslandWindow : Window
             UpdateMediaProgress();
             if (media.IsPlaying && media.Duration > TimeSpan.Zero) _mediaTimer.Start();
             else _mediaTimer.Stop();
+            if (!was) _ = RefreshVolumeAsync();
         }
         else
         {
             _mediaTimer.Stop();
         }
 
+        UpdateVisualizer();
         if (show != was && _mode != Mode.Collapsed)
             AnimateToTarget();
     }
@@ -1290,7 +1528,7 @@ public sealed partial class IslandWindow : Window
         OnSearchTextChanged();
     }
 
-    private readonly TextBlock _placeholderProbe = new() { FontSize = 14 };
+    private readonly TextBlock _placeholderProbe = new() { FontSize = 15 };
 
     /// <summary>
     /// Подсказка клавиши — только пока строка пуста и только если помещается рядом
@@ -1304,8 +1542,9 @@ public sealed partial class IslandWindow : Window
             _placeholderProbe.Text = SearchBox.PlaceholderText;
             _placeholderProbe.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
             HotkeyHint.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            // Ширины ещё нет (островок не раскрывался) — не показываем: проверим при раскрытии.
             var free = SearchBox.ActualWidth - 14 - 10 - _placeholderProbe.DesiredSize.Width;
-            show = SearchBox.ActualWidth <= 0 || free >= HotkeyHint.DesiredSize.Width + 16;
+            show = SearchBox.ActualWidth > 0 && free >= HotkeyHint.DesiredSize.Width + 24;
         }
         HotkeyHint.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
     }
@@ -1808,6 +2047,7 @@ public sealed partial class IslandWindow : Window
         _peekGapTimer.Stop();
         _mediaTimer.Stop();
         _equalizerTimer.Stop();
+        _spectrum.Dispose();
         _host.Dispose();
     }
 }

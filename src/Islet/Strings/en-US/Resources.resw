@@ -959,4 +959,85 @@
   <data name="S_Forget" xml:space="preserve">
     <value>Forget all</value>
   </data>
+  <data name="Volume_Format" xml:space="preserve">
+    <value>Volume {0}%</value>
+  </data>
+  <data name="S_Position" xml:space="preserve">
+    <value>Horizontal position</value>
+  </data>
+  <data name="S_PositionHint" xml:space="preserve">
+    <value>Near an edge the island grows towards the screen, not both ways</value>
+  </data>
+  <data name="S_PosLeft" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="S_PosCenter" xml:space="preserve">
+    <value>Centre</value>
+  </data>
+  <data name="S_PosRight" xml:space="preserve">
+    <value>Right</value>
+  </data>
+  <data name="S_MusicSection" xml:space="preserve">
+    <value>Music</value>
+  </data>
+  <data name="S_MediaVolume" xml:space="preserve">
+    <value>App volume</value>
+  </data>
+  <data name="S_MediaVolumeHint" xml:space="preserve">
+    <value>A slider in the card, and the mouse wheel over the card or the capsule changes the volume of whatever is playing — like the Windows mixer</value>
+  </data>
+  <data name="S_VisualizerSection" xml:space="preserve">
+    <value>Visualizer</value>
+  </data>
+  <data name="S_VisMode" xml:space="preserve">
+    <value>How the bars move</value>
+  </data>
+  <data name="S_VisModeHint" xml:space="preserve">
+    <value>To the sound — listens to what your speakers play (no microphone involved); animation — they just sway</value>
+  </data>
+  <data name="S_VisReactive" xml:space="preserve">
+    <value>To the sound</value>
+  </data>
+  <data name="S_VisAnimated" xml:space="preserve">
+    <value>Animation</value>
+  </data>
+  <data name="S_VisOff" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="S_VisBars" xml:space="preserve">
+    <value>Number of bars</value>
+  </data>
+  <data name="S_VisColor" xml:space="preserve">
+    <value>Colour</value>
+  </data>
+  <data name="S_VisColorHint" xml:space="preserve">
+    <value>The album colour follows every track</value>
+  </data>
+  <data name="S_VisAlbum" xml:space="preserve">
+    <value>Album colour</value>
+  </data>
+  <data name="S_VisAccent" xml:space="preserve">
+    <value>Islet aqua</value>
+  </data>
+  <data name="S_VisWhite" xml:space="preserve">
+    <value>White</value>
+  </data>
+  <data name="S_VisSensitivity" xml:space="preserve">
+    <value>Sensitivity</value>
+  </data>
+  <data name="S_VisSensitivityHint" xml:space="preserve">
+    <value>Higher — the bars jump even at quiet sounds</value>
+  </data>
+  <data name="S_VisFps" xml:space="preserve">
+    <value>Smoothness</value>
+  </data>
+  <data name="S_VisFpsHint" xml:space="preserve">
+    <value>More frames look smoother but cost a little more</value>
+  </data>
+  <data name="S_VisFpsValue" xml:space="preserve">
+    <value>{0} fps</value>
+  </data>
+  <data name="S_VisInCard" xml:space="preserve">
+    <value>Visualizer in the “Now playing” card</value>
+  </data>
 </root>

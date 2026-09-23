@@ -43,7 +43,7 @@
             x:Name="Pill"
             Width="160"
             Height="8"
-            HorizontalAlignment="Center"
+            HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Background="{StaticResource IslandSurfaceBrush}"
             BackgroundSizing="OuterBorderEdge"
@@ -60,15 +60,14 @@
                 <Grid
                     x:Name="CompactLayer"
                     Height="30"
+                    Background="Transparent"
+                    PointerWheelChanged="Media_PointerWheelChanged"
                     Padding="6,0,10,0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     ColumnSpacing="8"
                     IsHitTestVisible="False"
                     Opacity="0">
-                    <Grid.OpacityTransition>
-                        <ScalarTransition Duration="0:0:0.16" />
-                    </Grid.OpacityTransition>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
@@ -94,26 +93,14 @@
                         MaxLines="1"
                         TextTrimming="CharacterEllipsis" />
 
+                    <!-- Столбики визуализатора создаёт код: их число задаётся в настройках. -->
                     <StackPanel
                         x:Name="Equalizer"
                         Grid.Column="2"
-                        Height="12"
+                        Height="14"
                         VerticalAlignment="Center"
                         Orientation="Horizontal"
-                        Spacing="2">
-                        <Rectangle x:Name="EqBar1" Width="3" Height="12" Fill="{StaticResource IslandAccentBrush}" RadiusX="1.5" RadiusY="1.5" RenderTransformOrigin="0.5,1">
-                            <Rectangle.RenderTransform><ScaleTransform ScaleY="0.6" /></Rectangle.RenderTransform>
-                        </Rectangle>
-                        <Rectangle x:Name="EqBar2" Width="3" Height="12" Fill="{StaticResource IslandAccentBrush}" RadiusX="1.5" RadiusY="1.5" RenderTransformOrigin="0.5,1">
-                            <Rectangle.RenderTransform><ScaleTransform ScaleY="0.9" /></Rectangle.RenderTransform>
-                        </Rectangle>
-                        <Rectangle x:Name="EqBar3" Width="3" Height="12" Fill="{StaticResource IslandAccentBrush}" RadiusX="1.5" RadiusY="1.5" RenderTransformOrigin="0.5,1">
-                            <Rectangle.RenderTransform><ScaleTransform ScaleY="0.5" /></Rectangle.RenderTransform>
-                        </Rectangle>
-                        <Rectangle x:Name="EqBar4" Width="3" Height="12" Fill="{StaticResource IslandAccentBrush}" RadiusX="1.5" RadiusY="1.5" RenderTransformOrigin="0.5,1">
-                            <Rectangle.RenderTransform><ScaleTransform ScaleY="0.7" /></Rectangle.RenderTransform>
-                        </Rectangle>
-                    </StackPanel>
+                        Spacing="2" />
 
                     <!-- Прогресс активности тонкой полоской у нижнего края. -->
                     <Grid
@@ -140,9 +127,6 @@
                     IsHitTestVisible="False"
                     Opacity="0"
                     Tapped="PeekLayer_Tapped">
-                    <Grid.OpacityTransition>
-                        <ScalarTransition Duration="0:0:0.18" />
-                    </Grid.OpacityTransition>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="36" />
                         <ColumnDefinition Width="*" />
@@ -216,9 +200,6 @@
                     VerticalAlignment="Top"
                     IsHitTestVisible="False"
                     Opacity="0">
-                    <Grid.OpacityTransition>
-                        <ScalarTransition Duration="0:0:0.14" />
-                    </Grid.OpacityTransition>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="54" />
                         <RowDefinition Height="Auto" />
@@ -398,11 +379,14 @@
                         Padding="8,8,10,8"
                         Background="{StaticResource IslandCardBrush}"
                         CornerRadius="16"
+                        PointerWheelChanged="Media_PointerWheelChanged"
                         Visibility="Collapsed">
                         <Grid ColumnSpacing="12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="48" />
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <Grid Width="48" Height="48">
@@ -437,7 +421,35 @@
                                     <Rectangle x:Name="MediaProgress" Width="0" HorizontalAlignment="Left" Fill="{StaticResource IslandAccentBrush}" RadiusX="1.5" RadiusY="1.5" />
                                 </Grid>
                             </StackPanel>
-                            <StackPanel Grid.Column="2" VerticalAlignment="Center" Orientation="Horizontal" Spacing="2">
+                            <StackPanel
+                                x:Name="CardVisualizer"
+                                Grid.Column="2"
+                                Height="26"
+                                VerticalAlignment="Center"
+                                Orientation="Horizontal"
+                                Spacing="3" />
+
+                            <!-- Громкость играющего приложения, как в микшере Windows. Колесо мыши над карточкой — тоже она. -->
+                            <StackPanel
+                                x:Name="VolumePanel"
+                                Grid.Column="3"
+                                VerticalAlignment="Center"
+                                Orientation="Horizontal"
+                                Spacing="4"
+                                Visibility="Collapsed">
+                                <FontIcon x:Name="VolumeGlyph" FontSize="13" Foreground="{StaticResource IslandMutedBrush}" Glyph="&#xE767;" />
+                                <Slider
+                                    x:Name="VolumeSlider"
+                                    Width="84"
+                                    VerticalAlignment="Center"
+                                    IsThumbToolTipEnabled="True"
+                                    Maximum="100"
+                                    Minimum="0"
+                                    StepFrequency="1"
+                                    ValueChanged="VolumeSlider_ValueChanged" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="4" VerticalAlignment="Center" Orientation="Horizontal" Spacing="2">
                                 <Button x:Name="MediaPrev" Click="MediaPrev_Click" Style="{StaticResource IslandIconButton}">
                                     <FontIcon FontSize="14" Glyph="&#xE892;" />
                                 </Button>
