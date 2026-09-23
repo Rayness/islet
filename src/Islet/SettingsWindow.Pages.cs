@@ -308,16 +308,61 @@ public sealed partial class SettingsWindow
                 Glyph = "",
                 Foreground = new SolidColorBrush(ColorHelper.FromArgb(0xFF, 0x3B, 0xE5, 0xCE)),
             }));
-            stack.Children.Add(Toggle(Loc.T("S_ClipTideNotifications"), Loc.T("S_ClipTideNotificationsHint"), s.ClipTideNotifications, on =>
+            stack.Children.Add(Toggle(Loc.T("S_ClipTideNotifications"), Loc.T("S_ClipTideNotificationsHint"), s.ClipTideNotifications,
+                on => SettingsStore.Update(x => x.ClipTideNotifications = on)));
+
+            if (!clipTide.CanDownload)
             {
-                SettingsStore.Update(x => x.ClipTideNotifications = on);
-                clipTide.Start();
+                stack.Children.Add(Row(Loc.T("ClipTide_UpdateNeeded"), Loc.T("S_ClipTideUpdateHint"),
+                    ActionButton(Loc.T("S_ClipTideDownload"), () => Launcher.Open(ClipTideBridge.ReleasesUrl))));
+            }
+            stack.Children.Add(Toggle(Loc.T("S_ClipTideLinks"), Loc.T("S_ClipTideLinksHint"), s.ClipTideLinks,
+                on => SettingsStore.Update(x => x.ClipTideLinks = on)));
+
+            string[] formats = [.. ClipTideProvider.VideoFormats, .. ClipTideProvider.AudioFormats];
+            var formatLabels = formats.Select(f => ClipTideProvider.AudioFormats.Contains(f)
+                ? Loc.T("S_ClipTideAudioOnly", f.ToUpperInvariant())
+                : f.ToUpperInvariant()).ToArray();
+            stack.Children.Add(Choice(Loc.T("S_ClipTideFormat"), Loc.T("S_ClipTideFormatHint"), formats, formatLabels, s.ClipTideFormat,
+                value => SettingsStore.Update(x => x.ClipTideFormat = value)));
+            var qualities = ClipTideProvider.Qualities;
+            stack.Children.Add(Choice(Loc.T("S_ClipTideQuality"), null, qualities,
+                ["2160p · 4K", "1440p · 2K", "1080p · Full HD", "720p · HD", "480p", "360p"], s.ClipTideQuality,
+                value => SettingsStore.Update(x => x.ClipTideQuality = value)));
+
+            stack.Children.Add(Toggle(Loc.T("S_ClipTideProgress"), Loc.T("S_ClipTideProgressHint"), s.ClipTideProgress, on =>
+            {
+                SettingsStore.Update(x => x.ClipTideProgress = on);
+                if (on) clipTide.Subscribe();
+                else clipTide.Unsubscribe();
             }));
         }
         else
         {
             stack.Children.Add(Row(Loc.T("S_ClipTideMissing"), Loc.T("S_ClipTideMissingHint"),
-                ActionButton(Loc.T("S_ClipTideDownload"), () => Launcher.Open("https://github.com/Rayness/YouTube-Downloader/releases/latest"))));
+                ActionButton(Loc.T("S_ClipTideDownload"), () => Launcher.Open(ClipTideBridge.ReleasesUrl))));
+        }
+
+        // --- Wireless Device Connect: только если он есть — программа не публичная ---
+        var wdc = App.Current.Devices;
+        if (wdc.IsInstalled)
+        {
+            stack.Children.Add(Section(WirelessDevicesBridge.AppName));
+            stack.Children.Add(Hint(Loc.T("S_WdcHint")));
+            stack.Children.Add(Toggle(Loc.T("S_WdcPeeks"), Loc.T("S_WdcPeeksHint"), s.WirelessBatteryPeeks, on =>
+            {
+                SettingsStore.Update(x => x.WirelessBatteryPeeks = on);
+                wdc.Refresh();
+            }));
+            string[] thresholds = ["30", "20", "15", "10"];
+            stack.Children.Add(Choice(Loc.T("S_WdcThreshold"), Loc.T("S_WdcThresholdHint"), thresholds,
+                thresholds.Select(t => $"{t}%").ToArray(), s.WirelessLowBattery.ToString(), value =>
+                {
+                    SettingsStore.Update(x => x.WirelessLowBattery = int.Parse(value));
+                    wdc.Refresh();
+                }));
+            stack.Children.Add(Toggle(Loc.T("S_WdcSearch"), Loc.T("S_WdcSearchHint"), s.WirelessSearch,
+                on => SettingsStore.Update(x => x.WirelessSearch = on)));
         }
 
         // --- Свои программы ---

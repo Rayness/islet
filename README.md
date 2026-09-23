@@ -122,7 +122,7 @@ Type `?` to see all of them.
 | `cb ` | clipboard history |
 | `timer ` | a timer: `5m`, `25 min`, `1:30`, with a label |
 | `k ` | anime in the [Kawaki](https://kawaki.ru) catalogue |
-| `ct ` | recent ClipTide downloads |
+| `ct ` | download a link with ClipTide (`ct <link> mp3 720`), recent downloads |
 | `kill ` | running processes, to end them (plugin) |
 | `g ` `y ` `yt ` `w ` `gh ` `tr ` `maps ` `so ` `npm ` `shiki ` | site search (plugin) |
 
@@ -133,8 +133,12 @@ Type `?` to see all of them.
   rewards arrive as peeks; `k ` searches the catalogue with posters. Tokens are stored
   encrypted with DPAPI.
 - **ClipTide.** If [ClipTide](https://github.com/Rayness/YouTube-Downloader) is installed,
-  finished downloads show up as peeks with a thumbnail; a click opens the folder. ClipTide needs
-  no changes — the island watches its notification file.
+  finished downloads show up as peeks with a thumbnail; a click opens the folder. `ct <link>` sends
+  the link to ClipTide and the download starts right away; links to YouTube, TikTok, VK and other
+  video sites get a “Download” row in search, and `ct` on its own takes the link from the
+  clipboard. While ClipTide downloads, the capsule shows the title, percent and thumbnail. If
+  ClipTide is closed, the island starts it minimised. Downloading needs a ClipTide with the
+  channel for other programs; notifications work with any version.
 - **Your own scripts.** `Islet.exe --notify "Backup finished" "312 files"` or a JSON line into
   `\\.\pipe\Islet.<user name>` — see [docs/protocol.md](docs/protocol.md).
 
@@ -176,7 +180,7 @@ The drive index can be turned off, leaving only Windows Search.
 | Appearance | horizontal position, glass, background density, island width, collapsed capsule size, number of result rows, clock |
 | Search | calculator, commands, clipboard history, recent items, remembering launches; the drive index, its folders and exclusions |
 | Buttons | order, removal, adding an app, a file, a folder or a link |
-| Integrations | Kawaki sign-in, Kawaki notifications and search, ClipTide notifications, examples for your scripts |
+| Integrations | Kawaki sign-in, Kawaki notifications and search; ClipTide notifications, link downloads, format and quality, progress in the capsule; examples for your scripts |
 | Plugins | the list, on/off switches, errors, the plugins folder, reload |
 
 Every change is saved as you make it; there is no Apply button.

@@ -19,11 +19,12 @@ internal static class IpcChannel
 
 internal static class IpcClient
 {
-    public static bool TrySend(string jsonLine, int timeoutMs = 2000)
+    /// <summary>Строка JSON в канал островка или, если задан <paramref name="pipeName"/>, в чужой (ClipTide).</summary>
+    public static bool TrySend(string jsonLine, int timeoutMs = 2000, string? pipeName = null)
     {
         try
         {
-            using var pipe = new NamedPipeClientStream(".", IpcChannel.PipeName, PipeDirection.Out, PipeOptions.CurrentUserOnly);
+            using var pipe = new NamedPipeClientStream(".", pipeName ?? IpcChannel.PipeName, PipeDirection.Out, PipeOptions.CurrentUserOnly);
             pipe.Connect(timeoutMs);
             var bytes = Encoding.UTF8.GetBytes(jsonLine.ReplaceLineEndings(" ") + "\n");
             pipe.Write(bytes);

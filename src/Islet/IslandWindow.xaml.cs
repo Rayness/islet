@@ -133,6 +133,8 @@ public sealed partial class IslandWindow : Window
 
     // Живая капсула.
     private CompactKind _compactKind = CompactKind.None;
+    /// <summary>Какая картинка активности стоит в капсуле сейчас.</summary>
+    private string? _compactIcon;
     private double _compactWidth = 200;
     private bool _equalizerRunning;
 
@@ -912,6 +914,7 @@ public sealed partial class IslandWindow : Window
                 CompactText.Foreground = (Brush)Root.Resources["IslandForegroundBrush"];
                 CompactGlyph.Glyph = "";
                 CompactArtBrush.ImageSource = media.Thumbnail;
+                _compactIcon = null;
                 CompactGlyph.Visibility = media.Thumbnail is null ? Visibility.Visible : Visibility.Collapsed;
                 Equalizer.Visibility = Visibility.Visible;
                 CompactProgressTrack.Visibility = Visibility.Collapsed;
@@ -1117,6 +1120,14 @@ public sealed partial class IslandWindow : Window
 
     private async void SetCompactImage(string? icon)
     {
+        // Прогресс загрузки обновляет активность несколько раз в секунду —
+        // та же картинка уже стоит, не сбрасываем её, иначе капсула мигает.
+        if (icon is not null && icon == _compactIcon && CompactArtBrush.ImageSource is not null)
+        {
+            CompactGlyph.Visibility = Visibility.Collapsed;
+            return;
+        }
+        _compactIcon = icon;
         CompactArtBrush.ImageSource = null;
         if (icon is null) return;
         var image = await ShellIcons.LoadAsync(icon, 20);

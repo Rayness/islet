@@ -33,6 +33,7 @@ public partial class App : Application
     internal ClipboardHistory Clipboard { get; } = new();
     internal KawakiClient Kawaki { get; } = new();
     internal ClipTideBridge ClipTide { get; } = new();
+    internal WirelessDevicesBridge Devices { get; } = new();
     internal PluginManager Plugins { get; } = new();
     internal SearchService Search { get; private set; } = null!;
 
@@ -60,8 +61,9 @@ public partial class App : Application
         DriveIndex.Start();
 
         Search = new SearchService(DriveIndex, [new KawakiProvider(Kawaki)]);
-        var clipTide = new ClipTideProvider(Search.Apps);
-        Search.Extra = () => Plugins.Providers.Append(clipTide);
+        var clipTide = new ClipTideProvider(Search.Apps, ClipTide);
+        var devices = new WirelessDevicesProvider(Devices, Search.Apps);
+        Search.Extra = () => Plugins.Providers.Append(clipTide).Append(devices);
         ActionRunner.PluginInvoker = Plugins.Invoke;
         Plugins.Load();
 
@@ -74,6 +76,7 @@ public partial class App : Application
         _ = Media.StartAsync(_queue);
         Kawaki.Start();
         ClipTide.Start();
+        Devices.Start();
 
         // Проверка обновлений не должна задерживать запуск островка.
         _ = Updater.CheckAsync();
@@ -144,6 +147,7 @@ public partial class App : Application
         Plugins.Dispose();
         Kawaki.Stop();
         ClipTide.Dispose();
+        Devices.Dispose();
         Media.Stop();
         Notifications.Save();
         DriveIndex.Dispose();

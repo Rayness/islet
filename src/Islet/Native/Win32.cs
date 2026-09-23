@@ -71,6 +71,9 @@ internal static unsafe partial class Win32
     [DllImport("user32.dll")]
     public static extern bool SetForegroundWindow(nint hWnd);
 
+    /// <summary>Для <see cref="AllowSetForegroundWindow"/>: право вывести окно вперёд — любому процессу.</summary>
+    public const int ASFW_ANY = -1;
+
     [DllImport("user32.dll")]
     public static extern nint GetForegroundWindow();
 

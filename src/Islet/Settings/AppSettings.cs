@@ -129,6 +129,20 @@ public sealed class AppSettings
     public bool KawakiGlobalSearch { get; set; } = false;
     public bool KawakiNotifications { get; set; } = true;
     public bool ClipTideNotifications { get; set; } = true;
+    /// <summary>«ct &lt;ссылка&gt;» и строка «Скачать» под ссылками на видео в общей выдаче.</summary>
+    public bool ClipTideLinks { get; set; } = true;
+    /// <summary>Формат и качество по умолчанию для ссылок из островка (как в ClipTide: mp4…flac, 2160…360).</summary>
+    public string ClipTideFormat { get; set; } = "mp4";
+    public string ClipTideQuality { get; set; } = "1080";
+    /// <summary>Живой прогресс загрузок ClipTide в капсуле.</summary>
+    public bool ClipTideProgress { get; set; } = true;
+
+    /// <summary>Wireless Device Connect: пик, когда садится заряд, и капсула, когда почти сел.</summary>
+    public bool WirelessBatteryPeeks { get; set; } = true;
+    /// <summary>Порог «садится», %; «почти сел» — вдвое ниже.</summary>
+    public int WirelessLowBattery { get; set; } = 20;
+    /// <summary>«bat » и имена устройств в поиске.</summary>
+    public bool WirelessSearch { get; set; } = true;
 
     /// <summary>Выключенные плагины по id.</summary>
     public List<string> DisabledPlugins { get; set; } = [];

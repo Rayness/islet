@@ -489,7 +489,7 @@
     <value>An expression: 2+2*3, sqrt(2), 15%4, 0xFF</value>
   </data>
   <data name="Provider_ClipTideHint" xml:space="preserve">
-    <value>Recent ClipTide downloads</value>
+    <value>Download a link, recent ClipTide downloads</value>
   </data>
   <data name="Provider_Clipboard" xml:space="preserve">
     <value>Clipboard</value>
@@ -870,7 +870,7 @@
     <value>ClipTide found</value>
   </data>
   <data name="S_ClipTideFoundHint" xml:space="preserve">
-    <value>Finished downloads show up as island peeks; click to open the folder. “ct ” lists recent downloads.</value>
+    <value>Finished downloads show up as island peeks; click to open the folder. “ct &lt;link&gt;” downloads, “ct ” lists recent downloads.</value>
   </data>
   <data name="S_ClipTideMissing" xml:space="preserve">
     <value>ClipTide isn't installed</value>
@@ -1045,5 +1045,116 @@
   </data>
   <data name="RecentHint.Text" xml:space="preserve">
     <value>Shift+Del removes · can be turned off in Search settings</value>
+  </data>
+  <data name="ClipTide_DownloadVideo" xml:space="preserve">
+    <value>Download video</value>
+  </data>
+  <data name="ClipTide_DownloadAudio" xml:space="preserve">
+    <value>Download audio</value>
+  </data>
+  <data name="ClipTide_FromClipboard" xml:space="preserve">
+    <value>From clipboard: {0} · {1}</value>
+  </data>
+  <data name="ClipTide_Analyzing" xml:space="preserve">
+    <value>ClipTide · reading the link…</value>
+  </data>
+  <data name="ClipTide_Starting" xml:space="preserve">
+    <value>Starting ClipTide…</value>
+  </data>
+  <data name="ClipTide_Finishing" xml:space="preserve">
+    <value>{0} · finishing</value>
+  </data>
+  <data name="ClipTide_Many" xml:space="preserve">
+    <value>{0} downloads · {1}%</value>
+  </data>
+  <data name="ClipTide_Failed" xml:space="preserve">
+    <value>Download failed</value>
+  </data>
+  <data name="ClipTide_LaunchFailed" xml:space="preserve">
+    <value>ClipTide didn't start</value>
+  </data>
+  <data name="ClipTide_UpdateNeeded" xml:space="preserve">
+    <value>Update ClipTide</value>
+  </data>
+  <data name="ClipTide_UpdateNeededHint" xml:space="preserve">
+    <value>This version can't take links from Islet</value>
+  </data>
+  <data name="S_ClipTideUpdateHint" xml:space="preserve">
+    <value>The installed version can't take links from Islet — notifications work, downloading with “ct ” comes with the update</value>
+  </data>
+  <data name="S_ClipTideLinks" xml:space="preserve">
+    <value>Download links</value>
+  </data>
+  <data name="S_ClipTideLinksHint" xml:space="preserve">
+    <value>“ct &lt;link&gt;” sends it to ClipTide, and links to YouTube, TikTok, VK and other video sites get a “Download” row in search. “ct” on its own takes the link from the clipboard.</value>
+  </data>
+  <data name="S_ClipTideFormat" xml:space="preserve">
+    <value>Default format</value>
+  </data>
+  <data name="S_ClipTideFormatHint" xml:space="preserve">
+    <value>Change it right in the query: “ct &lt;link&gt; mp3 720”</value>
+  </data>
+  <data name="S_ClipTideAudioOnly" xml:space="preserve">
+    <value>{0} · audio only</value>
+  </data>
+  <data name="S_ClipTideQuality" xml:space="preserve">
+    <value>Default quality</value>
+  </data>
+  <data name="S_ClipTideProgress" xml:space="preserve">
+    <value>Progress in the capsule</value>
+  </data>
+  <data name="S_ClipTideProgressHint" xml:space="preserve">
+    <value>While ClipTide downloads, the capsule shows the title, percent and thumbnail; click to open ClipTide</value>
+  </data>
+  <data name="Provider_WdcHint" xml:space="preserve">
+    <value>Mouse and keyboard battery and connection (Wireless Device Connect)</value>
+  </data>
+  <data name="Wdc_LowTitle" xml:space="preserve">
+    <value>{0}: {1}% battery</value>
+  </data>
+  <data name="Wdc_LowBody" xml:space="preserve">
+    <value>Time to charge it</value>
+  </data>
+  <data name="Wdc_CriticalBody" xml:space="preserve">
+    <value>Almost empty — put it on charge</value>
+  </data>
+  <data name="Wdc_Activity" xml:space="preserve">
+    <value>{0} · {1}%</value>
+  </data>
+  <data name="Wdc_Dongle" xml:space="preserve">
+    <value>2.4 GHz</value>
+  </data>
+  <data name="Wdc_Disconnected" xml:space="preserve">
+    <value>Not connected</value>
+  </data>
+  <data name="Wdc_NoBattery" xml:space="preserve">
+    <value>battery not readable</value>
+  </data>
+  <data name="Wdc_NotRunning" xml:space="preserve">
+    <value>Wireless Device Connect isn't running</value>
+  </data>
+  <data name="Wdc_NotRunningHint" xml:space="preserve">
+    <value>Enter to start it; battery shows up after the first poll</value>
+  </data>
+  <data name="S_WdcHint" xml:space="preserve">
+    <value>The island gets device battery and connection from Wireless Device Connect while it runs.</value>
+  </data>
+  <data name="S_WdcPeeks" xml:space="preserve">
+    <value>Battery warnings</value>
+  </data>
+  <data name="S_WdcPeeksHint" xml:space="preserve">
+    <value>A peek when the battery drops to the threshold; at half of it, another one and a reminder in the capsule until you charge</value>
+  </data>
+  <data name="S_WdcThreshold" xml:space="preserve">
+    <value>Battery threshold</value>
+  </data>
+  <data name="S_WdcThresholdHint" xml:space="preserve">
+    <value>The island stays quiet while a device is charging</value>
+  </data>
+  <data name="S_WdcSearch" xml:space="preserve">
+    <value>Devices in search</value>
+  </data>
+  <data name="S_WdcSearchHint" xml:space="preserve">
+    <value>“bat ” lists all devices; “battery” or a device name works without the keyword too</value>
   </data>
 </root>
