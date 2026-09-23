@@ -33,7 +33,7 @@ public partial class App : Application
     internal ClipboardHistory Clipboard { get; } = new();
     internal KawakiClient Kawaki { get; } = new();
     internal ClipTideBridge ClipTide { get; } = new();
-    internal WirelessDevicesBridge Devices { get; } = new();
+    internal DeviceMonitor Devices { get; } = new();
     internal PluginManager Plugins { get; } = new();
     internal SearchService Search { get; private set; } = null!;
 
@@ -62,7 +62,7 @@ public partial class App : Application
 
         Search = new SearchService(DriveIndex, [new KawakiProvider(Kawaki)]);
         var clipTide = new ClipTideProvider(Search.Apps, ClipTide);
-        var devices = new WirelessDevicesProvider(Devices, Search.Apps);
+        var devices = new DevicesProvider(Devices);
         Search.Extra = () => Plugins.Providers.Append(clipTide).Append(devices);
         ActionRunner.PluginInvoker = Plugins.Invoke;
         Plugins.Load();

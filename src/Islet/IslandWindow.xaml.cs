@@ -226,6 +226,7 @@ public sealed partial class IslandWindow : Window
         _app.Notifications.Changed += OnNotificationsChanged;
         _app.Activities.Changed += UpdateCompact;
         _app.Media.Changed += OnMediaChanged;
+        _app.Devices.Changed += OnDevicesChanged;
         ApplySettings();
 
         UpdateClock();
@@ -1565,6 +1566,13 @@ public sealed partial class IslandWindow : Window
         HotkeyHint.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
     }
 
+    /// <summary>Пришёл свежий заряд, пока открыт «bat », — перерисовать строки.</summary>
+    private void OnDevicesChanged() => DispatcherQueue.TryEnqueue(() => Guard.Run(() =>
+    {
+        if (_mode == Mode.Pinned && _scope?.Id == "devices")
+            OnQueryChanged();
+    }));
+
     private void OnQueryChanged()
     {
         UpdateHotkeyHint();
@@ -2062,6 +2070,7 @@ public sealed partial class IslandWindow : Window
         _app.Notifications.Changed -= OnNotificationsChanged;
         _app.Activities.Changed -= UpdateCompact;
         _app.Media.Changed -= OnMediaChanged;
+        _app.Devices.Changed -= OnDevicesChanged;
         _pollTimer.Stop();
         _animationTimer.Stop();
         _clockTimer.Stop();

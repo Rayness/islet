@@ -343,27 +343,24 @@ public sealed partial class SettingsWindow
                 ActionButton(Loc.T("S_ClipTideDownload"), () => Launcher.Open(ClipTideBridge.ReleasesUrl))));
         }
 
-        // --- Wireless Device Connect: только если он есть — программа не публичная ---
-        var wdc = App.Current.Devices;
-        if (wdc.IsInstalled)
+        // --- Устройства: заряд мыши и клавиатуры читает сам островок ---
+        var devices = App.Current.Devices;
+        stack.Children.Add(Section(Loc.T("S_DevicesSection")));
+        stack.Children.Add(Hint(Loc.T("S_WdcHint")));
+        stack.Children.Add(Toggle(Loc.T("S_WdcPeeks"), Loc.T("S_WdcPeeksHint"), s.WirelessBatteryPeeks, on =>
         {
-            stack.Children.Add(Section(WirelessDevicesBridge.AppName));
-            stack.Children.Add(Hint(Loc.T("S_WdcHint")));
-            stack.Children.Add(Toggle(Loc.T("S_WdcPeeks"), Loc.T("S_WdcPeeksHint"), s.WirelessBatteryPeeks, on =>
+            SettingsStore.Update(x => x.WirelessBatteryPeeks = on);
+            devices.Reevaluate();
+        }));
+        string[] thresholds = ["30", "20", "15", "10"];
+        stack.Children.Add(Choice(Loc.T("S_WdcThreshold"), Loc.T("S_WdcThresholdHint"), thresholds,
+            thresholds.Select(t => $"{t}%").ToArray(), s.WirelessLowBattery.ToString(), value =>
             {
-                SettingsStore.Update(x => x.WirelessBatteryPeeks = on);
-                wdc.Refresh();
+                SettingsStore.Update(x => x.WirelessLowBattery = int.Parse(value));
+                devices.Reevaluate();
             }));
-            string[] thresholds = ["30", "20", "15", "10"];
-            stack.Children.Add(Choice(Loc.T("S_WdcThreshold"), Loc.T("S_WdcThresholdHint"), thresholds,
-                thresholds.Select(t => $"{t}%").ToArray(), s.WirelessLowBattery.ToString(), value =>
-                {
-                    SettingsStore.Update(x => x.WirelessLowBattery = int.Parse(value));
-                    wdc.Refresh();
-                }));
-            stack.Children.Add(Toggle(Loc.T("S_WdcSearch"), Loc.T("S_WdcSearchHint"), s.WirelessSearch,
-                on => SettingsStore.Update(x => x.WirelessSearch = on)));
-        }
+        stack.Children.Add(Toggle(Loc.T("S_WdcSearch"), Loc.T("S_WdcSearchHint"), s.WirelessSearch,
+            on => SettingsStore.Update(x => x.WirelessSearch = on)));
 
         // --- Свои программы ---
         stack.Children.Add(Section(Loc.T("S_ExternalSection")));

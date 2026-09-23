@@ -123,6 +123,7 @@ Type `?` to see all of them.
 | `timer ` | a timer: `5m`, `25 min`, `1:30`, with a label |
 | `k ` | anime in the [Kawaki](https://kawaki.ru) catalogue |
 | `ct ` | download a link with ClipTide (`ct <link> mp3 720`), recent downloads |
+| `bat ` | mouse and keyboard battery |
 | `kill ` | running processes, to end them (plugin) |
 | `g ` `y ` `yt ` `w ` `gh ` `tr ` `maps ` `so ` `npm ` `shiki ` | site search (plugin) |
 
@@ -139,6 +140,10 @@ Type `?` to see all of them.
   clipboard. While ClipTide downloads, the capsule shows the title, percent and thumbnail. If
   ClipTide is closed, the island starts it minimised. Downloading needs a ClipTide with the
   channel for other programs; notifications work with any version.
+- **Mouse and keyboard battery.** The island asks the Ajazz AJ159 APEX and Aula F75 receivers
+  for their charge: a peek when it runs low, a reminder in the capsule until you charge;
+  `bat ` lists the devices with their charge. Windows tells the island when a receiver is
+  plugged in, so nothing is polled for that.
 - **Your own scripts.** `Islet.exe --notify "Backup finished" "312 files"` or a JSON line into
   `\\.\pipe\Islet.<user name>` — see [docs/protocol.md](docs/protocol.md).
 
