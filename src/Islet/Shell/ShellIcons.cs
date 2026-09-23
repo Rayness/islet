@@ -45,6 +45,51 @@ internal static class ShellIcons
         return image;
     }
 
+    private static readonly string[] ImageExtensions = [".png", ".jpg", ".jpeg", ".bmp", ".gif", ".webp", ".ico"];
+
+    /// <summary>
+    /// Любая иконка: https:// и ms-appx:/// — картинкой по адресу, файл-картинка —
+    /// из файла, остальное (exe, папка, shell:AppsFolder\…) — иконкой оболочки.
+    /// Картинки по сети грузит и кеширует сам BitmapImage, в размер декодирования.
+    /// </summary>
+    public static async Task<ImageSource?> LoadAsync(string spec, int size)
+    {
+        if (spec.StartsWith("http", StringComparison.OrdinalIgnoreCase) || spec.StartsWith("ms-appx:", StringComparison.OrdinalIgnoreCase))
+        {
+            var key = $"{size}|{spec}";
+            if (Cache.TryGetValue(key, out var cached)) return cached;
+            if (!Uri.TryCreate(spec, UriKind.Absolute, out var uri)) return null;
+            // Постеры вытянутые: декодируем по ширине, чтобы вписать в квадрат без размытия.
+            var image = new BitmapImage { DecodePixelWidth = size * 2, UriSource = uri };
+            // Сотни постеров за сессию не держим в памяти вечно.
+            if (Cache.Count > 400) Cache.Clear();
+            Cache[key] = image;
+            return image;
+        }
+
+        if (Path.IsPathFullyQualified(spec) && ImageExtensions.Contains(Path.GetExtension(spec).ToLowerInvariant()))
+        {
+            var key = $"{size}|{spec}";
+            if (Cache.TryGetValue(key, out var cached)) return cached;
+            try
+            {
+                var file = await Windows.Storage.StorageFile.GetFileFromPathAsync(spec);
+                using var stream = await file.OpenReadAsync();
+                var image = new BitmapImage { DecodePixelWidth = size * 2 };
+                await image.SetSourceAsync(stream);
+                Cache[key] = image;
+                return image;
+            }
+            catch
+            {
+                Cache[key] = null;
+                return null;
+            }
+        }
+
+        return await GetAsync(spec, size);
+    }
+
     private readonly record struct Pixels(int Width, int Height, byte[] Bgra);
 
     private static Pixels? Extract(string parsingName, int size)

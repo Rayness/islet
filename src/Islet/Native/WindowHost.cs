@@ -18,6 +18,18 @@ internal sealed unsafe class WindowHost : IDisposable
     private readonly HashSet<int> _hotkeys = [];
 
     public event Action<int>? HotkeyPressed;
+    /// <summary>Содержимое буфера обмена поменялось (после <see cref="ListenClipboard"/>).</summary>
+    public event Action? ClipboardChanged;
+
+    private bool _clipboardListening;
+
+    public void ListenClipboard(bool listen)
+    {
+        if (listen == _clipboardListening) return;
+        _clipboardListening = listen;
+        if (listen) Win32.AddClipboardFormatListener(_hwnd);
+        else Win32.RemoveClipboardFormatListener(_hwnd);
+    }
 
     public WindowHost(nint hwnd)
     {
@@ -82,6 +94,10 @@ internal sealed unsafe class WindowHost : IDisposable
                 Win32.EraseTransparent(hWnd, wParam);
                 return 1;
 
+            case Win32.WM_CLIPBOARDUPDATE:
+                ClipboardChanged?.Invoke();
+                return 0;
+
             case Win32.WM_HOTKEY:
                 HotkeyPressed?.Invoke((int)wParam);
                 return 0;
@@ -103,6 +119,7 @@ internal sealed unsafe class WindowHost : IDisposable
 
     public void Dispose()
     {
+        ListenClipboard(false);
         foreach (var id in _hotkeys)
             Win32.UnregisterHotKey(_hwnd, id);
         _hotkeys.Clear();

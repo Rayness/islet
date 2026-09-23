@@ -50,9 +50,15 @@ public sealed partial class SettingsWindow : Window
         PlaceWindow();
 
         LoadValues();
+        BuildSearchSources();
+        BuildNotificationsPage();
+        BuildIntegrationsPage();
+        RenderPlugins();
         Nav.SelectedItem = Nav.MenuItems[0];
 
         _pins.Changed += RenderPins;
+        App.Current.Kawaki.StateChanged += OnKawakiChanged;
+        App.Current.Plugins.Changed += OnPluginsChanged;
         App.Current.DriveIndex.StatusChanged += OnIndexStatusChanged;
         Updater.Changed += OnUpdateStateChanged;
         Closed += OnClosed;
@@ -121,7 +127,7 @@ public sealed partial class SettingsWindow : Window
         RenderUpdateState();
     }
 
-    /// <summary>Открыть раздел по тегу: general, behavior, look, search, pins, about.</summary>
+    /// <summary>Открыть раздел по тегу: general, behavior, notifications, look, search, pins, integrations, plugins, about.</summary>
     public void ShowPage(string tag)
     {
         var item = Nav.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(i => (string)i.Tag == tag);
@@ -144,6 +150,9 @@ public sealed partial class SettingsWindow : Window
         SearchPage.Visibility = tag == "search" ? Visibility.Visible : Visibility.Collapsed;
         PinsPage.Visibility = tag == "pins" ? Visibility.Visible : Visibility.Collapsed;
         AboutPage.Visibility = tag == "about" ? Visibility.Visible : Visibility.Collapsed;
+        NotificationsPage.Visibility = tag == "notifications" ? Visibility.Visible : Visibility.Collapsed;
+        IntegrationsPage.Visibility = tag == "integrations" ? Visibility.Visible : Visibility.Collapsed;
+        PluginsPage.Visibility = tag == "plugins" ? Visibility.Visible : Visibility.Collapsed;
     }
 
     // ------------------------------------------------------------------
@@ -385,7 +394,7 @@ public sealed partial class SettingsWindow : Window
     // ------------------------------------------------------------------
 
     private void OnUpdateStateChanged() =>
-        DispatcherQueue.TryEnqueue(RenderUpdateState);
+        DispatcherQueue.TryEnqueue(() => Guard.Run(RenderUpdateState));
 
     private void RenderUpdateState()
     {
@@ -433,7 +442,7 @@ public sealed partial class SettingsWindow : Window
         UpdateIndexStatus();
     }
 
-    private void OnIndexStatusChanged() => DispatcherQueue.TryEnqueue(UpdateIndexStatus);
+    private void OnIndexStatusChanged() => DispatcherQueue.TryEnqueue(() => Guard.Run(UpdateIndexStatus));
 
     private void UpdateIndexStatus()
     {
@@ -680,5 +689,8 @@ public sealed partial class SettingsWindow : Window
         _pins.Changed -= RenderPins;
         App.Current.DriveIndex.StatusChanged -= OnIndexStatusChanged;
         Updater.Changed -= OnUpdateStateChanged;
+        App.Current.Kawaki.StateChanged -= OnKawakiChanged;
+        App.Current.Plugins.Changed -= OnPluginsChanged;
+        _kawakiLogin?.Cancel();
     }
 }

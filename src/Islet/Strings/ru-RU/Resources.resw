@@ -410,4 +410,553 @@
   <data name="Pin_TaskManager" xml:space="preserve">
     <value>Диспетчер задач</value>
   </data>
+  <data name="ClipTide_Open" xml:space="preserve">
+    <value>Открыть ClipTide</value>
+  </data>
+  <data name="Clipboard_Meta" xml:space="preserve">
+    <value>{0} · {1} симв.</value>
+  </data>
+  <data name="Confirm_Again" xml:space="preserve">
+    <value>Нажмите Enter ещё раз, чтобы подтвердить</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>Скопировано</value>
+  </data>
+  <data name="Ctx_Copy" xml:space="preserve">
+    <value>Копировать</value>
+  </data>
+  <data name="Ctx_Delete" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="Ctx_Forget" xml:space="preserve">
+    <value>Убрать из недавних</value>
+  </data>
+  <data name="Ctx_Paste" xml:space="preserve">
+    <value>Вставить в окно</value>
+  </data>
+  <data name="Ctx_RemoveFromHistory" xml:space="preserve">
+    <value>Удалить из истории</value>
+  </data>
+  <data name="Ctx_RunAsAdmin" xml:space="preserve">
+    <value>Запустить от имени администратора</value>
+  </data>
+  <data name="Ctx_CopyPath" xml:space="preserve">
+    <value>Копировать путь</value>
+  </data>
+  <data name="Ctx_CopyLink" xml:space="preserve">
+    <value>Копировать ссылку</value>
+  </data>
+  <data name="Hint_Layout" xml:space="preserve">
+    <value>Другая раскладка: «{0}»</value>
+  </data>
+  <data name="Hint_LayoutSub" xml:space="preserve">
+    <value>Нашлось по запросу в другой раскладке — Enter или Tab исправят строку</value>
+  </data>
+  <data name="Island_BellTooltip" xml:space="preserve">
+    <value>Уведомления</value>
+  </data>
+  <data name="Kawaki_Movie" xml:space="preserve">
+    <value>Фильм</value>
+  </data>
+  <data name="Kawaki_Special" xml:space="preserve">
+    <value>Спэшл</value>
+  </data>
+  <data name="Kawaki_SessionExpired" xml:space="preserve">
+    <value>Сессия Kawaki завершена — войдите снова</value>
+  </data>
+  <data name="Peek_Close" xml:space="preserve">
+    <value>Скрыть</value>
+  </data>
+  <data name="Plugin_BadManifest" xml:space="preserve">
+    <value>plugin.json не читается: {0}</value>
+  </data>
+  <data name="Plugin_Crashed" xml:space="preserve">
+    <value>Плагин падает (код {0}) — выключен до перезагрузки</value>
+  </data>
+  <data name="Plugin_NewerApi" xml:space="preserve">
+    <value>Плагин написан для протокола v{0} — обновите Islet</value>
+  </data>
+  <data name="Plugin_StartFailed" xml:space="preserve">
+    <value>Не запустился: {0}</value>
+  </data>
+  <data name="Provider_Apps" xml:space="preserve">
+    <value>Приложения</value>
+  </data>
+  <data name="Provider_Calc" xml:space="preserve">
+    <value>Калькулятор</value>
+  </data>
+  <data name="Provider_CalcHint" xml:space="preserve">
+    <value>Выражение: 2+2*3, sqrt(2), 15%4, 0xFF</value>
+  </data>
+  <data name="Provider_ClipTideHint" xml:space="preserve">
+    <value>Последние загрузки ClipTide</value>
+  </data>
+  <data name="Provider_Clipboard" xml:space="preserve">
+    <value>Буфер обмена</value>
+  </data>
+  <data name="Provider_ClipboardHint" xml:space="preserve">
+    <value>История буфера — Enter вставляет в окно</value>
+  </data>
+  <data name="Provider_Commands" xml:space="preserve">
+    <value>Команды</value>
+  </data>
+  <data name="Provider_CommandsHint" xml:space="preserve">
+    <value>Блокировка, сон, тема, корзина, параметры Windows</value>
+  </data>
+  <data name="Provider_Files" xml:space="preserve">
+    <value>Файлы</value>
+  </data>
+  <data name="Provider_FilesHint" xml:space="preserve">
+    <value>Только файлы и папки</value>
+  </data>
+  <data name="Provider_Help" xml:space="preserve">
+    <value>Справка</value>
+  </data>
+  <data name="Provider_KawakiHint" xml:space="preserve">
+    <value>Аниме в каталоге Kawaki</value>
+  </data>
+  <data name="Provider_Timer" xml:space="preserve">
+    <value>Таймер</value>
+  </data>
+  <data name="Provider_TimerHint" xml:space="preserve">
+    <value>5m, 25 мин, 1:30 — и подпись: «таймер 10 чай»</value>
+  </data>
+  <data name="Provider_Url" xml:space="preserve">
+    <value>Адрес</value>
+  </data>
+  <data name="Provider_Web" xml:space="preserve">
+    <value>Интернет</value>
+  </data>
+  <data name="Result_Command" xml:space="preserve">
+    <value>Команда</value>
+  </data>
+  <data name="Result_OpenUrl" xml:space="preserve">
+    <value>Открыть {0}</value>
+  </data>
+  <data name="Result_WindowsSettings" xml:space="preserve">
+    <value>Параметры Windows</value>
+  </data>
+  <data name="Shortcut_Hint" xml:space="preserve">
+    <value>Поиск: {0}</value>
+  </data>
+  <data name="Shortcut_Home" xml:space="preserve">
+    <value>Открыть {0}</value>
+  </data>
+  <data name="Shortcut_Search" xml:space="preserve">
+    <value>Найти «{0}» — {1}</value>
+  </data>
+  <data name="Source_External" xml:space="preserve">
+    <value>Внешняя программа</value>
+  </data>
+  <data name="Timer_CancelHint" xml:space="preserve">
+    <value>Enter — остановить</value>
+  </data>
+  <data name="Timer_Done" xml:space="preserve">
+    <value>Время вышло</value>
+  </data>
+  <data name="Timer_DoneBody" xml:space="preserve">
+    <value>Таймер на {0} закончился</value>
+  </data>
+  <data name="Timer_Running" xml:space="preserve">
+    <value>Идёт: осталось {0}</value>
+  </data>
+  <data name="Timer_Source" xml:space="preserve">
+    <value>Таймер</value>
+  </data>
+  <data name="Timer_Start" xml:space="preserve">
+    <value>Запустить таймер на {0}</value>
+  </data>
+  <data name="Timer_StartHint" xml:space="preserve">
+    <value>Обратный отсчёт в капсуле островка</value>
+  </data>
+  <data name="Trailing_Copy" xml:space="preserve">
+    <value>Enter — копировать</value>
+  </data>
+  <data name="Trailing_Open" xml:space="preserve">
+    <value>Enter — открыть</value>
+  </data>
+  <data name="Trailing_OpenFolder" xml:space="preserve">
+    <value>Открыть папку</value>
+  </data>
+  <data name="Trailing_Paste" xml:space="preserve">
+    <value>Enter — вставить</value>
+  </data>
+  <data name="Welcome_Title" xml:space="preserve">
+    <value>Привет, я Islet</value>
+  </data>
+  <data name="Welcome_Body" xml:space="preserve">
+    <value>Наведи курсор на полоску или нажми {0}. Щёлкни сюда — покажу, что умею</value>
+  </data>
+  <data name="Media_Play" xml:space="preserve">
+    <value>Играть</value>
+  </data>
+  <data name="Media_Pause" xml:space="preserve">
+    <value>Пауза</value>
+  </data>
+  <data name="MenuHelp.Text" xml:space="preserve">
+    <value>Что умеет островок</value>
+  </data>
+  <data name="MenuPlugins.Text" xml:space="preserve">
+    <value>Плагины</value>
+  </data>
+  <data name="NotificationsEmpty.Text" xml:space="preserve">
+    <value>Пока ничего не пришло</value>
+  </data>
+  <data name="NotificationsTitle.Text" xml:space="preserve">
+    <value>Уведомления</value>
+  </data>
+  <data name="ClearNotificationsButton.Content" xml:space="preserve">
+    <value>Очистить</value>
+  </data>
+  <data name="Cmd_Lock" xml:space="preserve">
+    <value>Заблокировать компьютер</value>
+  </data>
+  <data name="Cmd_Sleep" xml:space="preserve">
+    <value>Спящий режим</value>
+  </data>
+  <data name="Cmd_Restart" xml:space="preserve">
+    <value>Перезагрузить</value>
+  </data>
+  <data name="Cmd_Shutdown" xml:space="preserve">
+    <value>Завершить работу</value>
+  </data>
+  <data name="Cmd_SignOut" xml:space="preserve">
+    <value>Выйти из системы</value>
+  </data>
+  <data name="Cmd_EmptyRecycle" xml:space="preserve">
+    <value>Очистить корзину</value>
+  </data>
+  <data name="Cmd_Theme" xml:space="preserve">
+    <value>Переключить тёмную и светлую тему</value>
+  </data>
+  <data name="Cmd_Screenshot" xml:space="preserve">
+    <value>Снимок экрана</value>
+  </data>
+  <data name="Cmd_Downloads" xml:space="preserve">
+    <value>Загрузки</value>
+  </data>
+  <data name="Cmd_Desktop" xml:space="preserve">
+    <value>Рабочий стол</value>
+  </data>
+  <data name="Cmd_TaskManager" xml:space="preserve">
+    <value>Диспетчер задач</value>
+  </data>
+  <data name="Cmd_IsletSettings" xml:space="preserve">
+    <value>Настройки Islet</value>
+  </data>
+  <data name="Cmd_IsletPlugins" xml:space="preserve">
+    <value>Плагины Islet</value>
+  </data>
+  <data name="Cmd_Reindex" xml:space="preserve">
+    <value>Переиндексировать диски</value>
+  </data>
+  <data name="Cmd_ClearNotifications" xml:space="preserve">
+    <value>Очистить уведомления</value>
+  </data>
+  <data name="Cmd_StopTimers" xml:space="preserve">
+    <value>Остановить все таймеры</value>
+  </data>
+  <data name="Cmd_ClearClipboard" xml:space="preserve">
+    <value>Очистить историю буфера</value>
+  </data>
+  <data name="Cmd_Quit" xml:space="preserve">
+    <value>Закрыть Islet</value>
+  </data>
+  <data name="Set_Display" xml:space="preserve">
+    <value>Экран</value>
+  </data>
+  <data name="Set_NightLight" xml:space="preserve">
+    <value>Ночной свет</value>
+  </data>
+  <data name="Set_Sound" xml:space="preserve">
+    <value>Звук</value>
+  </data>
+  <data name="Set_Bluetooth" xml:space="preserve">
+    <value>Bluetooth и устройства</value>
+  </data>
+  <data name="Set_Wifi" xml:space="preserve">
+    <value>Wi‑Fi</value>
+  </data>
+  <data name="Set_Network" xml:space="preserve">
+    <value>Сеть и Интернет</value>
+  </data>
+  <data name="Set_Personalization" xml:space="preserve">
+    <value>Фон рабочего стола</value>
+  </data>
+  <data name="Set_Colors" xml:space="preserve">
+    <value>Цвета</value>
+  </data>
+  <data name="Set_Taskbar" xml:space="preserve">
+    <value>Панель задач</value>
+  </data>
+  <data name="Set_Apps" xml:space="preserve">
+    <value>Установленные приложения</value>
+  </data>
+  <data name="Set_DefaultApps" xml:space="preserve">
+    <value>Приложения по умолчанию</value>
+  </data>
+  <data name="Set_Startup" xml:space="preserve">
+    <value>Автозагрузка</value>
+  </data>
+  <data name="Set_Update" xml:space="preserve">
+    <value>Центр обновления Windows</value>
+  </data>
+  <data name="Set_Power" xml:space="preserve">
+    <value>Питание и батарея</value>
+  </data>
+  <data name="Set_Storage" xml:space="preserve">
+    <value>Память</value>
+  </data>
+  <data name="Set_Notifications" xml:space="preserve">
+    <value>Уведомления Windows</value>
+  </data>
+  <data name="Set_Mouse" xml:space="preserve">
+    <value>Мышь и сенсорная панель</value>
+  </data>
+  <data name="Set_Keyboard" xml:space="preserve">
+    <value>Ввод текста</value>
+  </data>
+  <data name="Set_Language" xml:space="preserve">
+    <value>Язык и регион</value>
+  </data>
+  <data name="Set_DateTime" xml:space="preserve">
+    <value>Дата и время</value>
+  </data>
+  <data name="Set_Accounts" xml:space="preserve">
+    <value>Учётные записи</value>
+  </data>
+  <data name="Set_Privacy" xml:space="preserve">
+    <value>Конфиденциальность и защита</value>
+  </data>
+  <data name="Set_About" xml:space="preserve">
+    <value>О системе</value>
+  </data>
+  <data name="Set_Focus" xml:space="preserve">
+    <value>Фокусировка</value>
+  </data>
+  <data name="Set_Gaming" xml:space="preserve">
+    <value>Игровой режим</value>
+  </data>
+  <data name="NavNotifications.Content" xml:space="preserve">
+    <value>Уведомления</value>
+  </data>
+  <data name="NavIntegrations.Content" xml:space="preserve">
+    <value>Интеграции</value>
+  </data>
+  <data name="NavPlugins.Content" xml:space="preserve">
+    <value>Плагины</value>
+  </data>
+  <data name="S_NotifyTitle" xml:space="preserve">
+    <value>Уведомления</value>
+  </data>
+  <data name="S_NotifyMode" xml:space="preserve">
+    <value>Как показывать</value>
+  </data>
+  <data name="S_NotifyModeHint" xml:space="preserve">
+    <value>Пик — островок раскрывается сам и показывает текст. Метка — подсвечивается только полоска. Тихо — всё копится в колоколе.</value>
+  </data>
+  <data name="S_NotifyPeek" xml:space="preserve">
+    <value>Пик</value>
+  </data>
+  <data name="S_NotifyBadge" xml:space="preserve">
+    <value>Метка на полоске</value>
+  </data>
+  <data name="S_NotifyOff" xml:space="preserve">
+    <value>Тихо</value>
+  </data>
+  <data name="S_PeekSeconds" xml:space="preserve">
+    <value>Сколько держится пик</value>
+  </data>
+  <data name="S_PeekSecondsHint" xml:space="preserve">
+    <value>Длинный текст едет бегущей строкой — время на неё добавляется само</value>
+  </data>
+  <data name="S_Seconds" xml:space="preserve">
+    <value>{0} с</value>
+  </data>
+  <data name="S_Sound" xml:space="preserve">
+    <value>Звук</value>
+  </data>
+  <data name="S_SoundHint" xml:space="preserve">
+    <value>Системный сигнал при новом уведомлении</value>
+  </data>
+  <data name="S_Test" xml:space="preserve">
+    <value>Проверка</value>
+  </data>
+  <data name="S_TestHint" xml:space="preserve">
+    <value>Островок покажет тестовое уведомление</value>
+  </data>
+  <data name="S_TestButton" xml:space="preserve">
+    <value>Показать</value>
+  </data>
+  <data name="S_TestTitle" xml:space="preserve">
+    <value>Так выглядит уведомление</value>
+  </data>
+  <data name="S_TestBody" xml:space="preserve">
+    <value>Длинный текст не обрезается многоточием, а едет бегущей строкой — его можно дочитать до конца</value>
+  </data>
+  <data name="S_LiveSection" xml:space="preserve">
+    <value>Живые активности</value>
+  </data>
+  <data name="S_LiveActivities" xml:space="preserve">
+    <value>Таймеры и прогресс в капсуле</value>
+  </data>
+  <data name="S_LiveActivitiesHint" xml:space="preserve">
+    <value>Свёрнутый островок показывает обратный отсчёт и прогресс плагинов</value>
+  </data>
+  <data name="S_MediaCapsule" xml:space="preserve">
+    <value>Музыка в капсуле</value>
+  </data>
+  <data name="S_MediaCapsuleHint" xml:space="preserve">
+    <value>Обложка и эквалайзер, пока что-то играет</value>
+  </data>
+  <data name="S_MediaCard" xml:space="preserve">
+    <value>Карточка «Сейчас играет»</value>
+  </data>
+  <data name="S_MediaCardHint" xml:space="preserve">
+    <value>В раскрытом островке на пустой строке: обложка, трек и кнопки</value>
+  </data>
+  <data name="S_BellSection" xml:space="preserve">
+    <value>Колокол</value>
+  </data>
+  <data name="S_ClearAll" xml:space="preserve">
+    <value>Очистить все уведомления</value>
+  </data>
+  <data name="S_IntegrationsTitle" xml:space="preserve">
+    <value>Интеграции</value>
+  </data>
+  <data name="S_KawakiHint" xml:space="preserve">
+    <value>Уведомления аккаунта пиком на островке и поиск аниме. Вход по коду — пароль островок не видит.</value>
+  </data>
+  <data name="S_KawakiSignIn" xml:space="preserve">
+    <value>Войти через kawaki.ru</value>
+  </data>
+  <data name="S_KawakiSignedIn" xml:space="preserve">
+    <value>Вы вошли как {0}</value>
+  </data>
+  <data name="S_KawakiSignOut" xml:space="preserve">
+    <value>Выйти</value>
+  </data>
+  <data name="S_KawakiCodeHint" xml:space="preserve">
+    <value>Откройте страницу подтверждения и проверьте, что код совпадает. Ждём подтверждения…</value>
+  </data>
+  <data name="S_KawakiOpenPage" xml:space="preserve">
+    <value>Открыть страницу</value>
+  </data>
+  <data name="S_KawakiExpired" xml:space="preserve">
+    <value>Код истёк или вход отменён — попробуйте ещё раз</value>
+  </data>
+  <data name="S_KawakiFailed" xml:space="preserve">
+    <value>Не удалось получить код: сайт недоступен</value>
+  </data>
+  <data name="S_KawakiNotifications" xml:space="preserve">
+    <value>Уведомления Kawaki</value>
+  </data>
+  <data name="S_KawakiNotificationsHint" xml:space="preserve">
+    <value>Ответы, друзья, награды — пиком на островке. Проверка раз в полторы минуты</value>
+  </data>
+  <data name="S_KawakiSearch" xml:space="preserve">
+    <value>Поиск аниме по «k »</value>
+  </data>
+  <data name="S_KawakiSearchHint" xml:space="preserve">
+    <value>«k наруто» — тайтлы из каталога с постерами</value>
+  </data>
+  <data name="S_KawakiGlobal" xml:space="preserve">
+    <value>Искать на Kawaki без ключевого слова</value>
+  </data>
+  <data name="S_KawakiGlobalHint" xml:space="preserve">
+    <value>Каждый запрос будет уходить на kawaki.ru</value>
+  </data>
+  <data name="S_ClipTideFound" xml:space="preserve">
+    <value>ClipTide найден</value>
+  </data>
+  <data name="S_ClipTideFoundHint" xml:space="preserve">
+    <value>Готовые загрузки появляются пиком на островке, щелчок открывает папку. «ct » — последние загрузки.</value>
+  </data>
+  <data name="S_ClipTideMissing" xml:space="preserve">
+    <value>ClipTide не установлен</value>
+  </data>
+  <data name="S_ClipTideMissingHint" xml:space="preserve">
+    <value>Загрузчик видео и музыки с YouTube и сотен сайтов — островок покажет, когда загрузка готова</value>
+  </data>
+  <data name="S_ClipTideDownload" xml:space="preserve">
+    <value>Скачать</value>
+  </data>
+  <data name="S_ClipTideNotifications" xml:space="preserve">
+    <value>Уведомления о загрузках</value>
+  </data>
+  <data name="S_ClipTideNotificationsHint" xml:space="preserve">
+    <value>Пик с превью, когда ClipTide закончил загрузку или конвертацию</value>
+  </data>
+  <data name="S_ExternalSection" xml:space="preserve">
+    <value>Свои программы и скрипты</value>
+  </data>
+  <data name="S_ExternalHint" xml:space="preserve">
+    <value>Любая программа может показать на островке уведомление или живую активность — ключом командной строки или строкой JSON в именованный канал:</value>
+  </data>
+  <data name="S_ExternalProtocol" xml:space="preserve">
+    <value>Описание протокола</value>
+  </data>
+  <data name="S_CopyExample" xml:space="preserve">
+    <value>Копировать пример</value>
+  </data>
+  <data name="S_PluginsTitle" xml:space="preserve">
+    <value>Плагины</value>
+  </data>
+  <data name="S_PluginsHint" xml:space="preserve">
+    <value>Плагин — папка с plugin.json: готовые команды, поиск по сайтам или программа на любом языке, которая отвечает на запросы. Свои кладите в {0} и нажмите «Перезагрузить».</value>
+  </data>
+  <data name="S_PluginsOpenFolder" xml:space="preserve">
+    <value>Открыть папку</value>
+  </data>
+  <data name="S_PluginsReload" xml:space="preserve">
+    <value>Перезагрузить</value>
+  </data>
+  <data name="S_PluginsDocs" xml:space="preserve">
+    <value>Как написать плагин</value>
+  </data>
+  <data name="S_PluginsEmpty" xml:space="preserve">
+    <value>Плагинов пока нет</value>
+  </data>
+  <data name="S_PluginBuiltIn" xml:space="preserve">
+    <value>встроенный</value>
+  </data>
+  <data name="S_PluginKeywords" xml:space="preserve">
+    <value>Ключевые слова: {0}</value>
+  </data>
+  <data name="S_SourcesSection" xml:space="preserve">
+    <value>Источники</value>
+  </data>
+  <data name="S_Calculator" xml:space="preserve">
+    <value>Калькулятор</value>
+  </data>
+  <data name="S_CalculatorHint" xml:space="preserve">
+    <value>«2+2*3», «sqrt(2)», «0xFF+1» — ответ первой строкой, Enter копирует</value>
+  </data>
+  <data name="S_Commands" xml:space="preserve">
+    <value>Команды</value>
+  </data>
+  <data name="S_CommandsHint" xml:space="preserve">
+    <value>«блок», «сон», «wifi», «корзина» и страницы параметров Windows. «&gt;» — весь список</value>
+  </data>
+  <data name="S_Clipboard" xml:space="preserve">
+    <value>История буфера обмена</value>
+  </data>
+  <data name="S_ClipboardHint" xml:space="preserve">
+    <value>«cb » — последние скопированные тексты, Enter вставляет в окно. Только в памяти; скопированное из менеджеров паролей не запоминается</value>
+  </data>
+  <data name="S_Recent" xml:space="preserve">
+    <value>Недавнее на пустой строке</value>
+  </data>
+  <data name="S_RecentHint" xml:space="preserve">
+    <value>Частое и недавнее, когда островок открыт клавишей</value>
+  </data>
+  <data name="S_Remember" xml:space="preserve">
+    <value>Запоминать запуски</value>
+  </data>
+  <data name="S_RememberHint" xml:space="preserve">
+    <value>Частое поднимается выше в выдаче. Хранится в history.json</value>
+  </data>
+  <data name="S_Forget" xml:space="preserve">
+    <value>Забыть всё</value>
+  </data>
 </root>

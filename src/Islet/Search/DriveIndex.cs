@@ -218,6 +218,7 @@ internal sealed class DriveIndex : IDisposable
                 Kind = b.IsDir ? ResultKind.Folder : ResultKind.File,
                 Target = b.Path,
                 IconSource = b.Path,
+                ProviderId = "files",
             })
             .ToList();
 

@@ -1,0 +1,25 @@
+{
+  // Декларативный плагин: без кода, только адреса. Ключевое слово + пробел
+  // превращается в чип области поиска, Enter открывает сайт с запросом.
+  "id": "web-shortcuts",
+  "name": { "en": "Web shortcuts", "ru": "Поиск по сайтам" },
+  "version": "1.0.0",
+  "author": "Rayness",
+  "description": {
+    "en": "g, y, yt, w, gh, tr, maps, so, npm, shiki — search a site straight from the island",
+    "ru": "g, y, yt, w, gh, tr, maps, so, npm, shiki — поиск по сайту прямо из островка"
+  },
+  "icon": "\uE774",
+  "shortcuts": [
+    { "keyword": "g", "name": "Google", "url": "https://www.google.com/search?q={query}", "home": "https://www.google.com", "glyph": "\uE721" },
+    { "keyword": "y", "aliases": ["я"], "name": { "en": "Yandex", "ru": "Яндекс" }, "url": "https://yandex.ru/search/?text={query}", "home": "https://yandex.ru", "glyph": "\uE721" },
+    { "keyword": "yt", "name": "YouTube", "url": "https://www.youtube.com/results?search_query={query}", "home": "https://www.youtube.com", "glyph": "\uE714" },
+    { "keyword": "w", "aliases": ["wiki"], "name": { "en": "Wikipedia", "ru": "Википедия" }, "url": "https://ru.wikipedia.org/w/index.php?search={query}", "home": "https://ru.wikipedia.org", "glyph": "\uE736" },
+    { "keyword": "gh", "name": "GitHub", "url": "https://github.com/search?q={query}", "home": "https://github.com", "glyph": "\uE943" },
+    { "keyword": "tr", "aliases": ["пер"], "name": { "en": "Google Translate", "ru": "Переводчик" }, "url": "https://translate.google.com/?sl=auto&text={query}", "home": "https://translate.google.com", "glyph": "\uF2B7" },
+    { "keyword": "maps", "aliases": ["карты"], "name": { "en": "Yandex Maps", "ru": "Яндекс Карты" }, "url": "https://yandex.ru/maps/?text={query}", "home": "https://yandex.ru/maps", "glyph": "\uE707" },
+    { "keyword": "so", "name": "Stack Overflow", "url": "https://stackoverflow.com/search?q={query}", "home": "https://stackoverflow.com", "glyph": "\uE943" },
+    { "keyword": "npm", "name": "npm", "url": "https://www.npmjs.com/search?q={query}", "glyph": "\uE7B8" },
+    { "keyword": "shiki", "name": "Shikimori", "url": "https://shikimori.one/animes?search={query}", "home": "https://shikimori.one", "glyph": "\uE8B2" }
+  ]
+}

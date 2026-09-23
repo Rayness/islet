@@ -1,0 +1,23 @@
+{
+  // Процессный плагин: островок запускает скрипт один раз и разговаривает с ним
+  // строками JSON через stdin/stdout. PowerShell есть на любой Windows —
+  // ставить ничего не нужно.
+  "id": "process-killer",
+  "name": { "en": "Kill a process", "ru": "Завершить процесс" },
+  "version": "1.0.0",
+  "author": "Rayness",
+  "description": {
+    "en": "“kill chrome” — running processes by name and how much memory they use; Enter ends them",
+    "ru": "«kill chrome» — запущенные процессы по имени и сколько памяти едят; Enter завершает"
+  },
+  "icon": "\uE9D9",
+  "keywords": ["kill", "уб"],
+  "order": 30,
+  "answersEmpty": true,
+  "maxResults": 10,
+  "timeoutMs": 2500,
+  "run": {
+    "command": "powershell.exe",
+    "args": ["-NoLogo", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", "{pluginDir}killer.ps1"]
+  }
+}

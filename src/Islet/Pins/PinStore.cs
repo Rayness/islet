@@ -34,6 +34,7 @@ public sealed record Pin(string Title, PinKind Kind, string Target, string? Argu
     {
         ResultKind.App => new Pin(item.Title, PinKind.App, item.Target),
         ResultKind.File or ResultKind.Folder => new Pin(item.Title, PinKind.Path, item.Target),
+        ResultKind.Url or ResultKind.Kawaki => new Pin(item.Title, PinKind.Url, item.Target, Icon: item.IconUrl),
         _ => null,
     };
 }

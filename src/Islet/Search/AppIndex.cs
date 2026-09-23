@@ -43,22 +43,46 @@ internal sealed class AppIndex
         var q = Normalize(query);
         if (q.Length == 0) return [];
 
+        // Частые запуски поднимаются над просто совпавшими: «te» ведёт в Telegram,
+        // если его открывают каждый день, а не в «Техническую поддержку».
         return _entries
             .Select(e => (Entry: e, Score: Score(e, q)))
             .Where(x => x.Score > 0)
-            .OrderByDescending(x => x.Score)
-            .ThenBy(x => x.Entry.Name.Length)
-            .DistinctBy(x => x.Entry.Name, StringComparer.OrdinalIgnoreCase)
-            .Take(max)
-            .Select(x => new ResultItem
+            .Select(x =>
             {
-                Title = x.Entry.Name,
-                Subtitle = Loc.T("Result_App"),
-                Kind = ResultKind.App,
-                Target = x.Entry.Id,
-                IconSource = $"shell:AppsFolder\\{x.Entry.Id}",
+                var item = ToItem(x.Entry);
+                item.Score = x.Score + Frecency.Boost(item);
+                return item;
             })
+            .OrderByDescending(x => x.Score)
+            .ThenBy(x => x.Title.Length)
+            .DistinctBy(x => x.Title, StringComparer.OrdinalIgnoreCase)
+            .Take(max)
             .ToList();
+    }
+
+    private static ResultItem ToItem(Entry e) => new()
+    {
+        Title = e.Name,
+        Subtitle = Loc.T("Result_App"),
+        Kind = ResultKind.App,
+        Target = e.Id,
+        ProviderId = "apps",
+        IconSource = $"shell:AppsFolder\\{e.Id}",
+    };
+
+    /// <summary>Есть ли уже список — до первой загрузки «Недавние» не фильтруем.</summary>
+    public bool IsLoaded => _entries.Count > 0;
+
+    /// <summary>Приложение по точному идентификатору — для «Недавних».</summary>
+    public bool Contains(string id) => _entries.Any(e => string.Equals(e.Id, id, StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>Установленное приложение по имени — для интеграций (ClipTide и др.).</summary>
+    public string? FindIdByName(string name)
+    {
+        var q = Normalize(name);
+        return _entries.FirstOrDefault(e => e.Normalized == q)?.Id
+            ?? _entries.FirstOrDefault(e => e.Normalized.StartsWith(q, StringComparison.Ordinal))?.Id;
     }
 
     private static int Score(Entry e, string q)

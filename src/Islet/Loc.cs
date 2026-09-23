@@ -1,3 +1,4 @@
+using Islet.Settings;
 using Microsoft.Windows.ApplicationModel.Resources;
 
 namespace Islet;
@@ -11,10 +12,39 @@ internal static class Loc
 {
     private static readonly ResourceLoader Loader = new();
 
-    public static string T(string key) => Loader.GetString(key);
+    /// <summary>
+    /// Строка по ключу. Ключи свойств из x:Uid («SearchBox.PlaceholderText») в MRT
+    /// адресуются через «/» — переводим сами. Нет строки — ключ, а не исключение:
+    /// брошенное в обработчике XAML оно роняет процесс целиком (stowed exception).
+    /// </summary>
+    public static string T(string key)
+    {
+        try
+        {
+            var value = Loader.GetString(key.Replace('.', '/'));
+            return string.IsNullOrEmpty(value) ? key : value;
+        }
+        catch
+        {
+            return key;
+        }
+    }
 
-    public static string T(string key, params object?[] args) =>
-        string.Format(Loader.GetString(key), args);
+    /// <summary>Язык интерфейса двумя буквами: ru, en. Передаётся плагинам.</summary>
+    public static string CurrentLanguage
+    {
+        get
+        {
+            var language = SettingsStore.Current.Language is { Length: > 0 } chosen ? chosen : SystemLanguage();
+            return language.Split('-')[0].ToLowerInvariant();
+        }
+    }
+
+    public static string T(string key, params object?[] args)
+    {
+        try { return string.Format(T(key), args); }
+        catch (FormatException) { return T(key); }
+    }
 
     /// <summary>
     /// Пусто — язык системы. Сбросить переопределение пустой строкой нельзя: вне пакета

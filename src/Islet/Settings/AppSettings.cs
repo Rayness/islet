@@ -78,6 +78,44 @@ public sealed class AppSettings
     /// <summary>Сколько строк выдачи помещается на островке.</summary>
     public int MaxRows { get; set; } = 8;
 
+    // --- Уведомления и живые активности ---
+
+    /// <summary>"peek" — островок раскрывается сам и показывает текст; "badge" — только метка на капсуле; "off" — тихо в колокол.</summary>
+    public string NotifyMode { get; set; } = "peek";
+    /// <summary>Сколько пик держится на экране, секунд (без учёта бегущей строки).</summary>
+    public double PeekSeconds { get; set; } = 4.5;
+    public bool NotifySound { get; set; } = false;
+    /// <summary>Таймеры и прогресс плагинов в свёрнутой капсуле.</summary>
+    public bool LiveActivities { get; set; } = true;
+    /// <summary>«Сейчас играет» карточкой в раскрытом островке.</summary>
+    public bool MediaCard { get; set; } = true;
+    /// <summary>Играющая музыка — обложка и эквалайзер в свёрнутой капсуле.</summary>
+    public bool MediaInCapsule { get; set; } = true;
+    /// <summary>Первый запуск уже был: знакомство показано.</summary>
+    public bool Onboarded { get; set; } = false;
+
+    // --- Поиск: источники ---
+
+    public bool RememberLaunches { get; set; } = true;
+    /// <summary>Недавнее и частое на пустой запрос.</summary>
+    public bool ShowRecent { get; set; } = true;
+    public bool CalculatorEnabled { get; set; } = true;
+    public bool CommandsEnabled { get; set; } = true;
+    /// <summary>История буфера обмена — только текст, только в памяти.</summary>
+    public bool ClipboardHistory { get; set; } = true;
+    public int ClipboardMax { get; set; } = 30;
+
+    // --- Интеграции ---
+
+    public bool KawakiSearch { get; set; } = true;
+    /// <summary>Искать на Kawaki без «k » — каждый запрос уходит на сайт, поэтому по умолчанию выключено.</summary>
+    public bool KawakiGlobalSearch { get; set; } = false;
+    public bool KawakiNotifications { get; set; } = true;
+    public bool ClipTideNotifications { get; set; } = true;
+
+    /// <summary>Выключенные плагины по id.</summary>
+    public List<string> DisabledPlugins { get; set; } = [];
+
     public bool DriveIndexEnabled { get; set; } = true;
     /// <summary>null — все несистемные диски; иначе ровно этот список папок.</summary>
     public List<string>? IndexRoots { get; set; }
@@ -140,6 +178,12 @@ internal static class SettingsStore
         Current.HoverCloseDelayMs = Math.Clamp(Current.HoverCloseDelayMs, 0, 2000);
         if (Current.MonitorMode is not ("primary" or "cursor"))
             Current.MonitorMode = "primary";
+        if (Current.NotifyMode is not ("peek" or "badge" or "off"))
+            Current.NotifyMode = "peek";
+        Current.PeekSeconds = Math.Clamp(Current.PeekSeconds, 2, 15);
+        Current.ClipboardMax = Math.Clamp(Current.ClipboardMax, 5, 100);
+        Current.DisabledPlugins ??= [];
+        Current.IndexExcludes ??= [.. AppSettings.DefaultExcludes];
     }
 
     public static void Update(Action<AppSettings> change)

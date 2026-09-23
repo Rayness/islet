@@ -1,0 +1,15 @@
+{
+  "id": "passwords",
+  "name": { "en": "Passwords & UUIDs", "ru": "Пароли и UUID" },
+  "version": "1.0.0",
+  "author": "Rayness",
+  "description": {
+    "en": "“pw 24” — strong passwords, “pw uuid” — a fresh UUID. Enter copies, the context menu pastes",
+    "ru": "«pw 24» — надёжные пароли, «pw uuid» — свежий UUID. Enter копирует, меню — вставляет"
+  },
+  "icon": "\uE8D7",
+  "keywords": ["pw", "пароль"],
+  "answersEmpty": true,
+  "maxResults": 6,
+  "run": { "command": "python", "args": ["main.py"] }
+}

@@ -320,4 +320,146 @@ internal static unsafe partial class Win32
 
     [DllImport("user32.dll")]
     public static extern int ReleaseDC(nint hWnd, nint hDC);
+
+    // --- Буфер обмена, ввод, система ---
+
+    public const int WM_CLIPBOARDUPDATE = 0x031D;
+
+    [DllImport("user32.dll")]
+    public static extern bool MessageBeep(uint uType);
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    public static extern uint RegisterClipboardFormat(string lpszFormat);
+
+    [DllImport("user32.dll")]
+    public static extern bool IsClipboardFormatAvailable(uint format);
+
+    [DllImport("user32.dll")]
+    private static extern bool OpenClipboard(nint hWndNewOwner);
+
+    [DllImport("user32.dll")]
+    private static extern bool CloseClipboard();
+
+    [DllImport("user32.dll")]
+    private static extern nint GetClipboardData(uint uFormat);
+
+    [DllImport("kernel32.dll")]
+    private static extern nint GlobalLock(nint hMem);
+
+    [DllImport("kernel32.dll")]
+    private static extern bool GlobalUnlock(nint hMem);
+
+    [DllImport("kernel32.dll")]
+    private static extern nuint GlobalSize(nint hMem);
+
+    /// <summary>DWORD из формата буфера; -1 — не прочитался.</summary>
+    public static long ReadClipboardDword(uint format)
+    {
+        if (!OpenClipboard(0)) return -1;
+        try
+        {
+            var handle = GetClipboardData(format);
+            if (handle == 0 || GlobalSize(handle) < 4) return -1;
+            var ptr = GlobalLock(handle);
+            if (ptr == 0) return -1;
+            try { return *(uint*)ptr; }
+            finally { GlobalUnlock(handle); }
+        }
+        finally
+        {
+            CloseClipboard();
+        }
+    }
+
+    [DllImport("user32.dll")]
+    public static extern bool AddClipboardFormatListener(nint hwnd);
+
+    [DllImport("user32.dll")]
+    public static extern bool RemoveClipboardFormatListener(nint hwnd);
+
+    [DllImport("user32.dll")]
+    public static extern bool LockWorkStation();
+
+    [DllImport("powrprof.dll")]
+    public static extern bool SetSuspendState(bool hibernate, bool forceCritical, bool disableWakeEvent);
+
+    [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+    public static extern int SHEmptyRecycleBin(nint hwnd, string? pszRootPath, uint dwFlags);
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern nint SendMessageTimeout(nint hWnd, uint msg, nint wParam, string lParam, uint flags, uint timeout, out nint result);
+
+    /// <summary>Сообщить всем окнам, что поменялась системная настройка (тема).</summary>
+    public static void BroadcastSettingChange(string area)
+    {
+        const uint WM_SETTINGCHANGE = 0x001A;
+        const uint SMTO_ABORTIFHUNG = 0x0002;
+        SendMessageTimeout(0xFFFF, WM_SETTINGCHANGE, 0, area, SMTO_ABORTIFHUNG, 200, out _);
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct KEYBDINPUT
+    {
+        public ushort wVk, wScan;
+        public uint dwFlags, time;
+        public nint dwExtraInfo;
+    }
+
+    // INPUT с союзом: берём размер самого большого члена (MOUSEINPUT), иначе SendInput отвергнет cbSize.
+    [StructLayout(LayoutKind.Explicit, Size = 40)]
+    private struct INPUT
+    {
+        [FieldOffset(0)] public uint type;
+        [FieldOffset(8)] public KEYBDINPUT ki;
+    }
+
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern uint SendInput(uint nInputs, INPUT* pInputs, int cbSize);
+
+    [DllImport("user32.dll")]
+    private static extern short GetAsyncKeyState(int vKey);
+
+    /// <summary>Ctrl+V в окно с фокусом. Зажатые человеком модификаторы сначала отпускаем.</summary>
+    public static void SendCtrlV()
+    {
+        const uint INPUT_KEYBOARD = 1, KEYUP = 0x2;
+        const ushort VK_CONTROL = 0x11, VK_V = 0x56, VK_SHIFT = 0x10, VK_MENU = 0x12, VK_LWIN = 0x5B;
+        var inputs = stackalloc INPUT[8];
+        var n = 0;
+        foreach (var held in new[] { VK_SHIFT, VK_MENU, VK_LWIN })
+        {
+            if (GetAsyncKeyState(held) < 0)
+                inputs[n++] = new INPUT { type = INPUT_KEYBOARD, ki = new KEYBDINPUT { wVk = held, dwFlags = KEYUP } };
+        }
+        inputs[n++] = new INPUT { type = INPUT_KEYBOARD, ki = new KEYBDINPUT { wVk = VK_CONTROL } };
+        inputs[n++] = new INPUT { type = INPUT_KEYBOARD, ki = new KEYBDINPUT { wVk = VK_V } };
+        inputs[n++] = new INPUT { type = INPUT_KEYBOARD, ki = new KEYBDINPUT { wVk = VK_V, dwFlags = KEYUP } };
+        inputs[n++] = new INPUT { type = INPUT_KEYBOARD, ki = new KEYBDINPUT { wVk = VK_CONTROL, dwFlags = KEYUP } };
+        SendInput((uint)n, inputs, sizeof(INPUT));
+    }
+
+    [DllImport("user32.dll")]
+    public static extern bool AllowSetForegroundWindow(int dwProcessId);
+
+    private const long WS_EX_NOACTIVATE = 0x08000000L;
+
+    /// <summary>
+    /// Щелчок по окну не забирает фокус. Свёрнутому островку (полоска, капсула,
+    /// пик уведомления) фокус не нужен: крестик на пике не должен уводить
+    /// клавиатуру из окна, где человек печатал.
+    /// </summary>
+    public static void SetNoActivate(nint hWnd, bool noActivate)
+    {
+        var ex = (long)GetWindowLongPtr(hWnd, GWL_EXSTYLE);
+        var next = noActivate ? ex | WS_EX_NOACTIVATE : ex & ~WS_EX_NOACTIVATE;
+        if (next != ex)
+            SetWindowLongPtr(hWnd, GWL_EXSTYLE, (nint)next);
+    }
+
+    [DllImport("user32.dll")]
+    private static extern uint GetWindowThreadProcessId(nint hWnd, out uint processId);
+
+    /// <summary>Окно этого же процесса (всплывающие меню островка, окно настроек).</summary>
+    public static bool IsOwnWindow(nint hWnd) =>
+        GetWindowThreadProcessId(hWnd, out var pid) != 0 && pid == (uint)Environment.ProcessId;
 }

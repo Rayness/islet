@@ -410,4 +410,553 @@
   <data name="Pin_TaskManager" xml:space="preserve">
     <value>Task Manager</value>
   </data>
+  <data name="ClipTide_Open" xml:space="preserve">
+    <value>Open ClipTide</value>
+  </data>
+  <data name="Clipboard_Meta" xml:space="preserve">
+    <value>{0} · {1} chars</value>
+  </data>
+  <data name="Confirm_Again" xml:space="preserve">
+    <value>Press Enter again to confirm</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>Copied</value>
+  </data>
+  <data name="Ctx_Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="Ctx_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Ctx_Forget" xml:space="preserve">
+    <value>Remove from recent</value>
+  </data>
+  <data name="Ctx_Paste" xml:space="preserve">
+    <value>Paste into the window</value>
+  </data>
+  <data name="Ctx_RemoveFromHistory" xml:space="preserve">
+    <value>Remove from history</value>
+  </data>
+  <data name="Ctx_RunAsAdmin" xml:space="preserve">
+    <value>Run as administrator</value>
+  </data>
+  <data name="Ctx_CopyPath" xml:space="preserve">
+    <value>Copy path</value>
+  </data>
+  <data name="Ctx_CopyLink" xml:space="preserve">
+    <value>Copy link</value>
+  </data>
+  <data name="Hint_Layout" xml:space="preserve">
+    <value>Other keyboard layout: “{0}”</value>
+  </data>
+  <data name="Hint_LayoutSub" xml:space="preserve">
+    <value>Found by the query in the other layout — Enter or Tab fixes the text</value>
+  </data>
+  <data name="Island_BellTooltip" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="Kawaki_Movie" xml:space="preserve">
+    <value>Movie</value>
+  </data>
+  <data name="Kawaki_Special" xml:space="preserve">
+    <value>Special</value>
+  </data>
+  <data name="Kawaki_SessionExpired" xml:space="preserve">
+    <value>Your Kawaki session ended — sign in again</value>
+  </data>
+  <data name="Peek_Close" xml:space="preserve">
+    <value>Dismiss</value>
+  </data>
+  <data name="Plugin_BadManifest" xml:space="preserve">
+    <value>plugin.json can't be read: {0}</value>
+  </data>
+  <data name="Plugin_Crashed" xml:space="preserve">
+    <value>The plugin keeps crashing (code {0}) — off until you reload</value>
+  </data>
+  <data name="Plugin_NewerApi" xml:space="preserve">
+    <value>Written for protocol v{0} — update Islet</value>
+  </data>
+  <data name="Plugin_StartFailed" xml:space="preserve">
+    <value>Failed to start: {0}</value>
+  </data>
+  <data name="Provider_Apps" xml:space="preserve">
+    <value>Apps</value>
+  </data>
+  <data name="Provider_Calc" xml:space="preserve">
+    <value>Calculator</value>
+  </data>
+  <data name="Provider_CalcHint" xml:space="preserve">
+    <value>An expression: 2+2*3, sqrt(2), 15%4, 0xFF</value>
+  </data>
+  <data name="Provider_ClipTideHint" xml:space="preserve">
+    <value>Recent ClipTide downloads</value>
+  </data>
+  <data name="Provider_Clipboard" xml:space="preserve">
+    <value>Clipboard</value>
+  </data>
+  <data name="Provider_ClipboardHint" xml:space="preserve">
+    <value>Clipboard history — Enter pastes into your window</value>
+  </data>
+  <data name="Provider_Commands" xml:space="preserve">
+    <value>Commands</value>
+  </data>
+  <data name="Provider_CommandsHint" xml:space="preserve">
+    <value>Lock, sleep, theme, recycle bin, Windows settings</value>
+  </data>
+  <data name="Provider_Files" xml:space="preserve">
+    <value>Files</value>
+  </data>
+  <data name="Provider_FilesHint" xml:space="preserve">
+    <value>Files and folders only</value>
+  </data>
+  <data name="Provider_Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="Provider_KawakiHint" xml:space="preserve">
+    <value>Anime in the Kawaki catalogue</value>
+  </data>
+  <data name="Provider_Timer" xml:space="preserve">
+    <value>Timer</value>
+  </data>
+  <data name="Provider_TimerHint" xml:space="preserve">
+    <value>5m, 25 min, 1:30 — plus a label: “timer 10 tea”</value>
+  </data>
+  <data name="Provider_Url" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="Provider_Web" xml:space="preserve">
+    <value>Web</value>
+  </data>
+  <data name="Result_Command" xml:space="preserve">
+    <value>Command</value>
+  </data>
+  <data name="Result_OpenUrl" xml:space="preserve">
+    <value>Open {0}</value>
+  </data>
+  <data name="Result_WindowsSettings" xml:space="preserve">
+    <value>Windows Settings</value>
+  </data>
+  <data name="Shortcut_Hint" xml:space="preserve">
+    <value>Search {0}</value>
+  </data>
+  <data name="Shortcut_Home" xml:space="preserve">
+    <value>Open {0}</value>
+  </data>
+  <data name="Shortcut_Search" xml:space="preserve">
+    <value>Search “{0}” on {1}</value>
+  </data>
+  <data name="Source_External" xml:space="preserve">
+    <value>External app</value>
+  </data>
+  <data name="Timer_CancelHint" xml:space="preserve">
+    <value>Enter to stop</value>
+  </data>
+  <data name="Timer_Done" xml:space="preserve">
+    <value>Time's up</value>
+  </data>
+  <data name="Timer_DoneBody" xml:space="preserve">
+    <value>Your {0} timer is done</value>
+  </data>
+  <data name="Timer_Running" xml:space="preserve">
+    <value>Running: {0} left</value>
+  </data>
+  <data name="Timer_Source" xml:space="preserve">
+    <value>Timer</value>
+  </data>
+  <data name="Timer_Start" xml:space="preserve">
+    <value>Start a {0} timer</value>
+  </data>
+  <data name="Timer_StartHint" xml:space="preserve">
+    <value>Counts down in the island capsule</value>
+  </data>
+  <data name="Trailing_Copy" xml:space="preserve">
+    <value>Enter to copy</value>
+  </data>
+  <data name="Trailing_Open" xml:space="preserve">
+    <value>Enter to open</value>
+  </data>
+  <data name="Trailing_OpenFolder" xml:space="preserve">
+    <value>Open folder</value>
+  </data>
+  <data name="Trailing_Paste" xml:space="preserve">
+    <value>Enter to paste</value>
+  </data>
+  <data name="Welcome_Title" xml:space="preserve">
+    <value>Hi, I'm Islet</value>
+  </data>
+  <data name="Welcome_Body" xml:space="preserve">
+    <value>Point at the stripe or press {0}. Click here to see what I can do</value>
+  </data>
+  <data name="Media_Play" xml:space="preserve">
+    <value>Play</value>
+  </data>
+  <data name="Media_Pause" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="MenuHelp.Text" xml:space="preserve">
+    <value>What the island can do</value>
+  </data>
+  <data name="MenuPlugins.Text" xml:space="preserve">
+    <value>Plugins</value>
+  </data>
+  <data name="NotificationsEmpty.Text" xml:space="preserve">
+    <value>Nothing here yet</value>
+  </data>
+  <data name="NotificationsTitle.Text" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="ClearNotificationsButton.Content" xml:space="preserve">
+    <value>Clear all</value>
+  </data>
+  <data name="Cmd_Lock" xml:space="preserve">
+    <value>Lock the PC</value>
+  </data>
+  <data name="Cmd_Sleep" xml:space="preserve">
+    <value>Sleep</value>
+  </data>
+  <data name="Cmd_Restart" xml:space="preserve">
+    <value>Restart</value>
+  </data>
+  <data name="Cmd_Shutdown" xml:space="preserve">
+    <value>Shut down</value>
+  </data>
+  <data name="Cmd_SignOut" xml:space="preserve">
+    <value>Sign out</value>
+  </data>
+  <data name="Cmd_EmptyRecycle" xml:space="preserve">
+    <value>Empty the Recycle Bin</value>
+  </data>
+  <data name="Cmd_Theme" xml:space="preserve">
+    <value>Toggle dark and light theme</value>
+  </data>
+  <data name="Cmd_Screenshot" xml:space="preserve">
+    <value>Take a screenshot</value>
+  </data>
+  <data name="Cmd_Downloads" xml:space="preserve">
+    <value>Downloads</value>
+  </data>
+  <data name="Cmd_Desktop" xml:space="preserve">
+    <value>Desktop</value>
+  </data>
+  <data name="Cmd_TaskManager" xml:space="preserve">
+    <value>Task Manager</value>
+  </data>
+  <data name="Cmd_IsletSettings" xml:space="preserve">
+    <value>Islet settings</value>
+  </data>
+  <data name="Cmd_IsletPlugins" xml:space="preserve">
+    <value>Islet plugins</value>
+  </data>
+  <data name="Cmd_Reindex" xml:space="preserve">
+    <value>Rebuild the drive index</value>
+  </data>
+  <data name="Cmd_ClearNotifications" xml:space="preserve">
+    <value>Clear notifications</value>
+  </data>
+  <data name="Cmd_StopTimers" xml:space="preserve">
+    <value>Stop all timers</value>
+  </data>
+  <data name="Cmd_ClearClipboard" xml:space="preserve">
+    <value>Clear clipboard history</value>
+  </data>
+  <data name="Cmd_Quit" xml:space="preserve">
+    <value>Quit Islet</value>
+  </data>
+  <data name="Set_Display" xml:space="preserve">
+    <value>Display</value>
+  </data>
+  <data name="Set_NightLight" xml:space="preserve">
+    <value>Night light</value>
+  </data>
+  <data name="Set_Sound" xml:space="preserve">
+    <value>Sound</value>
+  </data>
+  <data name="Set_Bluetooth" xml:space="preserve">
+    <value>Bluetooth &amp; devices</value>
+  </data>
+  <data name="Set_Wifi" xml:space="preserve">
+    <value>Wi‑Fi</value>
+  </data>
+  <data name="Set_Network" xml:space="preserve">
+    <value>Network &amp; internet</value>
+  </data>
+  <data name="Set_Personalization" xml:space="preserve">
+    <value>Desktop background</value>
+  </data>
+  <data name="Set_Colors" xml:space="preserve">
+    <value>Colors</value>
+  </data>
+  <data name="Set_Taskbar" xml:space="preserve">
+    <value>Taskbar</value>
+  </data>
+  <data name="Set_Apps" xml:space="preserve">
+    <value>Installed apps</value>
+  </data>
+  <data name="Set_DefaultApps" xml:space="preserve">
+    <value>Default apps</value>
+  </data>
+  <data name="Set_Startup" xml:space="preserve">
+    <value>Startup apps</value>
+  </data>
+  <data name="Set_Update" xml:space="preserve">
+    <value>Windows Update</value>
+  </data>
+  <data name="Set_Power" xml:space="preserve">
+    <value>Power &amp; battery</value>
+  </data>
+  <data name="Set_Storage" xml:space="preserve">
+    <value>Storage</value>
+  </data>
+  <data name="Set_Notifications" xml:space="preserve">
+    <value>Windows notifications</value>
+  </data>
+  <data name="Set_Mouse" xml:space="preserve">
+    <value>Mouse &amp; touchpad</value>
+  </data>
+  <data name="Set_Keyboard" xml:space="preserve">
+    <value>Typing</value>
+  </data>
+  <data name="Set_Language" xml:space="preserve">
+    <value>Language &amp; region</value>
+  </data>
+  <data name="Set_DateTime" xml:space="preserve">
+    <value>Date &amp; time</value>
+  </data>
+  <data name="Set_Accounts" xml:space="preserve">
+    <value>Accounts</value>
+  </data>
+  <data name="Set_Privacy" xml:space="preserve">
+    <value>Privacy &amp; security</value>
+  </data>
+  <data name="Set_About" xml:space="preserve">
+    <value>About this PC</value>
+  </data>
+  <data name="Set_Focus" xml:space="preserve">
+    <value>Focus</value>
+  </data>
+  <data name="Set_Gaming" xml:space="preserve">
+    <value>Game Mode</value>
+  </data>
+  <data name="NavNotifications.Content" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="NavIntegrations.Content" xml:space="preserve">
+    <value>Integrations</value>
+  </data>
+  <data name="NavPlugins.Content" xml:space="preserve">
+    <value>Plugins</value>
+  </data>
+  <data name="S_NotifyTitle" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="S_NotifyMode" xml:space="preserve">
+    <value>How to show them</value>
+  </data>
+  <data name="S_NotifyModeHint" xml:space="preserve">
+    <value>Peek — the island opens by itself and shows the text. Mark — only the stripe lights up. Silent — everything waits in the bell.</value>
+  </data>
+  <data name="S_NotifyPeek" xml:space="preserve">
+    <value>Peek</value>
+  </data>
+  <data name="S_NotifyBadge" xml:space="preserve">
+    <value>Mark on the stripe</value>
+  </data>
+  <data name="S_NotifyOff" xml:space="preserve">
+    <value>Silent</value>
+  </data>
+  <data name="S_PeekSeconds" xml:space="preserve">
+    <value>How long a peek stays</value>
+  </data>
+  <data name="S_PeekSecondsHint" xml:space="preserve">
+    <value>Long text scrolls as a marquee — its time is added on top</value>
+  </data>
+  <data name="S_Seconds" xml:space="preserve">
+    <value>{0} s</value>
+  </data>
+  <data name="S_Sound" xml:space="preserve">
+    <value>Sound</value>
+  </data>
+  <data name="S_SoundHint" xml:space="preserve">
+    <value>A system beep on every new notification</value>
+  </data>
+  <data name="S_Test" xml:space="preserve">
+    <value>Try it</value>
+  </data>
+  <data name="S_TestHint" xml:space="preserve">
+    <value>The island will show a test notification</value>
+  </data>
+  <data name="S_TestButton" xml:space="preserve">
+    <value>Show</value>
+  </data>
+  <data name="S_TestTitle" xml:space="preserve">
+    <value>This is what a notification looks like</value>
+  </data>
+  <data name="S_TestBody" xml:space="preserve">
+    <value>Long text isn't cut off with an ellipsis — it scrolls like a marquee so you can read it to the end</value>
+  </data>
+  <data name="S_LiveSection" xml:space="preserve">
+    <value>Live activities</value>
+  </data>
+  <data name="S_LiveActivities" xml:space="preserve">
+    <value>Timers and progress in the capsule</value>
+  </data>
+  <data name="S_LiveActivitiesHint" xml:space="preserve">
+    <value>The collapsed island shows countdowns and plugin progress</value>
+  </data>
+  <data name="S_MediaCapsule" xml:space="preserve">
+    <value>Music in the capsule</value>
+  </data>
+  <data name="S_MediaCapsuleHint" xml:space="preserve">
+    <value>Album art and an equalizer while something is playing</value>
+  </data>
+  <data name="S_MediaCard" xml:space="preserve">
+    <value>“Now playing” card</value>
+  </data>
+  <data name="S_MediaCardHint" xml:space="preserve">
+    <value>In the open island with an empty query: art, track and controls</value>
+  </data>
+  <data name="S_BellSection" xml:space="preserve">
+    <value>Bell</value>
+  </data>
+  <data name="S_ClearAll" xml:space="preserve">
+    <value>Clear all notifications</value>
+  </data>
+  <data name="S_IntegrationsTitle" xml:space="preserve">
+    <value>Integrations</value>
+  </data>
+  <data name="S_KawakiHint" xml:space="preserve">
+    <value>Account notifications as island peeks, plus anime search. You sign in with a code — the island never sees your password.</value>
+  </data>
+  <data name="S_KawakiSignIn" xml:space="preserve">
+    <value>Sign in with kawaki.ru</value>
+  </data>
+  <data name="S_KawakiSignedIn" xml:space="preserve">
+    <value>Signed in as {0}</value>
+  </data>
+  <data name="S_KawakiSignOut" xml:space="preserve">
+    <value>Sign out</value>
+  </data>
+  <data name="S_KawakiCodeHint" xml:space="preserve">
+    <value>Open the confirmation page and check the code matches. Waiting for approval…</value>
+  </data>
+  <data name="S_KawakiOpenPage" xml:space="preserve">
+    <value>Open the page</value>
+  </data>
+  <data name="S_KawakiExpired" xml:space="preserve">
+    <value>The code expired or sign-in was cancelled — try again</value>
+  </data>
+  <data name="S_KawakiFailed" xml:space="preserve">
+    <value>Couldn't get a code: the site is unreachable</value>
+  </data>
+  <data name="S_KawakiNotifications" xml:space="preserve">
+    <value>Kawaki notifications</value>
+  </data>
+  <data name="S_KawakiNotificationsHint" xml:space="preserve">
+    <value>Replies, friends, rewards — as island peeks. Checked every ninety seconds</value>
+  </data>
+  <data name="S_KawakiSearch" xml:space="preserve">
+    <value>Anime search with “k ”</value>
+  </data>
+  <data name="S_KawakiSearchHint" xml:space="preserve">
+    <value>“k naruto” — catalogue titles with posters</value>
+  </data>
+  <data name="S_KawakiGlobal" xml:space="preserve">
+    <value>Search Kawaki without the keyword</value>
+  </data>
+  <data name="S_KawakiGlobalHint" xml:space="preserve">
+    <value>Every query will be sent to kawaki.ru</value>
+  </data>
+  <data name="S_ClipTideFound" xml:space="preserve">
+    <value>ClipTide found</value>
+  </data>
+  <data name="S_ClipTideFoundHint" xml:space="preserve">
+    <value>Finished downloads show up as island peeks; click to open the folder. “ct ” lists recent downloads.</value>
+  </data>
+  <data name="S_ClipTideMissing" xml:space="preserve">
+    <value>ClipTide isn't installed</value>
+  </data>
+  <data name="S_ClipTideMissingHint" xml:space="preserve">
+    <value>A video and music downloader for YouTube and hundreds of sites — the island tells you when a download is done</value>
+  </data>
+  <data name="S_ClipTideDownload" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="S_ClipTideNotifications" xml:space="preserve">
+    <value>Download notifications</value>
+  </data>
+  <data name="S_ClipTideNotificationsHint" xml:space="preserve">
+    <value>A peek with a thumbnail when ClipTide finishes a download or conversion</value>
+  </data>
+  <data name="S_ExternalSection" xml:space="preserve">
+    <value>Your own apps and scripts</value>
+  </data>
+  <data name="S_ExternalHint" xml:space="preserve">
+    <value>Any program can show a notification or a live activity on the island — with a command-line switch or a JSON line sent to a named pipe:</value>
+  </data>
+  <data name="S_ExternalProtocol" xml:space="preserve">
+    <value>Protocol reference</value>
+  </data>
+  <data name="S_CopyExample" xml:space="preserve">
+    <value>Copy example</value>
+  </data>
+  <data name="S_PluginsTitle" xml:space="preserve">
+    <value>Plugins</value>
+  </data>
+  <data name="S_PluginsHint" xml:space="preserve">
+    <value>A plugin is a folder with plugin.json: ready-made commands, site searches, or a program in any language that answers queries. Put yours into {0} and press Reload.</value>
+  </data>
+  <data name="S_PluginsOpenFolder" xml:space="preserve">
+    <value>Open folder</value>
+  </data>
+  <data name="S_PluginsReload" xml:space="preserve">
+    <value>Reload</value>
+  </data>
+  <data name="S_PluginsDocs" xml:space="preserve">
+    <value>How to write a plugin</value>
+  </data>
+  <data name="S_PluginsEmpty" xml:space="preserve">
+    <value>No plugins yet</value>
+  </data>
+  <data name="S_PluginBuiltIn" xml:space="preserve">
+    <value>built-in</value>
+  </data>
+  <data name="S_PluginKeywords" xml:space="preserve">
+    <value>Keywords: {0}</value>
+  </data>
+  <data name="S_SourcesSection" xml:space="preserve">
+    <value>Sources</value>
+  </data>
+  <data name="S_Calculator" xml:space="preserve">
+    <value>Calculator</value>
+  </data>
+  <data name="S_CalculatorHint" xml:space="preserve">
+    <value>“2+2*3”, “sqrt(2)”, “0xFF+1” — the answer comes first, Enter copies it</value>
+  </data>
+  <data name="S_Commands" xml:space="preserve">
+    <value>Commands</value>
+  </data>
+  <data name="S_CommandsHint" xml:space="preserve">
+    <value>“lock”, “sleep”, “wifi”, “recycle” and Windows Settings pages. “&gt;” lists them all</value>
+  </data>
+  <data name="S_Clipboard" xml:space="preserve">
+    <value>Clipboard history</value>
+  </data>
+  <data name="S_ClipboardHint" xml:space="preserve">
+    <value>“cb ” — recently copied text, Enter pastes it into your window. Memory only; anything copied from password managers is skipped</value>
+  </data>
+  <data name="S_Recent" xml:space="preserve">
+    <value>Recent items on an empty query</value>
+  </data>
+  <data name="S_RecentHint" xml:space="preserve">
+    <value>Frequent and recent items when you open the island with the hotkey</value>
+  </data>
+  <data name="S_Remember" xml:space="preserve">
+    <value>Remember launches</value>
+  </data>
+  <data name="S_RememberHint" xml:space="preserve">
+    <value>Frequent things rise in the results. Kept in history.json</value>
+  </data>
+  <data name="S_Forget" xml:space="preserve">
+    <value>Forget all</value>
+  </data>
 </root>

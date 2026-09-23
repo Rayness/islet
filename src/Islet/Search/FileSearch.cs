@@ -62,6 +62,7 @@ internal static class FileSearch
                 Kind = isFolder ? ResultKind.Folder : ResultKind.File,
                 Target = path,
                 IconSource = path,
+                ProviderId = "files",
             });
         }
         return results;

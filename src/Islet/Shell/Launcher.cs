@@ -19,6 +19,10 @@ internal static class Launcher
             UseShellExecute = true,
         });
 
+    /// <summary>Запустить от имени администратора (UAC спросит сам).</summary>
+    public static bool OpenAsAdmin(string path) =>
+        Start(new ProcessStartInfo(path) { UseShellExecute = true, Verb = "runas" });
+
     /// <summary>Открыть папку с выделенным файлом.</summary>
     public static bool Reveal(string path) =>
         Start(new ProcessStartInfo("explorer.exe", $"/select,\"{path}\""));

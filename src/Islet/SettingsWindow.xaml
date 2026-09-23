@@ -90,6 +90,11 @@
                         <FontIcon Glyph="&#xE7C4;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
+                <NavigationViewItem x:Uid="NavNotifications" Tag="notifications">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xEA8F;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
                 <NavigationViewItem x:Uid="NavLook" Tag="look">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE790;" />
@@ -103,6 +108,16 @@
                 <NavigationViewItem x:Uid="NavPins" Tag="pins">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE718;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Uid="NavIntegrations" Tag="integrations">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE71B;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Uid="NavPlugins" Tag="plugins">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xEA86;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem x:Uid="NavAbout" Tag="about">
@@ -482,6 +497,9 @@
                     <StackPanel Style="{StaticResource PageStack}">
                         <TextBlock Style="{StaticResource PageTitle}" x:Uid="PageSearch" />
 
+                        <!-- Источники выдачи: калькулятор, команды, буфер, недавнее (собирается в коде). -->
+                        <StackPanel x:Name="SearchSourcesStack" Spacing="6" />
+
                         <Border Style="{StaticResource Card}">
                             <Grid ColumnSpacing="16">
                                 <Grid.ColumnDefinitions>
@@ -606,6 +624,17 @@
                             <Button Click="ResetPins_Click" x:Uid="ResetPinsButton" />
                         </StackPanel>
                     </StackPanel>
+                </ScrollViewer>
+
+                <!-- ============ Уведомления, Интеграции, Плагины — собираются в коде ============ -->
+                <ScrollViewer x:Name="NotificationsPage" Visibility="Collapsed">
+                    <StackPanel x:Name="NotificationsStack" Style="{StaticResource PageStack}" />
+                </ScrollViewer>
+                <ScrollViewer x:Name="IntegrationsPage" Visibility="Collapsed">
+                    <StackPanel x:Name="IntegrationsStack" Style="{StaticResource PageStack}" />
+                </ScrollViewer>
+                <ScrollViewer x:Name="PluginsPage" Visibility="Collapsed">
+                    <StackPanel x:Name="PluginsStack" Style="{StaticResource PageStack}" />
                 </ScrollViewer>
 
                 <!-- ============ О программе ============ -->

@@ -1,6 +1,14 @@
+using System.Text.Json;
+using Islet.Core;
+using Islet.Integrations;
+using Islet.Ipc;
+using Islet.Media;
 using Islet.Pins;
+using Islet.Plugins;
 using Islet.Search;
 using Islet.Settings;
+using Islet.Shell;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 
 namespace Islet;
@@ -9,51 +17,112 @@ public partial class App : Application
 {
     private IslandWindow? _island;
     private SettingsWindow? _settings;
+    private DispatcherQueue? _queue;
+    private readonly IpcServer _ipc = new();
+    // Одноразовые таймеры держим полем: иначе сборщик мусора заберёт их раньше срабатывания.
+    private DispatcherQueueTimer? _welcomeTimer;
 
     internal static new App Current => (App)Application.Current;
 
     internal PinStore Pins { get; } = new();
     internal DriveIndex DriveIndex { get; } = new();
+    internal NotificationCenter Notifications { get; } = new();
+    internal ActivityHub Activities { get; } = new();
+    internal TimerService Timers { get; } = new();
+    internal MediaService Media { get; } = new();
+    internal ClipboardHistory Clipboard { get; } = new();
+    internal KawakiClient Kawaki { get; } = new();
+    internal ClipTideBridge ClipTide { get; } = new();
+    internal PluginManager Plugins { get; } = new();
+    internal SearchService Search { get; private set; } = null!;
 
     public App()
     {
-        // Первым делом: на установке и удалении Velopack запускает exe со своими ключами,
-        // и до создания окон он должен успеть отработать.
-        Velopack.VelopackApp.Build().Run();
         InitializeComponent();
+        UnhandledException += (_, e) =>
+        {
+            // Островок живёт весь день: ошибка в одном обработчике не должна его ронять.
+            Log.Write($"unhandled: {e.Exception}");
+            e.Handled = true;
+        };
     }
 
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
-        // Второй экземпляр не нужен: островок один на рабочий стол.
-        if (!SingleInstance.TryAcquire())
-        {
-            Exit();
-            return;
-        }
+        _queue = DispatcherQueue.GetForCurrentThread();
 
         SettingsStore.Load();
         Loc.Apply(SettingsStore.Current.Language);
+        Notifications.Attach(_queue);
+        Activities.Attach(_queue);
+        Timers.Attach(_queue);
         Pins.Load();
         DriveIndex.Start();
+
+        Search = new SearchService(DriveIndex, [new KawakiProvider(Kawaki)]);
+        var clipTide = new ClipTideProvider(Search.Apps);
+        Search.Extra = () => Plugins.Providers.Append(clipTide);
+        ActionRunner.PluginInvoker = Plugins.Invoke;
+        Plugins.Load();
 
         _island = new IslandWindow();
         _island.Activate();
 
-        // Проверка обновлений не должна задерживать запуск островка.
-        _ = Shell.Updater.CheckAsync();
+        _ipc.MessageReceived += msg => Protocol.Handle(msg, "ipc", Loc.T("Source_External"));
+        _ipc.Start();
 
-        // Ключи для проверки вида без клавиатуры и мыши.
-        var cli = Environment.GetCommandLineArgs();
-        var settings = Array.IndexOf(cli, "--settings");
-        if (settings >= 0)
-            OpenSettings(settings + 1 < cli.Length ? cli[settings + 1] : null);
-        var demo = Array.IndexOf(cli, "--demo");
-        if (demo >= 0 && demo + 1 < cli.Length)
-            _island.ShowDemo(cli[demo + 1]);
+        _ = Media.StartAsync(_queue);
+        Kawaki.Start();
+        ClipTide.Start();
+
+        // Проверка обновлений не должна задерживать запуск островка.
+        _ = Updater.CheckAsync();
+
+        if (Program.StartupMessage is { } message)
+        {
+            using var doc = JsonDocument.Parse(message);
+            Protocol.Handle(doc.RootElement.Clone(), "cli", Loc.T("Source_External"));
+        }
+
+        if (!SettingsStore.Current.Onboarded)
+            Welcome();
+    }
+
+    /// <summary>
+    /// Первый запуск: полоска у края экрана ни о чём не говорит, поэтому островок
+    /// сам раскрывается пиком и рассказывает, как им пользоваться.
+    /// </summary>
+    private void Welcome()
+    {
+        SettingsStore.Update(s => s.Onboarded = true);
+        var hotkey = SettingsStore.Current.Hotkey.Label;
+        var delay = _welcomeTimer = _queue!.CreateTimer();
+        delay.Interval = TimeSpan.FromSeconds(1.2);
+        delay.IsRepeating = false;
+        delay.Tick += (_, _) => Notifications.Post(new IsletNotification
+        {
+            Source = "islet",
+            SourceName = "Islet",
+            Title = Loc.T("Welcome_Title"),
+            Body = Loc.T("Welcome_Body", hotkey),
+            Icon = "ms-appx:///Assets/islet.ico",
+            Action = new IsletAction { Query = "?" },
+        });
+        delay.Start();
     }
 
     internal IslandWindow? Island => _island;
+
+    /// <summary>Выход по-настоящему — окну островка можно закрыться.</summary>
+    internal bool IsShuttingDown { get; private set; }
+
+    /// <summary>Выполнить на UI-потоке (из обработчиков канала, плагинов, таймеров).</summary>
+    internal void Dispatch(Action action)
+    {
+        if (_queue is null) return;
+        if (_queue.HasThreadAccess) Guard.Run(action);
+        else _queue.TryEnqueue(() => Guard.Run(action));
+    }
 
     internal void OpenSettings(string? page = null)
     {
@@ -69,7 +138,14 @@ public partial class App : Application
 
     internal void Shutdown()
     {
+        IsShuttingDown = true;
         _settings?.Close();
+        _ipc.Dispose();
+        Plugins.Dispose();
+        Kawaki.Stop();
+        ClipTide.Dispose();
+        Media.Stop();
+        Notifications.Save();
         DriveIndex.Dispose();
         _island?.Close();
         Exit();

@@ -18,14 +18,18 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
-    <Version>0.1.1</Version>
+    <Version>0.2.0</Version>
     <ApplicationIcon>Assets\islet.ico</ApplicationIcon>
     <!-- Язык по умолчанию: на него падаем, если языка системы в ресурсах нет. -->
     <DefaultLanguage>en-US</DefaultLanguage>
+    <!-- Свой Main (Program.cs): второй запуск пересылает команду первому ещё до WinUI. -->
+    <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
     <Content Include="Assets\**" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Встроенные плагины лежат рядом с exe и обновляются вместе с приложением. -->
+    <Content Include="..\..\plugins\**" Link="plugins\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <PRIResource Include="Strings\**\*.resw" />
   </ItemGroup>
 
@@ -46,6 +50,8 @@
     <!-- Только описания эффектов для стекла (маска по форме островка). -->
     <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.4.0" />
     <PackageReference Include="Velopack" Version="1.2.0" />
+    <!-- DPAPI: токены Kawaki на диске зашифрованы ключом текущего пользователя Windows. -->
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.12" />
   </ItemGroup>
 
 </Project>
